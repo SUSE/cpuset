@@ -1,5 +1,5 @@
 __copyright__ = """
-Copyright (C) 2008 Novell Inc.
+Copyright (C) 2008, 2009 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify

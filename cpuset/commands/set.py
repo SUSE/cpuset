@@ -2,7 +2,7 @@
 """
 
 __copyright__ = """
-Copyright (C) 2008 Novell Inc.
+Copyright (C) 2008, 2009 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 import sys, os, logging
 from optparse import OptionParser, make_option
 
+from cpuset import config
 from cpuset import cset
 from cpuset.util import *
 from cpuset.commands.common import *
 try: from cpuset.commands import proc
-except: pass
+except SyntaxError:
+    raise
+except: 
+    pass
 
 global log
 log = logging.getLogger('set')
@@ -43,7 +47,7 @@ A cpuset is an organizational unit that defines a group of CPUs
 and a group of memory nodes where a process or thread (i.e. task)
 is allowed to run on.  For non-NUMA machines, the memory node is
 always 0 (zero) and cannot be set to anything else.  For NUMA
-machines, the memory node can be set to a similar specifcation
+machines, the memory node can be set to a similar specification
 as the CPU definition and will tie those memory nodes to that
 cpuset.  You will usually want the memory nodes that belong to
 the CPUs defined to be in the same cpuset.
@@ -113,7 +117,7 @@ Create a cpuset that specifies both CPUs and memory nodes:
 
         Note that this command uses the full path method to
         specify the name of the new cpuset "/rad/set_one". It
-        also names the new cpuset implicitily (i.e. no --set
+        also names the new cpuset implicitly (i.e. no --set
         option, although you can use that if you want to).  If
         the "set_one" name is unique, you can subsequently refer
         to is just by that.  Memory node 3 is assigned to this
@@ -124,8 +128,7 @@ already exist, they will modify them to the new specifications."""
 
 verbose = 0
 options = [make_option('-l', '--list',
-                       help = 'list the named cpuset(s); recursive list if also -r; '
-                              'members if also -a',
+                       help = 'list the named cpuset(s); recursive list if also -r',
                        action = 'store_true'),
            make_option('-c', '--cpu',
                        help = 'create or modify cpuset in the specified '
@@ -133,19 +136,26 @@ options = [make_option('-l', '--list',
                        metavar = 'CPUSPEC'),
            make_option('-m', '--mem',
                        help = 'specify which memory nodes to assign '
-                              'to the created or modified cpuset',
+                              'to the created or modified cpuset (optional)',
                        metavar = 'MEMSPEC'),
+           make_option('-n', '--newname',
+                       help = 'rename cpuset specified with --set to NEWNAME'),
            make_option('-d', '--destroy',
                        help = 'destroy specified cpuset',
                        action = 'store_true'),
            make_option('-s', '--set',
                        metavar = 'CPUSET',
                        help = 'specify cpuset'),
-           make_option('-a', '--all',
-                       help = 'also do listing of member cpusets',
-                       action = 'store_true'),
            make_option('-r', '--recurse',
-                       help = 'do recursive listing, for use with --list',
+                       help = 'do things recursively, use with --list and --destroy',
+                       action = 'store_true'),
+           make_option('--force',
+                       help = 'force recursive deletion even if processes are running ' 
+                              'in those cpusets (they will be moved to parent cpusets)',
+                       action = 'store_true'),
+           make_option('-x', '--usehex',
+                       help = 'use hexadecimal value for CPUSPEC and MEMSPEC when '
+                              'listing cpusets',
                        action = 'store_true'),
            make_option('-v', '--verbose',
                        help = 'prints more detailed output, additive',
@@ -167,10 +177,10 @@ def func(parser, options, args):
 
     if options.list:
         if options.set:
-            list_sets(options.set, options.recurse, options.all)
+            list_sets(options.set, options.recurse, options.usehex)
             return
-        if len(args): list_sets(args, options.recurse, options.all)
-        else: list_sets('root', options.recurse, options.all)
+        if len(args): list_sets(args, options.recurse, options.usehex)
+        else: list_sets('root', options.recurse, options.usehex)
         return
 
     if options.cpu or options.mem:
@@ -178,21 +188,27 @@ def func(parser, options, args):
         create_from_options(options, args)
         return
 
+    if options.newname:
+        rename_set(options, args)
+        return
+
     if options.destroy:
-        if options.set: destroy_sets(options.set)
-        else: destroy_sets(args)
+        if options.set: destroy_sets(options.set, options.recurse, options.force)
+        else: destroy_sets(args, options.recurse, options.force)
         return
 
     if options.cpu_exclusive or options.mem_exclusive:
-        # modification of existing cpusets for exclusivity
+        # FIXME: modification of existing cpusets for exclusivity
         return
 
     # default behavior if no options specified is list
     log.debug('no options set, default is listing cpusets')
-    if len(args): list_sets(args, options.recurse, options.all)
-    else: list_sets('root', options.recurse, options.all)
+    if options.set: list_sets(options.set, options.recurse, options.usehex)
+    elif len(args): list_sets(args, options.recurse, options.usehex)
+    else: list_sets('root', options.recurse, options.usehex)
 
-def list_sets(tset, recurse=None, members=None):
+def list_sets(tset, recurse=None, usehex=False):
+    """list cpusets specified in tset as cpuset or list of cpusets, recurse if true"""
     log.debug('entering list_sets, tset=%s recurse=%s', tset, recurse)
     sl = []
     if isinstance(tset, list):
@@ -200,51 +216,74 @@ def list_sets(tset, recurse=None, members=None):
     else:
         sl.extend(cset.find_sets(tset))
     log.debug('total unique sets in passed tset: %d', len(sl))
-    if recurse: members = True
-    if members:
-        sl2 = []
-        for s in sl:
-            sl2.append(s)
-            if len(s.subsets) > 0:
-                sl2.extend(s.subsets)
-            if recurse:
-                for node in s.subsets:
-                    for nd in cset.walk_set(node):
-                        sl2.append(nd)
-        sl = sl2
-    pl = ['']
-    pl.extend(set_header('   '))
+    sl2 = []
+    for s in sl:
+        sl2.append(s)
+        if len(s.subsets) > 0:
+            sl2.extend(s.subsets)
+        if recurse:
+            for node in s.subsets:
+                for nd in cset.walk_set(node):
+                    sl2.append(nd)
+    sl = sl2
+    if config.mread:
+        pl = ['cpuset_list_start']
+    else:
+        pl = ['']
+        pl.extend(set_header(' '))
+
     for s in sl:
         if verbose:
-            pl.append(set_details(s,'   ', 0))
+            pl.append(set_details(s,' ', None, usehex))
         else:
-            pl.append(set_details(s,'   '))
+            pl.append(set_details(s,' ', 78, usehex))
+
+    if config.mread:
+        pl.append('cpuset_list_end')
     log.info("\n".join(pl))
 
-def destroy_sets(sets):
-    log.debug('enter destroy_sets, sets=%s', sets)
+def destroy_sets(sets, recurse=False, force=False):
+    """destroy cpusets in list of sets, recurse if true, if force destroy if tasks running"""
+    log.debug('enter destroy_sets, sets=%s, force=%s', sets, force)
     nl = []
     try:
         nl.extend(sets)
     except:
         nl.append(sets)
     # check that sets passed are ok, will raise if one is bad
+    sl2 = []
     for s in nl: 
         st = cset.unique_set(s)
+        sl2.append(st)
         if len(st.subsets) > 0:
-            raise CpusetException('cpuset "%s" has subsets, delete them first'
-                                  % st.path)
+            if not recurse:
+                raise CpusetException(
+                        'cpuset "%s" has subsets, delete them first, or use --recurse'
+                        % st.path)
+            elif not force:
+                raise CpusetException(
+                        'cpuset "%s" has subsets, use --force to destroy'
+                        % st.path)
+            sl2.extend(st.subsets)
+            for node in st.subsets:
+                for nd in cset.walk_set(node):
+                    sl2.append(nd)
+
     # ok, good to go
-    for s in nl:
+    if recurse: sl2.reverse()
+    for s in sl2:
         s = cset.unique_set(s)
+        # skip the root set!!! or you'll have problems...
+        if s.path == '/': continue
         log.info('--> processing cpuset "%s", moving %s tasks to parent "%s"...',
                  s.name, len(s.tasks), s.parent.path)
         proc.move(s, s.parent)
-        log.info('deleting cpuset "%s"', s.path)
+        log.info('--> deleting cpuset "%s"', s.path)
         destroy(s)
     log.info('done')
 
 def destroy(name):
+    """destroy one cpuset by name as cset or string"""
     log.debug('entering destroy, name=%s', name)
     if isinstance(name, str):
         set = cset.unique_set(name)
@@ -261,7 +300,40 @@ def destroy(name):
     # fixme: perhaps reparsing the all the sets is not so efficient...
     cset.rescan()
 
+def rename_set(options, args):
+    """rename cpuset as specified in options and args lists"""
+    log.debug('entering rename_set, options=%s args=%s', options, args)
+    # figure out target cpuset name, if --set not used, use first arg
+    name = options.newname
+    if options.set:
+        tset = cset.unique_set(options.set)
+    elif len(args) > 0:
+        tset = cset.unique_set(args[0])
+    else:
+        raise CpusetException('desired cpuset not specified')
+    path = tset.path[0:tset.path.rfind('/')+1]
+    log.debug('target set="%s", path="%s", name="%s"', tset.path, path, name)
+    try:
+        if name.find('/') == -1:
+            chk = cset.unique_set(path+name)
+        else:
+            if name[0:name.rfind('/')+1] != path:
+                raise CpusetException('desired name cannot have different path')
+            chk = cset.unique_set(name)
+        raise CpusetException('cpuset "'+chk.path+'" already exists')
+    except CpusetNotFound:
+        pass
+    except:
+        raise
+
+    if name.rfind('/') != -1:
+        name = name[name.rfind('/')+1:]
+    log.info('--> renaming "%s" to "%s"', cset.CpuSet.basepath+tset.path, name)
+    os.rename(cset.CpuSet.basepath+tset.path, cset.CpuSet.basepath+path+name)
+    cset.rescan()
+
 def create_from_options(options, args):
+    """create cpuset as specified by options and args lists"""
     log.debug('entering create_from_options, options=%s args=%s', options, args)
     # figure out target cpuset name, if --set not used, use first arg
     if options.set:
@@ -292,6 +364,7 @@ def create_from_options(options, args):
     active(tset)
 
 def create(name, cpuspec, memspec, cx, mx):
+    """create one cpuset by name, cpuspec, memspec, cpu and mem exclusive flags"""
     log.debug('entering create, name=%s cpuspec=%s memspec=%s cx=%s mx=%s',
               name, cpuspec, memspec, cx, mx)
     try:
@@ -310,6 +383,7 @@ def create(name, cpuspec, memspec, cx, mx):
     modify(name, cpuspec, memspec, cx, mx)
 
 def modify(name, cpuspec=None, memspec=None, cx=None, mx=None):
+    """modify one cpuset by name, cpuspec, memspec, cpu and mem exclusive flags"""
     log.debug('entering modify, name=%s cpuspec=%s memspec=%s cx=%s mx=%s',
               name, cpuspec, memspec, cx, mx)
     if isinstance(name, str):
@@ -326,6 +400,7 @@ def modify(name, cpuspec=None, memspec=None, cx=None, mx=None):
     if mx: nset.mem_exclusive = mx
 
 def active(name):
+    """check that cpuset by name or cset is ready to be used"""
     log.debug("entering active, name=%s", name)
     if isinstance(name, str):
         set = cset.unique_set(name)
@@ -339,55 +414,66 @@ def active(name):
         raise CpusetException('"%s" cpuset not active, no mems defined' % set.path)
 
 def set_header(indent=None):
+    """return list of cpuset output header"""
     if indent: istr = indent
     else: istr = ''
     l = []
-    #               '1234567890-1234567890-1234567890-1234567890-1234567890'
+    #               '123456789-123456789-123456789-123456789-123456789-123456789-'
     l.append(istr + '        Name       CPUs-X    MEMs-X Tasks Subs Path')
     l.append(istr + '------------ ---------- - ------- - ----- ---- ----------')
     return l
 
-def set_details(name, indent=None, width=75):
+def set_details(name, indent=None, width=None, usehex=False):
+    """return string of cpuset details"""
+    if width == None: width = 0
     if isinstance(name, str):
         set = cset.unique_set(name)
     elif not isinstance(name, cset.CpuSet):
         raise CpusetException("passing bogus set=%s" % name)
     else:
         set = name
-    if indent: istr = indent
-    else: istr = ''
+
     l = []
-    used = 0
-    l.append(istr)
-    used += len(istr)
     l.append(set.name.rjust(12))
-    used += 12
     cs = set.cpus
     if cs == '': cs = '*****'
-    l.append(cs.rjust(11))
-    used += 11 
+    elif usehex: cs = cset.cpuspec_to_hex(cs)
+    l.append(cs.rjust(10))
     if set.cpu_exclusive:
-        l.append(' y')
+        l.append('y')
     else:
-        l.append(' n')
-    used += 2
+        l.append('n')
     cs = set.mems
     if cs == '': cs = '*****'
-    l.append(cs.rjust(8))
-    used += 8
+    elif usehex: cs = cset.cpuspec_to_hex(cs)
+    l.append(cs.rjust(7))
     if set.mem_exclusive:
-        l.append(' y')
+        l.append('y')
     else:
-        l.append(' n')
-    used += 2
-    l.append(str(len(set.tasks)).rjust(6))
-    used += 6
-    l.append(str(len(set.subsets)).rjust(5))
-    used += 5
-    l.append(' ')
-    used += 1
-    if width == 0:
+        l.append('n')
+    l.append(str(len(set.tasks)).rjust(5))
+    l.append(str(len(set.subsets)).rjust(4))
+
+    if config.mread:
         l.append(set.path)
+        l2 = []
+        for line in l: 
+            l2.append(line.strip())
+        return ';'.join(l2)
+
+    out = ' '.join(l) + ' '
+    tst = out + set.path
+
+    if width != 0 and len(tst) > width:
+        target = width - len(out)
+        patha = set.path[:len(set.path)/2-3]
+        pathb = set.path[len(set.path)/2:]
+        patha = patha[:target/2-3]
+        pathb = pathb[-target/2:]
+        out += patha + '...' + pathb
     else:
-        l.append(set.path[:(width-used)])
-    return ''.join(l)
+        out = tst
+
+    if indent: istr = indent
+    else: istr = ''
+    return istr + out

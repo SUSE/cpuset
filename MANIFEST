@@ -4,15 +4,15 @@ INSTALL
 MANIFEST
 MANIFEST.in
 Makefile
+NEWS
 README
-TODO
 cset
 setup.cfg
 setup.py
 cpuset/__init__.py
+cpuset/config.py
 cpuset/cset.py
 cpuset/main.py
-cpuset/task.py
 cpuset/util.py
 cpuset/version.py
 cpuset/commands/__init__.py
@@ -37,5 +37,6 @@ doc/cset.1
 doc/cset.html
 doc/cset.txt
 doc/tutorial.conf
+doc/tutorial.html
 doc/tutorial.txt
 t/README

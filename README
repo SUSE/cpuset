@@ -2,17 +2,23 @@ Cpuset is a Python application that forms a wrapper around the
 standard Linux filesystem calls to make using the cpusets facilities
 in the Linux kernel easier.
 
-For the latest version see http://opensuse.org/build_service/cpuset
-Bugs or feature requests should be sent to http://bugs.opensuse.org
+For the latest version see:
+   http://developer.novell.com/wiki/index.php/cpuset
+
+For packages, see the OpenSUSE build service:
+   http://download.opensuse.org/repositories/home:/tsariounov:/Cpuset
+
+Bugs or feature requests should be sent to:
+   http://devzilla.novell.com/cpuset/
 
 -----
 
-Copyright (C) 2008 Novell Inc.
+Copyright (C) 2008, 2009 Novell Inc.
 
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License version 2 only as
+it under the terms of the GNU General Public License version 2 as
 published by the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful,

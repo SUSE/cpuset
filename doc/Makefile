@@ -48,8 +48,8 @@ install: man
 -include doc.dep
 
 clean:
-	#rm -f *.xml *.html *.pdf *.1 *.7 doc.dep
 	rm -f *.xml *.pdf doc.dep
+	#rm -f *.xml *.html *.pdf *.1 *.7 doc.dep
 
 %.html : %.txt
 	$(ASCIIDOC) -b xhtml11 -d manpage -f asciidoc.conf $(ASCIIDOC_EXTRA) $<
@@ -63,8 +63,8 @@ clean:
 %.pdf: %.xml
 	xmlto pdf $<
 
-# special formatting rules
+#special formatting rules
 tutorial.html : %.html : %.txt
-	$(ASCIIDOC) -b xhtml11 -d article -f tutorial.conf $(ASCIIDOC_EXTRA) $<
+	$(ASCIIDOC) -b xhtml11 -d article -f tutorial.conf -a toc -a numbered -a toclevels=4 $(ASCIIDOC_EXTRA) $<
 tutorial.xml : %.xml : %.txt
 	$(ASCIIDOC) -b docbook -d article -f tutorial.conf $<

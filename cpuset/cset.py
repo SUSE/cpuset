@@ -2,7 +2,7 @@
 """
 
 __copyright__ = """
-Copyright (C) 2008 Novell Inc.
+Copyright (C) 2008, 2009 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -26,8 +26,8 @@ if __name__ == '__main__':
     logging.basicConfig()
 
 from cpuset.util import *
-global log
 log = logging.getLogger('cset')
+RootSet = None
 
 class CpuSet(object):
     # sets is a class variable dict that keeps track of all 
@@ -135,14 +135,14 @@ class CpuSet(object):
 
         if not path:
             # mounted cpusets not found, so mount them
-            # FIXME: provide default mount directory from config file
-            if not os.access("/cpusets", os.F_OK):
-                os.mkdir("/cpusets")
-            ret = os.system("mount -t cpuset none /cpusets")
+
+            if not os.access(config.mountpoint, os.F_OK):
+                os.mkdir(config.mountpoint)
+            ret = os.system("mount -t cpuset none " + config.mountpoint)
             if ret:
                raise CpusetException(
                      'mount of cpuset filesystem failed, do you have permission?')
-            path = "/cpusets"
+            path = config.mountpoint
         log.debug("cpusets mounted at: " + path)
         return path
 
@@ -231,9 +231,10 @@ class CpuSet(object):
                 f.write(task)
                 f.close()
             except Exception, err:
-                if str(err).find('Permission denied') != -1:
+                if str(err).find('No such process') != -1:
+                    log.info('**> task %s not found, not moved', task)
+                else: 
                     raise
-                # if here, means process is already gone, racy stuff...
             if prog:
                 tick += 1
                 pb(tick)
@@ -245,9 +246,41 @@ class CpuSet(object):
 # Helper functions
 #
 
+def lookup_task_from_proc(pid):
+    """lookup the cpuset of the specified pid from proc filesystem"""
+    log.debug("entering lookup_task_from_proc, pid = %s", str(pid))
+    path = "/proc/"+str(pid)+"/cpuset"
+    if os.access(path, os.F_OK):
+        set = file(path).readline()[:-1]
+        log.debug('lookup_task_from_proc: found task %s cpuset: %s', str(pid), set)
+        return set
+    # FIXME: add search for threads here...
+    raise CpusetException("task ID %s not found, i.e. not running" % str(pid))
+
+def lookup_task_from_cpusets(pid):
+    """lookup the cpuset of the specified pid from cpuset filesystem"""
+    log.debug("entering lookup_task_from_cpusets, pid = %s", str(pid))
+    global RootSet
+    if RootSet == None: rescan()
+    gotit = None
+    if pid in RootSet.tasks:
+        gotit = RootSet
+    else:
+        for node in walk_set(RootSet):
+            if pid in node.tasks:
+                gotit = node
+                break
+    if gotit:
+        log.debug('lookup_task_from_cpusets: found task %s cpuset: %s', str(pid),
+                  gotit.path)
+        return gotit.path
+    raise CpusetException("task ID %s not found, i.e. not running" % str(pid))
+
 def unique_set(name):
     """find a unique cpuset by name or path, raise if multiple sets found"""
     log.debug("entering unique_set, name=%s", name)
+    if name == None:
+        raise CpusetException('unique_set() passed None as arg')
     if isinstance(name, CpuSet): return name
     nl = find_sets(name)
     if len(nl) > 1: 
@@ -256,7 +289,7 @@ def unique_set(name):
     return nl[0]
 
 def find_sets(name):
-    """find cpusets by name or path, return None if not found"""
+    """find cpusets by name or path, raise CpusetNotFound if not found"""
     log = logging.getLogger("cset.find_sets")
     log.debug('finding "%s" in cpusets', name)
     nodelist = []
@@ -267,13 +300,15 @@ def find_sets(name):
             log.debug("returning root set")
             nodelist.append(RootSet)
         else:
-            log.debug("walking from: %s", RootSet.name)
+            log.debug("walking from: %s", RootSet.path)
             for node in walk_set(RootSet):
                 if node.name == name:
                     log.debug('... found node "%s"', name)
                     nodelist.append(node)
     else:
         log.debug("find by path")
+        # make sure that leading slash is used if searching by path
+        if name[0] != '/': name = '/' + name
         if name in CpuSet.sets:
             log.debug('... found node "%s"', CpuSet.sets[name].name)
             nodelist.append(CpuSet.sets[name])
@@ -294,30 +329,65 @@ def walk_set(set):
             yield result 
 
 def rescan():
-    """ re-read the cpuset directory to sync system with data structs """
+    """re-read the cpuset directory to sync system with data structs"""
+    log.debug("entering rescan")
     global RootSet, maxcpu, allcpumask
     RootSet = CpuSet()
     # figure out system properties
     maxcpu = int(RootSet.cpus[-1])
     allcpumask = calc_cpumask(maxcpu)
 
-def cpuspec_check(cpuspec):
-    """ check format of cpuspec for validity """
-    log.debug("cpuspec_check(%s), maxcpu=%s", cpuspec, maxcpu)
-    groups = cpuspec.split(',')
-    if int(groups[-1].split('-')[-1]) > int(maxcpu):
-        str = 'CPUSPEC "%s" specifies higher max(%s) than available(%s)' % \
-              (cpuspec, groups[-1].split('-')[-1], maxcpu)
-        log.debug(str)
-        raise CpusetException(str)
+def cpuspec_check(cpuspec, usemax=True):
+    """check format of cpuspec for validity"""
+    log.debug("cpuspec_check(%s)", cpuspec)
     mo = re.search("[^0-9,\-]", cpuspec)
     if mo:
         str = 'CPUSPEC "%s" contains invalid charaters: %s' % (cpuspec, mo.group())
         log.debug(str)
         raise CpusetException(str)
+    groups = cpuspec.split(',')
+    if usemax and int(groups[-1].split('-')[-1]) > int(maxcpu):
+        str = 'CPUSPEC "%s" specifies higher max(%s) than available(%s)' % \
+              (cpuspec, groups[-1].split('-')[-1], maxcpu)
+        log.debug(str)
+        raise CpusetException(str)
+    for sub in groups:
+        it = sub.split('-')
+        if len(it) == 2:
+            if len(it[0]) == 0 or len(it[1]) == 0:
+                # catches negative numbers
+                raise CpusetException('CPUSPEC "%s" has bad group "%s"' % (cpuspec, sub))
+        if len(it) > 2:
+            raise CpusetException('CPUSPEC "%s" has bad group "%s"' % (cpuspec, sub))
+
+def cpuspec_to_hex(cpuspec):
+    """convert a cpuspec to the hexadecimal string representation"""
+    log.debug('cpuspec_to_string(%s)', cpuspec)
+    cpuspec_check(cpuspec, usemax=False)
+    groups = cpuspec.split(',')
+    number = 0
+    for sub in groups:
+        items = sub.split('-')
+        if len(items) == 1:
+            if not len(items[0]):
+                # two consecutive commas in cpuspec
+                continue
+            # one cpu in this group
+            log.debug(" adding cpu %s to result", items[0])
+            number |= 1 << int(items[0])
+        elif len(items) == 2: 
+            il = [int(ii) for ii in items]
+            if il[1] >= il[0]: rng = range(il[0], il[1]+1)
+            else: rng = range(il[1], il[0]+1)
+            log.debug(' group=%s has cpu range of %s', sub, rng)
+            for num in rng: number |= 1 << num
+        else:
+            raise CpusetException('CPUSPEC "%s" has bad group "%s"' % (cpuspec, sub))
+    log.debug(' final int number=%s in hex=%x', number, number)
+    return '%x' % number
 
 def memspec_check(memspec):
-    """check format of memspec for validity """
+    """check format of memspec for validity"""
     # FIXME: look under /sys/devices/system/node for numa memory node
     # information and check the memspec that way, currently we only do
     # a basic check
@@ -329,7 +399,7 @@ def memspec_check(memspec):
         raise CpusetException(str)
 
 def cpuspec_inverse(cpuspec):
-    """ calculate inverse of cpu specification """
+    """calculate inverse of cpu specification"""
     cpus = [0 for x in range(maxcpu+1)]
     groups = cpuspec.split(',')
     log.debug("cpuspec_inverse(%s) maxcpu=%d groups=%d", 
@@ -382,8 +452,10 @@ def cpuspec_inverse(cpuspec):
 def summary(set):
     """return summary of cpuset with number of tasks running"""
     log.debug("entering summary, set=%s", set.path)
-    return ('"%s" cpuset of: %+10s cpu, with: %+5s tasks running' %
-            (set.name, set.cpus, len(set.tasks)) )
+    if len(set.tasks) == 1: msg = 'task'
+    else: msg = 'tasks'
+    return ('"%s" cpuset of CPUSPEC(%s) with %s %s running' %
+            (set.name, set.cpus, len(set.tasks), msg) )
             
 def calc_cpumask(max):
     all = 1

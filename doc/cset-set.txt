@@ -1,7 +1,7 @@
 cset-set(1)
 ===========
 Alex Tsariounov <alext@novell.com>
-v1.0, May 2008
+v1.5.0, February 2009
 
 NAME
 ----
@@ -13,11 +13,9 @@ SYNOPSIS
 'cset' [cset options] 'set' [set options] [args]
 'cset' set --help
 'cset' set
-'cset' set --all
 'cset' set --recurse
 'cset' set --list myset
 'cset' set myset
-'cset' set --all myset
 'cset' set --recurse --list myset
 'cset' set --cpu 2-5 --mem 0 --set newset
 'cset' set --cpu 2-5 newset
@@ -48,9 +46,6 @@ OPTIONS
 -s CPUSET, --set=CPUSET::
   specify cpuset name to be acted on
 
--a, --all::
-  also do listing of members of specified cpuset, for use with --list
-
 -r, --recurse::
   do recursive listing, for use with --list
 
@@ -75,7 +70,7 @@ A cpuset is an organizational unit that defines a group of CPUs
 and a group of memory nodes where a process or thread (i.e. task)
 is allowed to run on.  For non-NUMA machines, the memory node is
 always 0 (zero) and cannot be set to anything else.  For NUMA
-machines, the memory node can be set to a similar specifcation
+machines, the memory node can be set to a similar specification
 as the CPU definition and will tie those memory nodes to that
 cpuset.  You will usually want the memory nodes that belong to
 the CPUs defined to be in the same cpuset.
@@ -146,7 +141,7 @@ Create a cpuset that specifies both CPUs and memory nodes::
 
 Note that this command uses the full path method to
 specify the name of the new cpuset "/rad/set_one". It
-also names the new cpuset implicitily (i.e. no --set
+also names the new cpuset implicitly (i.e. no --set
 option, although you can use that if you want to).  If
 the "set_one" name is unique, you can subsequently refer
 to is just by that.  Memory node 3 is assigned to this
@@ -161,19 +156,18 @@ Cpuset is licensed under the GNU GPL V2 only.
 
 COPYRIGHT
 ---------
-Copyright (c) 2008 Novell Inc.
+Copyright (c) 2008-2009 Novell Inc.
 
 AUTHOR
 ------
-Written by Alex Tsariounov <alext@novell.com>.
-
-Some substrate code and ideas were taken from the excellent Stacked
-GIT (stgit) v0.13 (see http://gna.org/projects/stgit  and
-http://www.procode.org/stgit).  Stacked GIT is under GPL V2 or later.
+Written by Alex Tsariounov <\alext@novell.com>.
 
 SEE ALSO
 --------
-manlink:cset[1], csetlink:proc[], csetlink:shield[], manlink:taskset[1],
-manlink:chrt[1]
+cset(1), cset-proc(1), cset-shield(1)
+
+/usr/share/doc/packages/cpuset/html/tutorial.html
+
+taskset(1), chrt(1)
 
 /usr/src/linux/Documentation/cpusets.txt

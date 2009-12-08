@@ -20,7 +20,7 @@ setup(name = 'cpuset',
     scripts = ['cset'],
     packages = ['cpuset', 'cpuset.commands'],
     data_files = [
-		  ('share/doc/packages/cpuset', ['README', 'COPYING']),
+		  ('share/doc/packages/cpuset', ['README', 'COPYING', 'AUTHORS', 'NEWS', 'INSTALL']),
 		  ('share/doc/packages/cpuset', glob.glob('doc/*.html')),
 		  ('share/doc/packages/cpuset', glob.glob('doc/*.txt')),
 	         ]

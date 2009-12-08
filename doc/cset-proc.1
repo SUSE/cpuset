@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "CSET\-PROC" "1" "05/30/2008" "" ""
+.TH "CSET\-PROC" "1" "02/07/2009" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -47,6 +47,9 @@ move specified tasks to specified cpuset; to move a PIDSPEC to a cpuset, use \-m
 \-p PIDSPEC, \-\-pid=PIDSPEC
 specify pid or tid specification
 .TP
+\-\-threads
+if specified, any processes found in the PIDSPEC to have multiple threads will automatically have all their threads added to the PIDSPEC (use to move all related threads to a cpuset)
+.TP
 \-s CPUSET, \-\-set=CPUSET
 specify name of immediate cpuset
 .TP
@@ -59,7 +62,7 @@ specify name of origination cpuset
 \-k, \-\-kthread
 move, or include moving, unbound kernel threads
 .TP
-\-a, \-\-all
+\-\-force
 force all processes and threads to be moved
 .TP
 \-v, \-\-verbose
@@ -71,9 +74,9 @@ To list which tasks are running in a particular cpuset, use the \-\-list command
 
 For example:
 
-\fB# cset proc \-\-list \-\-set priset\fR
+\fB# cset proc \-\-list \-\-set myset\fR
 
-This command will list all the tasks running in the cpuset called "priset".
+This command will list all the tasks running in the cpuset called "myset".
 
 Processes are created by specifying the path to the executable and specifying the cpuset that the process is to be created in.
 
@@ -82,6 +85,14 @@ For example:
 \fB# cset proc \-\-set=blazing_cpuset \-\-exec /usr/bin/fast_code\fR
 
 This command will execute the /usr/bin/fast_code program on the "blazing_cpuset" cpuset.
+
+Note that if your command takes options, then use the traditional "\-\-" marker to separate cset\(cqs options from your command\(cqs options.
+
+For example:
+
+\fB# cset proc \-\-set myset \-\-exec \(em ls \-l\fR
+
+This command will execute "ls \-l" on the cpuset called "myset".
 
 The PIDSPEC argument taken for the move command is a comma separated list of PIDs or TIDs. The list can also include brackets of PIDs or TIDs (i.e. tasks) that are inclusive of the endpoints.
 
@@ -109,7 +120,7 @@ The move command accepts multiple common calling methods. For example, the follo
 
 These commands move the tasks defined as 2442 and any running task between 3000 and 3200 inclusive of the ends to the cpuset called "reserved_set".
 
-Specifying the \-\-fromset is not necesary since the tasks will be moved to the destination cpuset no matter which cpuset they are currently running on.
+Specifying the \-\-fromset is not necessary since the tasks will be moved to the destination cpuset no matter which cpuset they are currently running on.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
@@ -117,6 +128,8 @@ Specifying the \-\-fromset is not necesary since the tasks will be moved to the 
 .br
 \fBNote\fR
 However, if you do specify a cpuset with the \-\-fromset option, then only those tasks that are both in the PIDSPEC \fBand\fR are running in the cpuset specified by \-\-fromset will be moved. I.e., if there is a task running on the system but not in \-\-fromset that is in PIDSPEC, it will not be moved.
+
+If the \-\-threads switch is used, then the proc command will gather any threads of belonging to any processes or threads that are specified in the PIDSPEC and move them. This provides an easy way to move all related threads: just pick one TID from the set and use the \-\-threads option.
 
 To move all userspace tasks from one cpuset to another, you need to specify the source and destination cpuset by name.
 
@@ -131,14 +144,14 @@ This command specifies that all processes and threads running on cpuset "comp1" 
 .nr an-break-flag 1
 .br
 \fBNote\fR
-This move command will not move kernel threads unless the \-k/\-\-kthread switch is specified. If it is, then all unbound kernel threads will be added to the move. Unbound kernel threads are those that can run on any CPU. If you \fBalso specify\fR the \-a/\-\-all switch, then all tasks, kernel or not, bound or not, will be moved.
+This move command will not move kernel threads unless the \-k/\-\-kthread switch is specified. If it is, then all unbound kernel threads will be added to the move. Unbound kernel threads are those that can run on any CPU. If you \fBalso specify\fR the \-\-force switch, then all tasks, kernel or not, bound or not, will be moved.
 .sp
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
 \fBCaution\fR
-Please be cautious with the \-\-all switch, since moving a kernel thread that is bound to a specific CPU to a cpuset that does not include that CPU can cause a system hang.
+Please be cautious with the \-\-force switch, since moving a kernel thread that is bound to a specific CPU to a cpuset that does not include that CPU can cause a system hang.
 
 You must specify unique cpuset names for the both exec and move commands. If a simple name passed to the \-\-fromset, \-\-toset and \-\-set parameters is unique on the system then that command executes. However, if there are multiple cpusets by that name, then you will need to specify which one you mean with a full path rooted at the base cpuset tree.
 
@@ -157,17 +170,19 @@ Then, to move a process from myset in group1 to yourset in group2, you would hav
 
 # cset proc \-\-move \-\-pid=50 \-\-fromset=/group1/myset \-\-toset=/group2/yourset
 
-You do not have to worry about where in the Linux filesystem the cpuset filesystem is mounted. The cset command takes care of that. Any cpusets that are specifed by path (such as above), are done with respect to the root of the cpuset filesystem.
+You do not have to worry about where in the Linux filesystem the cpuset filesystem is mounted. The cset command takes care of that. Any cpusets that are specified by path (such as above), are done with respect to the root of the cpuset filesystem.
 .SH "LICENSE"
 Cpuset is licensed under the GNU GPL V2 only.
 .SH "COPYRIGHT"
-Copyright (c) 2008 Novell Inc.
+Copyright (c) 2008\-2009 Novell Inc.
 .SH "AUTHOR"
 Written by Alex Tsariounov <alext@novell.com>.
-
-Some substrate code and ideas were taken from the excellent Stacked GIT (stgit) v0.13 (see http://gna.org/projects/stgit and http://www.procode.org/stgit). Stacked GIT is under GPL V2 or later.
 .SH "SEE ALSO"
-\fBcset\fR(1), \fBcset\-set\fR(1), \fBcset\-shield\fR(1), \fBtaskset\fR(1), \fBchrt\fR(1)
+cset(1), cset\-set(1), cset\-shield(1)
+
+/usr/share/doc/packages/cpuset/html/tutorial.html
+
+taskset(1), chrt(1)
 
 /usr/src/linux/Documentation/cpusets.txt
 

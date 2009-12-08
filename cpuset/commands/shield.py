@@ -2,7 +2,7 @@
 """
 
 __copyright__ = """
-Copyright (C) 2008 Novell Inc.
+Copyright (C) 2008, 2009 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@ from cpuset.commands import proc
 from cpuset.commands import set
 from cpuset import cset
 from cpuset.util import *
+from cpuset import config
 
 global log 
 log = logging.getLogger('shield')
@@ -103,16 +104,16 @@ shielded cpuset with the --exec subcommand, or move processes or
 threads already running to the shielded cpuset with the --shield
 subcommand.
 
-The PIDSPEC argument taken for the --shield (or -s) subcommand is
-a comma separated list of PIDs or TIDs.  The list can also
-include brackets of PIDs or TIDs that are inclusive of the
-endpoints.
+The PIDSPEC argument taken for the --pid (or -p) option (used in
+conjunction with a --shield or --unshield command) is a comma
+separated list of PIDs or TIDs.  The list can also include
+brackets of PIDs or TIDs that are inclusive of the endpoints.
 
 For example:
     1,2,5               Means processes 1, 2 and 5
     1,2,600-700         Means processes 1, 2 and from 600 to 700
 
-    # cset shield --shield=50-65
+    # cset shield --shield --pid=50-65
         This command moves all processes and threads with PID or
         TID in the range 50-65 inclusive, from any cpuset they may
         be running in into the shielded user cpuset.
@@ -122,24 +123,18 @@ position populated.  In other words, for the example above, if
 there is only one process, say PID 57, in the range of 50-65,
 then only that process will be moved.
 
-DANGER: Please note that there is no checking of processes you
-request to move into the shield with the --shield command.  This
-means that the tool will happily move, for example, kernel
-threads that are bound to specific CPUs with this command. You
-can hang your system by indiscriminately specifying arbitrary
-PIDs to the --shield command so please be careful.
-
 The --unshield (or -u) subcommand will remove the specified
 processes or threads from the shielded cpuset and move them into
-the unshielded (or system) cpuset.  This option also takes a
-PIDSPEC argument, the same as for the --shield subcommand.
+the unshielded (or system) cpuset.  This option is use with a
+--pid and a PIDSPEC argument, the same as for the --shield
+subcommand.
 
 Both the --shield and the --unshield commands will also finally
 output the number of tasks running in the shield and out of the
-shield.  If you do not specify a PIDSPEC to these commands, then
-just that status is output.  By specifying also a --verbose in
-addition, then you will get a listing of every task that is
-running in either the shield or out of the shield.
+shield if you do not specify a PIDSPEC with -p.  By specifying
+also a --verbose in addition, then you will get a listing of
+every task that is running in either the shield or out of the
+shield.
 
 Using no subcommand, ie. only "cset shield", will output the
 status of both shield and non-shield.  Tasks will be listed if
@@ -179,25 +174,6 @@ USR_SET = '/user'
 SYS_SET = '/system'
 verbose = 0
 
-# callback for --shield/--unshield, allows optional argument
-# if no arg, then status of either shield or unshield is displayed
-def shield_cb(option, opt_str, value, parser):
-    if value == None:
-        try:
-            arg = parser.rargs[0]
-            if arg[0] != '-':
-                # assign and consume argument
-                value = arg
-                del parser.rargs[0]
-            else:
-                value = True
-        except IndexError, err:
-            # no further arguments
-            value = True
-        except:
-            raise
-    setattr(parser.values, option.dest, value)
-
 options = [make_option('-c', '--cpu',
                        metavar = 'CPUSPEC',
                        help = 'modifies or initializes the shield cpusets'),
@@ -208,22 +184,24 @@ options = [make_option('-c', '--cpu',
                        help = 'executes args in the shield',
                        dest = 'exc',
                        action = 'store_true'),
-            make_option('--user',
+           make_option('--user',
                        help = 'use this USER for --exec (id or name)'),
-            make_option('--group',
+           make_option('--group',
                        help = 'use this GROUP for --exec (id or name)'),
            make_option('-s', '--shield',
-                       action = 'callback',
-                       callback=shield_cb,
-                       dest = 'shield',
-                       metavar = 'PIDSPEC',
-                       help = 'shield specified PIDSPEC of processes or threads'),
+                       help = 'shield specified PIDSPEC of processes or threads',
+                       action = 'store_true'),
            make_option('-u', '--unshield',
-                       action = 'callback',
-                       callback=shield_cb,
-                       dest = 'unshield',
+                       help = 'remove specified PIDSPEC of processes or threads from shield',
+                       action = 'store_true'),
+           make_option('-p', '--pid',
                        metavar = 'PIDSPEC',
-                       help = 'remove specified PIDSPEC of processes or threads from shield'),
+                       help = 'specify pid or tid specification for shield/unshield'),
+           make_option("--threads",
+                       help = 'if specified, any processes found in the PIDSPEC to have '
+                              'multiple threads will automatically have all their threads '
+                              'added to the PIDSPEC; use to affect all related threads',
+                       action = 'store_true'),
            make_option('-k', '--kthread',
                        metavar = 'on|off',
                        choices = ['on', 'off'],
@@ -256,61 +234,76 @@ def func(parser, options, args):
     if (not options.cpu and not options.reset and not options.exc and
         not options.shield and not options.unshield and not options.kthread):
         shield_exists()
+        doshield = False
         if len(args) == 0:
             log.info("--> shielding system active with")
             print_all_stats()
         else:
-            exec_args(args, options.user, options.group)
-        return
+            # shortcut: first assume that arg is a pidspec, if not, then exec it
+            try:
+                plist = proc.pidspec_to_list(args[0])
+                for pid in plist: int(pid)
+                doshield = True
+                # ok, if we're here, then it's probably a pidspec, shield it
+            except:
+                exec_args(args, options.user, options.group)
+        if doshield:
+            # drop through to shield section below
+            options.pid = args[0]
+            options.shield = True
+        else:
+            return
         
     if options.reset: 
         reset_shield()
         return
 
-    # note that the following options fall through to others
-    # to allow for multiple options/commands on one cmdline
-    if options.cpu: make_shield(options.cpu, options.kthread)
+    if options.cpu: 
+        make_shield(options.cpu, options.kthread)
+        return
 
-    elif options.kthread: make_kthread(options.kthread)
+    if options.kthread: 
+        make_kthread(options.kthread)
+        return
 
-    if options.exc: exec_args(args, options.user, options.group)
+    if options.exc:
+        exec_args(args, options.user, options.group)
+        # exec_args does not return...
 
-    if options.shield: 
+    if options.shield or options.unshield: 
         shield_exists()
-        try:
-            log.info('--> shielding following pidspec: %s', options.shield)
+        if options.shield:
+            smsg = 'shielding'
+            to_set = USR_SET
+            from_set = SYS_SET
+            print_stats = print_usr_stats
+        else:
+            smsg = 'unshielding'
+            to_set = SYS_SET
+            from_set = USR_SET
+            print_stats = print_sys_stats
+        if options.pid == None:
+            if len(args) > 0:
+                # shortcut, assumes arg[0] is a pidspec
+                options.pid = args[0]
+            else:
+                # no pidspec so output shield state
+                print_stats()
+        if options.pid:
+            if options.threads: tmsg = '(with threads)'
+            else: tmsg = ''
+            log.info('--> %s following pidspec: %s %s', smsg, options.pid, tmsg)
             if options.force:
-                proc.move_pidspec(options.shield, USR_SET)
+                proc.move_pidspec(options.pid, to_set, None, options.threads)
             else:
-                proc.move_pidspec(options.shield, USR_SET, SYS_SET)
-            log.info('done')
-        except Exception, err:
-            if str(err).find('Permission denied') != -1:
-                raise
-            if options.shield != True:
-                log.info(err)
-                log.info('--> bad pidspec: %s, shield state is:', options.shield)
-            else:
-                log.info('--> shielded state is:')
-            print_usr_stats()
-
-    if options.unshield: 
-        shield_exists()
-        try:
-            log.info('--> unshielding following pidspec: %s', options.unshield)
-            if options.force:
-                proc.move_pidspec(options.unshield, SYS_SET)
-            else:
-                proc.move_pidspec(options.unshield, SYS_SET, USR_SET)
-            log.info('done')
-        except Exception, err:
-            if str(err).find('Permission denied') != -1:
-                raise
-            if options.unshield != True:
-                log.info('--> bad pidspec: %s, unshielded state is:', options.unshield)
-            else:
-                log.info('--> not shielded state is:')
-            print_sys_stats()
+                try:
+                    proc.move_pidspec(options.pid, to_set, from_set, options.threads)
+                except CpusetException, err:
+                    if str(err).find('do not match all criteria') != -1:
+                        log.info("--> hint: perhaps use --force if sure of command")
+                        raise
+        log.info('done')
+        return
 
 def print_all_stats():
     print_sys_stats()
@@ -323,7 +316,12 @@ def print_sys_stats():
         else:
             proc.log_detailed_task_table(cset.unique_set(SYS_SET), '   ')
     else:
-        log.info(cset.summary(cset.unique_set(SYS_SET)))
+        if config.mread:
+            str = SYS_SET
+            if str[0] == '/': str = str[1:]
+            log.info('proc_list_no_tasks-' + str)
+        else:
+            log.info(cset.summary(cset.unique_set(SYS_SET)))
 
 def print_usr_stats():
     if verbose and len(cset.unique_set(USR_SET).tasks) > 0:
@@ -332,7 +330,12 @@ def print_usr_stats():
         else:
             proc.log_detailed_task_table(cset.unique_set(USR_SET), '   ')
     else:
-        log.info(cset.summary(cset.unique_set(USR_SET)))
+        if config.mread:
+            str = USR_SET
+            if str[0] == '/': str = str[1:]
+            log.info('proc_list_no_tasks-' + str)
+        else:
+            log.info(cset.summary(cset.unique_set(USR_SET)))
 
 def shield_exists():
     try:
@@ -340,8 +343,8 @@ def shield_exists():
         cset.unique_set(SYS_SET)
         return True
     except CpusetNotFound:
-        log.info('can\'t find "%s" and "%s" cpusets on system...', SYS_SET, USR_SET)
-        raise CpusetException('--> shielding not active on system')
+        log.debug('can\'t find "%s" and "%s" cpusets on system...', SYS_SET, USR_SET)
+        raise CpusetException('shielding not active on system')
 
 def reset_shield():
     log.info("--> deactivating/reseting shielding")
@@ -349,11 +352,11 @@ def reset_shield():
     tasks = cset.unique_set(USR_SET).tasks
     log.info('moving %s tasks from "%s" user set to root set...', 
              len(tasks), USR_SET)
-    proc.move(USR_SET, 'root')
+    proc.move(USR_SET, 'root', None, verbose)
     tasks = cset.unique_set(SYS_SET).tasks
     log.info('moving %s tasks from "%s" system set to root set...', 
              len(tasks), SYS_SET)
-    proc.move(SYS_SET, 'root')
+    proc.move(SYS_SET, 'root', None, verbose)
     log.info('deleting "%s" and "%s" sets', USR_SET, SYS_SET)
     set.destroy(USR_SET)
     set.destroy(SYS_SET)
@@ -407,7 +410,7 @@ def make_shield(cpuspec, kthread):
             pass
     if len(tasks) != 0:
         log.info("moving %s tasks from root into system cpuset...", len(tasks))
-    proc.move('root', SYS_SET, tasks)
+    proc.move('root', SYS_SET, tasks, verbose)
     # move kernel theads into system set if asked for
     if kthread == 'on':
         root_tasks = cset.unique_set('/').tasks
@@ -420,7 +423,7 @@ def make_shield(cpuspec, kthread):
         if len(tasks) != 0:
             log.info("kthread shield activated, moving %s tasks into system cpuset...",
                      len(tasks))
-        proc.move('root', SYS_SET, tasks)
+        proc.move('root', SYS_SET, tasks, verbose)
     # print out stats
     print_all_stats()
 
@@ -442,11 +445,7 @@ def make_kthread(state):
             log.debug("total root tasks %s", len(root_tasks))
             log.info("kthread shield activated, moving %s tasks into system cpuset...",
                      len(tasks))
-            proc.move('root', SYS_SET, tasks)
-            if verbose == 1:
-                proc.log_detailed_task_table(tasks, '   ', 76)
-            elif verbose > 1:
-                proc.log_detailed_task_table(tasks, '   ')
+            proc.move('root', SYS_SET, tasks, verbose)
     else:
         log.info('--> deactivating kthread shielding')
         usr_tasks = cset.unique_set(SYS_SET).tasks
@@ -458,11 +457,7 @@ def make_kthread(state):
                 tasks.append(task)
         if len(tasks) != 0:
             log.info("moving %s tasks into root cpuset...", len(tasks))
-        proc.move(SYS_SET, '/', tasks)
-        if verbose == 1:
-            proc.log_detailed_task_table(tasks, '   ', 76)
-        elif verbose > 1:
-            proc.log_detailed_task_table(tasks, '   ')
+        proc.move(SYS_SET, '/', tasks, verbose)
     log.info('done')
 
 def exec_args(args, upar, gpar):

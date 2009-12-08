@@ -2,7 +2,7 @@
 """
 
 __copyright__ = """
-Copyright (C) 2008 Novell Inc.
+Copyright (C) 2008, 2009 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 """
 
 import sys, time
+from cpuset import config
 
 class CpusetException(Exception):
     pass
@@ -45,7 +46,8 @@ class TwirlyBar:
         self.__bar = ('|', '/', '-', '\\')
 
     def tick(self):
-        print '\b' + self.__bar[self.__state] + '\b',
+        if not config.mread:
+            print '\b' + self.__bar[self.__state] + '\b',
         self.__state = self.__state + 1
         if self.__state > 3: self.__state = 0
 
@@ -65,6 +67,8 @@ class ProgressBar:
             self.block=chr(178)
         else: 
             self.block=progresschar
+        if config.mread: 
+            return
         self.f=sys.stdout
         if not self.finalcount: return
         self.f.write('[')
@@ -82,11 +86,12 @@ class ProgressBar:
             percentcomplete=100
 
         blockcount=int(percentcomplete/2)
-        if blockcount > self.blockcount:
-            for i in range(self.blockcount,blockcount):
-                self.f.write(self.block)
-                self.f.flush()
+        if not config.mread:
+            if blockcount > self.blockcount:
+                for i in range(self.blockcount,blockcount):
+                    self.f.write(self.block)
+                    self.f.flush()
 
-        if percentcomplete == 100: self.f.write("]\n")
+            if percentcomplete == 100: self.f.write("]\n")
         self.blockcount=blockcount
 

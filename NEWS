@@ -1,0 +1,79 @@
+============================================================
+
+Cpuset 1.5.0 (February 7, 2009)
+https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.5.0
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Major upgrade since 1.04.  This release includes a number of bug fixes and
+enhancements as outlined below.  The release number also has transitioned to a
+three-digit number.  This release has many usability enhancements from the
+past months experience.  It also includes a lengthy tutorial to introduce
+users to the tool.
+
+The bug numbers refer to cpuset's bugzilla instance which can be found
+here:  http://devzilla.novell.com/cpuset
+
+Fixed Bugs:
+* Fix bug #1: Origination cpuset not accepted for process move...
+* Fix bug #2: Proc move from set to set does not recognize...
+* Fix bug #3: Interspersed arguments do not work
+* Fix bug #4: Add policy and priority to proc output list
+* Fix bug #5: Add ability to move all threads in a process container wi.
+* Fix bug #6: The -a option for set listing should be the default
+* Fix bug #7: Add destination cpuset for the proc move command
+* Fix bug #8: Let leading slash for nested cpuset spec be optional
+* Fix bug #9: Rearrange info output some, include machine readable output
+* Fix bug #10: Add a recursive cpuset delete with option
+* Fix bug #11: Add a configuration file
+* Fix bug #12: Add hex mask output for cpuset definition spec (cpuspec)
+* Fix bug #13: Add cpuset rename option to set command
+* Fix bug #21: Create shield shortcuts
+
+Other fixes:
+* Changed behavior of shield command, now it behaves more like the proc move
+  command: -s or -u needs a -p to shield or unshield, however, the shortcut of
+  shield pidspec still works.
+* Fixed exception when using cset with pipes
+* Fixed set list behavior if --set was specified but not --list
+* Added error message if proc list command does not specify a set
+* Fixed exception if proc is used with -l and -s
+* Location for cpuset filesystem mount can be specified in config file
+* Changed proc option -a/--all to --force only
+* Updated copyrights, URLs and documentation
+* Added spec file to svn which is used in build service
+* Cleaned up status output for clarity and consistency
+* Additional minor corner case bug fixes included
+
+============================================================
+
+Cpuset 1.04 (September 2, 2008)
+https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.04
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Minor bug fixes and inclusion in SLERT10SP2 and slotted for SLES11.
+
+============================================================
+
+Cpuset 1.03 (July 18, 2008)
+https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.03
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Fixed class variables that made import of cset.as python library possible.
+
+============================================================
+
+Cpuset 1.02 (June 10, 2008)
+https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.02
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Minor fixes.
+
+============================================================
+
+Cpuset 1.0 (May 30, 2008)
+https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.0
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+First full-featured public release complete with man pages and html docs.
+
+============================================================

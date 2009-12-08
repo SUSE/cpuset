@@ -10,7 +10,7 @@ cset - manage cpusets functions in the Linux kernel
 SYNOPSIS
 --------
 [verse]
-'cset' [--version | --help | --log]
+'cset' [--version | --help | --tohex]
 'cset' [help <command> | <command> --help]
 'cset' [cset options] <command> [command options] [args]
 
@@ -37,27 +37,27 @@ Setting up and managing a simple shielded CPU environment::
 For a simple shielded configuration, one typically uses three cpusets:
 the root set, a system set and a user set.  'Cset' includes a super
 command that implements this strategy and lets you easily manage it.
-See csetlink:shield[] for more details.
+See 'cset-shield(1)' for more details.
 
 Setting up and managing a comples shielding environment::
 	Shielding can be more complex of course where concepts such as
         priority cpusets and intersecting cpuset can be used.  You can
         use 'cset' to help manage this type of shielding as well.  You
-        will need to use the csetlink:set[] and csetlink:proc[]
+        will need to use the 'cset-set(1)' and 'cset-proc(1)'
         subcommands directly to do that.
 
 Managing cpusets on the system::
-	The cset subcommand csetlink:set[] allows you to create and
+	The cset subcommand 'cset-set(1)' allows you to create and
         destroy arbitrary cpusets on the system and assign arbitrary
         cpus and memory nodes to them.  The cpusets so created have to
-        follow the Linux kernel cpuset rules.  See the csetlink:set[]
+        follow the Linux kernel cpuset rules.  See the 'cset-set(1)'
         subcommand for more details.
 
 Managing processes that run on various system cpusets::
-	The cset subcommand csetlink:proc[] allows you to manage
+	The cset subcommand 'cset-proc(1)' allows you to manage
         processes running on various cpusets created on the system.
         You can exec new processes in specific cpusets and move tasks
-        around existing cpusets.  See the csetlink:proc[] subcommand
+        around existing cpusets.  See the 'cset-proc(1)' subcommand
         for more details.
 
 OPTIONS
@@ -67,9 +67,7 @@ are available per-command, and documented in the command-specific
 documentation.
 
 'cset' --version::
-	Prints the cpuset suite version that the 'cset' program came
-	from, as well as version of other components used, such as 
-	Python and the kernel.
+	Display version information and exits.
 
 'cset' --help::
 	Prints the synopsis and a list of all commands.
@@ -79,10 +77,14 @@ documentation.
         information is stored in this file.  This is usually used to
         debug cpuset when things don't go as planned.
 
-'cset' help 'command'::
-	Although not strictly an "option", this is a very helpful way
-        to execute help with cpuset.  The command prints out a lengthy
-        summary of how the specified subcommand works.
+'cset' --machine::
+        Makes cset output information for all operations in a format
+        that is machine readable (i.e. easy to parse).
+
+'cset' --tohex <CPUSPEC>::
+        Converts a CPUSPEC (see 'cset-set(1)' for definition) to a
+        hexadecimal number and outputs it.  Useful for setting IRQ
+        stub affinity to a cpuset definition.
 
 CPUSET COMMANDS
 ---------------
@@ -93,20 +95,30 @@ command manpages.  Those manpages are named 'cset-<command>(1)'. The
 first command, 'help', is especially useful as it prints out a long
 summary of what a particular command does.
 
-'cset help'::
-	print the detailed command usage
-'cset version'::
-	display version information
-'cset copyright'::
-	display copyright information
+'cset help command'::
+        print out a lengthy summary of how the specified subcommand
+        works
+'cset command --help'::
+        print out an extended synopsis of the specified subcommand
+
 'cset shield'::
 	supercommand to set up and manage basic shielding (see
-        csetlink:shield[])
+        'cset-shield(1)')
 'cset set'::
-	create, modify and destroy cpusets (see csetlink:set[])
+	create, modify and destroy cpusets (see 'cset-set(1)')
 'cset proc'::
 	create and manage processes within cpusets (see
-        csetlink:proc[])
+        'cset-proc(1)')
+
+FILES
+-----
+Cpuset uses a configuration file if present on the system.  The file
+is '/etc/cset.conf' and may contain the following options.
+
+mountpoint = <directory_name>::
+	Specify the mountpoint where the cpuset filesystem is to be
+        mounted.  By default this is '/cpusets'; however, some people
+        prefer to mount this in the more traditional '/dev/cpusets'.
 
 LICENSE
 -------
@@ -114,19 +126,22 @@ Cpuset is licensed under the GNU GPL V2 only.
 
 COPYRIGHT
 ---------
-Copyright (c) 2008 Novell Inc.
+Copyright (c) 2008-2009 Novell Inc.
 
 AUTHOR
 ------
-Written by Alex Tsariounov <alext@novell.com>.
+Written by Alex Tsariounov <\alext@novell.com>
 
 Some substrate code and ideas were taken from the excellent Stacked
-GIT (stgit) v0.13 (see http://gna.org/projects/stgit  and
-http://www.procode.org/stgit).  Stacked GIT is under GPL V2 or later.
+GIT (stgit) v0.13 (see \http://gna.org/projects/stgit  and
+\http://www.procode.org/stgit).  Stacked GIT is under GPL V2 or later.
 
 SEE ALSO
 --------
-csetlink:set[], csetlink:proc[], csetlink:shield[], manlink:taskset[1],
-manlink:chrt[1]
+cset-set(1), cset-proc(1), cset-shield(1)
+
+/usr/share/doc/packages/cpuset/html/tutorial.html
+
+taskset(1), chrt(1)
 
 /usr/src/linux/Documentation/cpusets.txt

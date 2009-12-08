@@ -1,3 +1,5 @@
+Building Cpuset from Source
+===========================
 This is a distutils-based package and as such, it contains
 a number of differnet installation methods.  By far the most
 convenient is to create an rpm.  This rpm can then be later
@@ -12,7 +14,7 @@ For basic installation:
 	python setup.py install
 
 By default, the above command installs cpuset in the
-$HOME/{bin,lib,share} directories. For a different location,
+/usr/local/{bin,lib,share} directories. For a different location,
 use the --prefix option:
 
 	python setup.py install --prefix=/usr
@@ -20,3 +22,10 @@ use the --prefix option:
 For more information:
 
 	http://docs.python.org/inst/inst.html
+
+Prebuild Binary Packages
+========================
+Alternatively, you may download pre-built binary packages for multiple
+distributions from the OpenSUSE Build Service here:
+
+       http://download.opensuse.org/repositories/home:/tsariounov:/cpuset
