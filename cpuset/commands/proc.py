@@ -573,7 +573,7 @@ def is_unbound(proc):
     # --> use /proc/<pid>/status -> Cpus_allowed
     #     int(line.replace(',',''), 16)
     #     note: delete leading zeros to compare to allcpumask
-    line = os.popen('/usr/bin/taskset -p ' + str(proc), 'r').readline()
+    line = os.popen('/usr/bin/taskset -p ' + str(proc) +' 2>/dev/null', 'r').readline()
     aff = line.split()[-1]
     log.debug('is_unbound, proc=%s aff=%s allcpumask=%s', 
               proc, aff, cset.allcpumask)

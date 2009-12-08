@@ -1,7 +1,7 @@
 cset(1)
 ======
 Alex Tsariounov <alext@novell.com>
-v1.0, May 2008
+v1.5.2, December 2009
 
 NAME
 ----
@@ -20,14 +20,14 @@ NOTE: In general, you need to have root permissions to run cset.  The
 tool mounts the cpusets filesystem and manipulates it.  Non-root users
 do not have permission for these actions.
 
-Cpuset is a Python application to make using the cpusets facilities in
+Cset is a Python application to make using the cpusets facilities in
 the Linux kernel easier. The actual included command is called 'cset'
 and it allows manipulation of cpusets on the system and provides
 higher level functions such as implementation and control of a basic
 cpu shielding setup.
 
-Typical uses of cpuset include
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Typical uses of cset include
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Setting up and managing a simple shielded CPU environment::
         The concept of 'shielded' cpus is that a certain number of
@@ -75,7 +75,7 @@ documentation.
 'cset' --log <filename>::
 	Creates a log file for the current run.  All manner of useful
         information is stored in this file.  This is usually used to
-        debug cpuset when things don't go as planned.
+        debug cset when things don't go as planned.
 
 'cset' --machine::
         Makes cset output information for all operations in a format
@@ -86,9 +86,9 @@ documentation.
         hexadecimal number and outputs it.  Useful for setting IRQ
         stub affinity to a cpuset definition.
 
-CPUSET COMMANDS
----------------
-The cpuset commands are divided into groups, according to the primary
+CSET COMMANDS
+-------------
+The cset commands are divided into groups, according to the primary
 purpose of those commands.  Following is a short description of each
 command. A more detailed description is available in individual
 command manpages.  Those manpages are named 'cset-<command>(1)'. The
@@ -110,8 +110,21 @@ summary of what a particular command does.
 	create and manage processes within cpusets (see
         'cset-proc(1)')
 
+PERSISTENT CPUSETS
+------------------
+To create a persistent cpuset setup, i.e. one that survives a reboot,
+you need to create the file '/etc/init.d/cset'.  This distribuition of
+cset includes an example cset init.d file found in
+'/usr/share/doc/pacakges/cpuset' which is called 'cset.init.d'.  You
+will need to alter the file to your specifications and copy it to be
+the file '/etc/init.d/cset'.  See the comments in that file for more
+details.
+
 FILES
 -----
+If used, the init.d script '/etc/init.d/cset' starts and stops a
+cpuset configuration on boot and poweroff.
+
 Cpuset uses a configuration file if present on the system.  The file
 is '/etc/cset.conf' and may contain the following options.
 
@@ -141,6 +154,8 @@ SEE ALSO
 cset-set(1), cset-proc(1), cset-shield(1)
 
 /usr/share/doc/packages/cpuset/html/tutorial.html
+
+/usr/share/doc/packages/cpuset/cset.init.d
 
 taskset(1), chrt(1)
 

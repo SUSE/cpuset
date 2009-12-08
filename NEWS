@@ -1,7 +1,24 @@
 ============================================================
+Cpuset 1.5.2 (December 2, 2009)
+https://forgesvn1.novell.com/viewsvn/cpuset/tags/rel_1.5.2/
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Maintenance update to 1.5.1 includes bug fixes as follows.
+
+Fixed Bugs:
+* BNC#558395 - cset couldn't delete cpu set
+* BNC#558399 - cset unable to move thread
+
+Other fixes:
+* Fixed failure to delete cpuset if tasks preset, cset now
+  waits a little bit for tardy tasks to disappear
+* Removed output noise from popened taskset command
+* Added example init.d cset script in documentation directory
+
+============================================================
 
 Cpuset 1.5.1 (June 17, 2009)
-https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.5.1
+https://forgesvn1.novell.com/viewsvn/cpuset/tags/rel_1.5.1/
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
 
 Maintenance update to 1.5.0 includes bug fixes as follows.
@@ -12,7 +29,7 @@ Fixed Bugs:
 ============================================================
 
 Cpuset 1.5.0 (February 7, 2009)
-https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.5.0
+https://forgesvn1.novell.com/viewsvn/cpuset/tags/rel_1.5.0/
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
 
 Major upgrade since 1.04.  This release includes a number of bug fixes and
@@ -58,7 +75,7 @@ Other fixes:
 ============================================================
 
 Cpuset 1.04 (September 2, 2008)
-https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.04
+https://forgesvn1.novell.com/viewsvn/cpuset/tags/rel_1.04/
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
 
 Minor bug fixes and inclusion in SLERT10SP2 and slotted for SLES11.
@@ -66,7 +83,7 @@ Minor bug fixes and inclusion in SLERT10SP2 and slotted for SLES11.
 ============================================================
 
 Cpuset 1.03 (July 18, 2008)
-https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.03
+https://forgesvn1.novell.com/viewsvn/cpuset/tags/rel_1.03/
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
 
 Fixed class variables that made import of cset.as python library possible.
@@ -74,7 +91,7 @@ Fixed class variables that made import of cset.as python library possible.
 ============================================================
 
 Cpuset 1.02 (June 10, 2008)
-https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.02
+https://forgesvn1.novell.com/viewsvn/cpuset/tags/rel_1.02/
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
 
 Minor fixes.
@@ -82,7 +99,7 @@ Minor fixes.
 ============================================================
 
 Cpuset 1.0 (May 30, 2008)
-https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.0
+https://forgesvn1.novell.com/viewsvn/cpuset/tags/rel_1.0/
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
 
 First full-featured public release complete with man pages and html docs.

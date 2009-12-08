@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.3.3" />
+<meta name="generator" content="AsciiDoc 8.4.5" />
 <title>cset(1)</title>
 <style type="text/css">
 /* Debug borders */
@@ -91,7 +91,7 @@ span#author {
 }
 span#email {
 }
-span#revision {
+span#revnumber, span#revdate, span#revremark {
   font-family: sans-serif;
 }
 
@@ -111,11 +111,13 @@ div#footer-badges {
   padding-bottom: 0.5em;
 }
 
-div#preamble,
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
 div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
-  margin-right: 10%;
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
@@ -157,9 +159,6 @@ div.sidebarblock > div.content {
   padding: 0.5em;
 }
 
-div.listingblock {
-  margin-right: 0%;
-}
 div.listingblock > div.content {
   border: 1px solid silver;
   background: #f4f4f4;
@@ -168,6 +167,7 @@ div.listingblock > div.content {
 
 div.quoteblock {
   padding-left: 2.0em;
+  margin-right: 10%;
 }
 div.quoteblock > div.attribution {
   padding-top: 0.5em;
@@ -176,6 +176,7 @@ div.quoteblock > div.attribution {
 
 div.verseblock {
   padding-left: 2.0em;
+  margin-right: 10%;
 }
 div.verseblock > div.content {
   white-space: pre;
@@ -208,8 +209,8 @@ div.exampleblock > div.content {
 }
 
 div.imageblock div.content { padding-left: 0; }
-div.imageblock img { border: 1px solid silver; }
 span.image img { border-style: none; }
+a.image:visited { color: white; }
 
 dl {
   margin-top: 0.8em;
@@ -303,6 +304,10 @@ td.hdlist2 {
 div.hdlist.compact tr {
   margin: 0;
   padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
 }
 
 @media print {
@@ -407,7 +412,7 @@ cset(1) Manual Page
 </p>
 </div>
 </div>
-<h2>SYNOPSIS</h2>
+<h2 id="_synopsis">SYNOPSIS</h2>
 <div class="sectionbody">
 <div class="verseblock">
 <div class="verseblock-content"><em>cset</em> [--version | --help | --tohex]
@@ -428,12 +433,12 @@ tool mounts the cpusets filesystem and manipulates it.  Non-root users
 do not have permission for these actions.</td>
 </tr></table>
 </div>
-<div class="paragraph"><p>Cpuset is a Python application to make using the cpusets facilities in
+<div class="paragraph"><p>Cset is a Python application to make using the cpusets facilities in
 the Linux kernel easier. The actual included command is called <em>cset</em>
 and it allows manipulation of cpusets on the system and provides
 higher level functions such as implementation and control of a basic
 cpu shielding setup.</p></div>
-<h3 id="_typical_uses_of_cpuset_include">Typical uses of cpuset include</h3><div style="clear:left"></div>
+<h3 id="_typical_uses_of_cset_include">Typical uses of cset include</h3><div style="clear:left"></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
 Setting up and managing a simple shielded CPU environment
@@ -516,7 +521,7 @@ documentation.</p></div>
 <p>
         Creates a log file for the current run.  All manner of useful
         information is stored in this file.  This is usually used to
-        debug cpuset when things don&#8217;t go as planned.
+        debug cset when things don&#8217;t go as planned.
 </p>
 </dd>
 <dt class="hdlist1">
@@ -540,9 +545,9 @@ documentation.</p></div>
 </dd>
 </dl></div>
 </div>
-<h2 id="_cpuset_commands">CPUSET COMMANDS</h2>
+<h2 id="_cset_commands">CSET COMMANDS</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>The cpuset commands are divided into groups, according to the primary
+<div class="paragraph"><p>The cset commands are divided into groups, according to the primary
 purpose of those commands.  Following is a short description of each
 command. A more detailed description is available in individual
 command manpages.  Those manpages are named <em>cset-&lt;command&gt;(1)</em>. The
@@ -594,8 +599,20 @@ summary of what a particular command does.</p></div>
 </dd>
 </dl></div>
 </div>
+<h2 id="_persistent_cpusets">PERSISTENT CPUSETS</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>To create a persistent cpuset setup, i.e. one that survives a reboot,
+you need to create the file <em>/etc/init.d/cset</em>.  This distribuition of
+cset includes an example cset init.d file found in
+<em>/usr/share/doc/pacakges/cpuset</em> which is called <em>cset.init.d</em>.  You
+will need to alter the file to your specifications and copy it to be
+the file <em>/etc/init.d/cset</em>.  See the comments in that file for more
+details.</p></div>
+</div>
 <h2 id="_files">FILES</h2>
 <div class="sectionbody">
+<div class="paragraph"><p>If used, the init.d script <em>/etc/init.d/cset</em> starts and stops a
+cpuset configuration on boot and poweroff.</p></div>
 <div class="paragraph"><p>Cpuset uses a configuration file if present on the system.  The file
 is <em>/etc/cset.conf</em> and may contain the following options.</p></div>
 <div class="dlist"><dl>
@@ -630,13 +647,14 @@ http://www.procode.org/stgit).  Stacked GIT is under GPL V2 or later.</p></div>
 <div class="sectionbody">
 <div class="paragraph"><p>cset-set(1), cset-proc(1), cset-shield(1)</p></div>
 <div class="paragraph"><p>/usr/share/doc/packages/cpuset/html/tutorial.html</p></div>
+<div class="paragraph"><p>/usr/share/doc/packages/cpuset/cset.init.d</p></div>
 <div class="paragraph"><p>taskset(1), chrt(1)</p></div>
 <div class="paragraph"><p>/usr/src/linux/Documentation/cpusets.txt</p></div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0<br />
-Last updated 2009-02-25 12:42:05 MDT
+Version 1.5.2<br />
+Last updated 2009-12-02 14:07:17 MDT
 </div>
 </div>
 </body>

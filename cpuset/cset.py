@@ -219,6 +219,8 @@ class CpuSet(object):
         for task in f: lst.append(task[:-1])
         return lst
     def settasks(self, tasklist):
+        notfound = []
+        unmovable = []
         if len(tasklist) > 3:
             pb = ProgressBar(len(tasklist), '=')
             tick = 0
@@ -232,12 +234,20 @@ class CpuSet(object):
                 f.close()
             except Exception, err:
                 if str(err).find('No such process') != -1:
-                    log.info('**> task %s not found, not moved', task)
+                    notfound.append(task)
+                elif str(err).find('Invalid argument'):
+                    unmovable.append(task)
                 else: 
                     raise
             if prog:
                 tick += 1
                 pb(tick)
+        if len(notfound) > 0:
+            log.info('**> %s tasks were not found, so were not moved', len(notfound))
+            log.debug(' not found: %s', notfound)
+        if len(unmovable) > 0:
+            log.info('**> %s tasks are not movable, impossible to move', len(unmovable))
+            log.debug(' not movable: %s', unmovable)
         log.debug("-> prop_set %s.tasks set with %s tasks", self.path, 
                   len(tasklist)) 
     tasks = property(gettasks, settasks, delprop, "Task list")

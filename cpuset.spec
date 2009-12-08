@@ -1,17 +1,22 @@
 #  
-# spec file for package cpuset (Version 1.04)  
+# spec file for package cpuset (Version 1.5.2)  
 #  
 # Copyright (c) 2008-2009 Novell, Inc. Waltham, MA, USA
 # This file and all modifications and additions to the pristine  
 # package are under the same license as the package itself.  
 #  
-# Please submit bugfixes or comments via http://devzilla.novell.com/cpuset
+# Please submit bugfixes or comments via 
+#        http://devzilla.novell.com/cpuset
+#    Or 
+#        http://bugs.opensuse.org/
+# 
+# For supported products, via http://bugzilla.novell.com
 #  
 
 # norootforbuild  
 
 Name:           cpuset
-Version:        1.5.1
+Version:        1.5.2
 Release:        1
 License:        GPL v2 only
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -32,7 +37,7 @@ BuildRequires:  python-devel
 Cpuset is a Python application to make using the cpusets facilities in
 the Linux kernel easier.  The actual included command is called cset
 and it allows manipulation of cpusets on the system and provides higher
-level functions such as implementation and control of a basic cpu
+level functions such as implementation and control of a basic CPU
 shielding setup.
 
 
@@ -57,7 +62,7 @@ CFLAGS="%{optflags}" \
 
 # Install documentation
 %{__mkdir_p} %{buildroot}/%{_defaultdocdir}/cpuset
-%{__cp} NEWS README INSTALL AUTHORS COPYING %{buildroot}/%{_defaultdocdir}/cpuset/
+%{__cp} NEWS README INSTALL AUTHORS COPYING cset.init.d %{buildroot}/%{_defaultdocdir}/cpuset/
 %{__mkdir_p} %{buildroot}/%{_mandir}/man1
 cd doc
 %{__gzip} *.1

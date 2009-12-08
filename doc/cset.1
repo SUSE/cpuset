@@ -1,12 +1,23 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "CSET" "1" "02/25/2009" "" ""
+'\" t
+.\"     Title: cset
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 12/02/2009
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
+.\"
+.TH "CSET" "1" "12/02/2009" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
 cset \- manage cpusets functions in the Linux kernel
 .SH "SYNOPSIS"
@@ -17,83 +28,126 @@ cset \- manage cpusets functions in the Linux kernel
 \fIcset\fR [cset options] <command> [command options] [args]
 .fi
 .SH "DESCRIPTION"
+.if n \{\
 .sp
+.\}
+.RS 4
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
 .br
+.ps +1
 \fBNote\fR
-In general, you need to have root permissions to run cset. The tool mounts the cpusets filesystem and manipulates it. Non\-root users do not have permission for these actions.
-
-Cpuset is a Python application to make using the cpusets facilities in the Linux kernel easier. The actual included command is called \fIcset\fR and it allows manipulation of cpusets on the system and provides higher level functions such as implementation and control of a basic cpu shielding setup.
-.SS "Typical uses of cpuset include"
-.TP
+.ps -1
+.br
+In general, you need to have root permissions to run cset\&. The tool mounts the cpusets filesystem and manipulates it\&. Non\-root users do not have permission for these actions\&.
+.sp .5v
+.RE
+Cset is a Python application to make using the cpusets facilities in the Linux kernel easier\&. The actual included command is called \fIcset\fR and it allows manipulation of cpusets on the system and provides higher level functions such as implementation and control of a basic cpu shielding setup\&.
+.SS "Typical uses of cset include"
+.PP
 Setting up and managing a simple shielded CPU environment
-The concept of \fIshielded\fR cpus is that a certain number of cpus are partitioned off on the system and only processes that are of interest are run on these cpus (i.e., inside the shield).
+.RS 4
+The concept of \fIshielded\fR cpus is that a certain number of cpus are partitioned off on the system and only processes that are of interest are run on these cpus (i\&.e\&., inside the shield)\&.
 
-For a simple shielded configuration, one typically uses three cpusets: the root set, a system set and a user set. \fICset\fR includes a super command that implements this strategy and lets you easily manage it. See \fIcset\-shield(1)\fR for more details.
-.TP
+For a simple shielded configuration, one typically uses three cpusets: the root set, a system set and a user set\&. \fICset\fR includes a super command that implements this strategy and lets you easily manage it\&. See \fIcset\-shield(1)\fR for more details\&.
+.RE
+.PP
 Setting up and managing a complex shielding environment
-Shielding can be more complex of course where concepts such as priority cpusets and intersecting cpuset can be used. You can use \fIcset\fR to help manage this type of shielding as well. You will need to use the \fIcset\-set(1)\fR and \fIcset\-proc(1)\fR subcommands directly to do that.
-.TP
+.RS 4
+Shielding can be more complex of course where concepts such as priority cpusets and intersecting cpuset can be used\&. You can use \fIcset\fR to help manage this type of shielding as well\&. You will need to use the \fIcset\-set(1)\fR and \fIcset\-proc(1)\fR subcommands directly to do that\&.
+.RE
+.PP
 Managing cpusets on the system
-The cset subcommand \fIcset\-set(1)\fR allows you to create and destroy arbitrary cpusets on the system and assign arbitrary cpus and memory nodes to them. The cpusets so created have to follow the Linux kernel cpuset rules. See the \fIcset\-set(1)\fR subcommand for more details.
-.TP
+.RS 4
+The cset subcommand \fIcset\-set(1)\fR allows you to create and destroy arbitrary cpusets on the system and assign arbitrary cpus and memory nodes to them\&. The cpusets so created have to follow the Linux kernel cpuset rules\&. See the \fIcset\-set(1)\fR subcommand for more details\&.
+.RE
+.PP
 Managing processes that run on various system cpusets
-The cset subcommand \fIcset\-proc(1)\fR allows you to manage processes running on various cpusets created on the system. You can exec new processes in specific cpusets and move tasks around existing cpusets. See the \fIcset\-proc(1)\fR subcommand for more details.
+.RS 4
+The cset subcommand \fIcset\-proc(1)\fR allows you to manage processes running on various cpusets created on the system\&. You can exec new processes in specific cpusets and move tasks around existing cpusets\&. See the \fIcset\-proc(1)\fR subcommand for more details\&.
+.RE
 .SH "OPTIONS"
-The following generic option flags are available. Additional options are available per\-command, and documented in the command\-specific documentation.
-.TP
+The following generic option flags are available\&. Additional options are available per\-command, and documented in the command\-specific documentation\&.
+.PP
 \fIcset\fR \-\-version
-Display version information and exits.
-.TP
+.RS 4
+Display version information and exits\&.
+.RE
+.PP
 \fIcset\fR \-\-help
-Prints the synopsis and a list of all commands.
-.TP
+.RS 4
+Prints the synopsis and a list of all commands\&.
+.RE
+.PP
 \fIcset\fR \-\-log <filename>
-Creates a log file for the current run. All manner of useful information is stored in this file. This is usually used to debug cpuset when things don\(cqt go as planned.
-.TP
+.RS 4
+Creates a log file for the current run\&. All manner of useful information is stored in this file\&. This is usually used to debug cset when things don\(cqt go as planned\&.
+.RE
+.PP
 \fIcset\fR \-\-machine
-Makes cset output information for all operations in a format that is machine readable (i.e. easy to parse).
-.TP
+.RS 4
+Makes cset output information for all operations in a format that is machine readable (i\&.e\&. easy to parse)\&.
+.RE
+.PP
 \fIcset\fR \-\-tohex <CPUSPEC>
-Converts a CPUSPEC (see \fIcset\-set(1)\fR for definition) to a hexadecimal number and outputs it. Useful for setting IRQ stub affinity to a cpuset definition.
-.SH "CPUSET COMMANDS"
-The cpuset commands are divided into groups, according to the primary purpose of those commands. Following is a short description of each command. A more detailed description is available in individual command manpages. Those manpages are named \fIcset\-<command>(1)\fR. The first command, \fIhelp\fR, is especially useful as it prints out a long summary of what a particular command does.
-.TP
+.RS 4
+Converts a CPUSPEC (see \fIcset\-set(1)\fR for definition) to a hexadecimal number and outputs it\&. Useful for setting IRQ stub affinity to a cpuset definition\&.
+.RE
+.SH "CSET COMMANDS"
+The cset commands are divided into groups, according to the primary purpose of those commands\&. Following is a short description of each command\&. A more detailed description is available in individual command manpages\&. Those manpages are named \fIcset\-<command>(1)\fR\&. The first command, \fIhelp\fR, is especially useful as it prints out a long summary of what a particular command does\&.
+.PP
 \fIcset help command\fR
+.RS 4
 print out a lengthy summary of how the specified subcommand works
-.TP
+.RE
+.PP
 \fIcset command \-\-help\fR
+.RS 4
 print out an extended synopsis of the specified subcommand
-.TP
+.RE
+.PP
 \fIcset shield\fR
+.RS 4
 supercommand to set up and manage basic shielding (see \fIcset\-shield(1)\fR)
-.TP
+.RE
+.PP
 \fIcset set\fR
+.RS 4
 create, modify and destroy cpusets (see \fIcset\-set(1)\fR)
-.TP
+.RE
+.PP
 \fIcset proc\fR
+.RS 4
 create and manage processes within cpusets (see \fIcset\-proc(1)\fR)
+.RE
+.SH "PERSISTENT CPUSETS"
+To create a persistent cpuset setup, i\&.e\&. one that survives a reboot, you need to create the file \fI/etc/init\&.d/cset\fR\&. This distribuition of cset includes an example cset init\&.d file found in \fI/usr/share/doc/pacakges/cpuset\fR which is called \fIcset\&.init\&.d\fR\&. You will need to alter the file to your specifications and copy it to be the file \fI/etc/init\&.d/cset\fR\&. See the comments in that file for more details\&.
 .SH "FILES"
-Cpuset uses a configuration file if present on the system. The file is \fI/etc/cset.conf\fR and may contain the following options.
-.TP
-mountpoint = <directory_name>
-Specify the mountpoint where the cpuset filesystem is to be mounted. By default this is \fI/cpusets\fR; however, some people prefer to mount this in the more traditional \fI/dev/cpusets\fR.
-.SH "LICENSE"
-Cpuset is licensed under the GNU GPL V2 only.
-.SH "COPYRIGHT"
-Copyright (c) 2008\-2009 Novell Inc.
-.SH "AUTHOR"
-Written by Alex Tsariounov <alext@novell.com>
+If used, the init\&.d script \fI/etc/init\&.d/cset\fR starts and stops a cpuset configuration on boot and poweroff\&.
 
-Some substrate code and ideas were taken from the excellent Stacked GIT (stgit) v0.13 (see http://gna.org/projects/stgit and http://www.procode.org/stgit). Stacked GIT is under GPL V2 or later.
+Cpuset uses a configuration file if present on the system\&. The file is \fI/etc/cset\&.conf\fR and may contain the following options\&.
+.PP
+mountpoint = <directory_name>
+.RS 4
+Specify the mountpoint where the cpuset filesystem is to be mounted\&. By default this is \fI/cpusets\fR; however, some people prefer to mount this in the more traditional \fI/dev/cpusets\fR\&.
+.RE
+.SH "LICENSE"
+Cpuset is licensed under the GNU GPL V2 only\&.
+.SH "COPYRIGHT"
+Copyright (c) 2008\-2009 Novell Inc\&.
+.SH "AUTHOR"
+Written by Alex Tsariounov <alext@novell\&.com>
+
+Some substrate code and ideas were taken from the excellent Stacked GIT (stgit) v0\&.13 (see http://gna\&.org/projects/stgit and http://www\&.procode\&.org/stgit)\&. Stacked GIT is under GPL V2 or later\&.
 .SH "SEE ALSO"
 cset\-set(1), cset\-proc(1), cset\-shield(1)
 
-/usr/share/doc/packages/cpuset/html/tutorial.html
+/usr/share/doc/packages/cpuset/html/tutorial\&.html
+
+/usr/share/doc/packages/cpuset/cset\&.init\&.d
 
 taskset(1), chrt(1)
 
-/usr/src/linux/Documentation/cpusets.txt
+/usr/src/linux/Documentation/cpusets\&.txt
 

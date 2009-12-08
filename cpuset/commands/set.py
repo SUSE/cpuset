@@ -19,7 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 """
 
-import sys, os, logging
+import sys, os, logging, time
 from optparse import OptionParser, make_option
 
 from cpuset import config
@@ -246,9 +246,9 @@ def destroy_sets(sets, recurse=False, force=False):
     """destroy cpusets in list of sets, recurse if true, if force destroy if tasks running"""
     log.debug('enter destroy_sets, sets=%s, force=%s', sets, force)
     nl = []
-    try:
+    if isinstance(sets, list):
         nl.extend(sets)
-    except:
+    else:
         nl.append(sets)
     # check that sets passed are ok, will raise if one is bad
     sl2 = []
@@ -292,10 +292,23 @@ def destroy(name):
                 "passed name=%s, which is not a string or CpuSet" % name) 
     else:
         set = name
-    if len(set.tasks) > 0:
-        log.debug('%i tasks still running in set %s', len(set.tasks), name)
-        raise CpusetException(
-                "trying to destroy cpuset %s with tasks running" % name)
+    tsks = set.tasks
+    if len(tsks) > 0:
+        # wait for tasks, sometimes it takes a little while to
+        # have them leave the set
+        ii = 0
+        while len(tsks)>0:
+            log.debug('%i tasks still running in set %s, waiting interval %s...',
+                      len(tsks), set.name, ii+1)
+            time.sleep(0.5)
+            tsks = set.tasks
+            ii += 1
+            if (ii) > 6:
+                # try it for 3 seconds, bail if tasks still there
+                raise CpusetException(
+                    "trying to destroy cpuset %s with tasks running: %s" %
+                    (set.path, set.tasks))
+    log.debug("tasks expired, deleting set %s" % set.path)
     os.rmdir(cset.CpuSet.basepath+set.path)
     # fixme: perhaps reparsing the all the sets is not so efficient...
     cset.rescan()
