@@ -1,0 +1,173 @@
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "CSET\-PROC" "1" "05/30/2008" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+cset\-proc \- manage processes running in cpusets
+.SH "SYNOPSIS"
+.sp
+.nf
+\fIcset\fR [cset options] \fIproc\fR [proc options] [args]
+\fIcset\fR proc \-\-help
+\fIcset\fR proc
+\fIcset\fR proc my_set my_other_set
+\fIcset\fR proc \-\-list \-\-set my_set
+\fIcset\fR proc \-\-exec my_set /opt/software/my_code \-\-my_opt_1
+\fIcset\fR proc \-\-set my_set \-\-exec /opt/software/my_code \-\-my_opt_1
+\fIcset\fR proc \-\-move 2442,3000\-3200 my_set
+\fIcset\fR proc \-\-move \-\-pid=2442,3000\-3200 \-\-toset=my_set
+\fIcset\fR proc \-\-move \-\-fromset=my_set_1 \-\-toset=my_set_2
+\fIcset\fR proc \-\-move \-\-pid=42 \-\-fromset=/group1/myset \-\-toset=/group2/yourset
+.fi
+.SH "OPTIONS"
+.TP
+\-h, \-\-help
+prints the list of options for this command
+.TP
+\-l, \-\-list
+list processes in the specified cpuset
+.TP
+\-e, \-\-exec
+execute arguments in the specified cpuset
+.TP
+\-u USER, \-\-user=USER
+use this USER to \-\-exec (id or name)
+.TP
+\-g GROUP, \-\-group=GROUP
+use this GROUP to \-\-exec (id or name)
+.TP
+\-m, \-\-move
+move specified tasks to specified cpuset; to move a PIDSPEC to a cpuset, use \-m PIDSPEC cpuset; to move all tasks specify \-\-fromset and \-\-toset
+.TP
+\-p PIDSPEC, \-\-pid=PIDSPEC
+specify pid or tid specification
+.TP
+\-s CPUSET, \-\-set=CPUSET
+specify name of immediate cpuset
+.TP
+\-t TOSET, \-\-toset=TOSET
+specify name of destination cpuset
+.TP
+\-f FROMSET, \-\-fromset=FROMSET
+specify name of origination cpuset
+.TP
+\-k, \-\-kthread
+move, or include moving, unbound kernel threads
+.TP
+\-a, \-\-all
+force all processes and threads to be moved
+.TP
+\-v, \-\-verbose
+prints more detailed output, additive
+.SH "DESCRIPTION"
+This command is used to run and manage arbitrary processes on specified cpusets. It is also used to move pre\-existing processes and threads to specified cpusets. You may note there is no "kill" or "destroy" option \(em use the standard OS ^C or kill commands for that.
+
+To list which tasks are running in a particular cpuset, use the \-\-list command.
+
+For example:
+
+\fB# cset proc \-\-list \-\-set priset\fR
+
+This command will list all the tasks running in the cpuset called "priset".
+
+Processes are created by specifying the path to the executable and specifying the cpuset that the process is to be created in.
+
+For example:
+
+\fB# cset proc \-\-set=blazing_cpuset \-\-exec /usr/bin/fast_code\fR
+
+This command will execute the /usr/bin/fast_code program on the "blazing_cpuset" cpuset.
+
+The PIDSPEC argument taken for the move command is a comma separated list of PIDs or TIDs. The list can also include brackets of PIDs or TIDs (i.e. tasks) that are inclusive of the endpoints.
+
+For example:
+.sp
+.nf
+1,2,5         Means processes 1, 2 and 5
+1,2,600\-700   Means processes 1, 2 and from 600 to 700
+.fi
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+The range of PIDs or TIDs does not need to have every position populated. In other words, for the example above, if there is only one process, say PID 57, in the range of 50\-65, then only that process will be moved.
+
+To move a PIDSPEC to a specific cpuset, you can either specify the PIDSPEC with \-\-pid and the destination cpuset with \-\-toset, or use the short hand and list the cpuset name after the PIDSPEC for the \-\-move arguments.
+
+The move command accepts multiple common calling methods. For example, the following commands are equivalent:
+
+\fB# cset proc \-\-move 2442,3000\-3200 reserved_set\fR
+
+\fB# cset proc \-\-move \-\-pid=2442,3000\-3200 \-\-toset=reserved_set\fR
+
+These commands move the tasks defined as 2442 and any running task between 3000 and 3200 inclusive of the ends to the cpuset called "reserved_set".
+
+Specifying the \-\-fromset is not necesary since the tasks will be moved to the destination cpuset no matter which cpuset they are currently running on.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+However, if you do specify a cpuset with the \-\-fromset option, then only those tasks that are both in the PIDSPEC \fBand\fR are running in the cpuset specified by \-\-fromset will be moved. I.e., if there is a task running on the system but not in \-\-fromset that is in PIDSPEC, it will not be moved.
+
+To move all userspace tasks from one cpuset to another, you need to specify the source and destination cpuset by name.
+
+For example:
+
+\fB# cset proc \-\-move \-\-fromset=comp1 \-\-toset=comp42\fR
+
+This command specifies that all processes and threads running on cpuset "comp1" be moved to cpuset "comp42".
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+This move command will not move kernel threads unless the \-k/\-\-kthread switch is specified. If it is, then all unbound kernel threads will be added to the move. Unbound kernel threads are those that can run on any CPU. If you \fBalso specify\fR the \-a/\-\-all switch, then all tasks, kernel or not, bound or not, will be moved.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBCaution\fR
+Please be cautious with the \-\-all switch, since moving a kernel thread that is bound to a specific CPU to a cpuset that does not include that CPU can cause a system hang.
+
+You must specify unique cpuset names for the both exec and move commands. If a simple name passed to the \-\-fromset, \-\-toset and \-\-set parameters is unique on the system then that command executes. However, if there are multiple cpusets by that name, then you will need to specify which one you mean with a full path rooted at the base cpuset tree.
+
+For example, suppose you have the following cpuset tree:
+.sp
+.nf
+/cpusets
+  /group1
+    /myset
+    /yourset
+  /group2
+    /myset
+    /yourset
+.fi
+Then, to move a process from myset in group1 to yourset in group2, you would have to issue the following command:
+
+# cset proc \-\-move \-\-pid=50 \-\-fromset=/group1/myset \-\-toset=/group2/yourset
+
+You do not have to worry about where in the Linux filesystem the cpuset filesystem is mounted. The cset command takes care of that. Any cpusets that are specifed by path (such as above), are done with respect to the root of the cpuset filesystem.
+.SH "LICENSE"
+Cpuset is licensed under the GNU GPL V2 only.
+.SH "COPYRIGHT"
+Copyright (c) 2008 Novell Inc.
+.SH "AUTHOR"
+Written by Alex Tsariounov <alext@novell.com>.
+
+Some substrate code and ideas were taken from the excellent Stacked GIT (stgit) v0.13 (see http://gna.org/projects/stgit and http://www.procode.org/stgit). Stacked GIT is under GPL V2 or later.
+.SH "SEE ALSO"
+\fBcset\fR(1), \fBcset\-set\fR(1), \fBcset\-shield\fR(1), \fBtaskset\fR(1), \fBchrt\fR(1)
+
+/usr/src/linux/Documentation/cpusets.txt
+

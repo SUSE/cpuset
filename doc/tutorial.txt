@@ -1,0 +1,51 @@
+Cpuset Tutorial
+###############
+
+
+Cpuset (cset) is a Python application that provides a command line
+application front end for the cpusets functionality found in the Linux
+kernel.
+
+
+Basic Operation
+===============
+
+Help
+----
+
+For a full list of cset commands:
+
+  cset help
+
+For help on individual subcommands:
+
+  cset help <command>
+
+For options of individual subcommands:
+
+  cset <command> (-h | --help)
+
+Built-in Super Commands
+-----------------------
+
+Cpuset has some built-in "super commands" that encapsulate common use
+cases of cpusets and make their interface simple to use.
+
+cset shield
+~~~~~~~~~~~
+
+This super command sets up a shielded set of cpus environment.
+
+Basic cpuset Manipulation Commands
+----------------------------------
+
+
+Advanced Usage
+==============
+
+This describes more advanced usage of cpusets.
+
+Priority Realtime CPU Sets
+---------------------------
+
+

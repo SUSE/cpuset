@@ -1,0 +1,3 @@
+include README Makefile MANIFEST MANIFEST.in AUTHORS COPYING INSTALL ChangeLog TODO
+include t/README
+include doc/*.txt doc/Makefile doc/*.conf doc/callouts.xsl doc/*.1 doc/*.html

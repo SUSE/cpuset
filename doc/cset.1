@@ -1,0 +1,90 @@
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "CSET" "1" "05/30/2008" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+cset \- manage cpusets functions in the Linux kernel
+.SH "SYNOPSIS"
+.sp
+.nf
+\fIcset\fR [\-\-version | \-\-help | \-\-log]
+\fIcset\fR [help <command> | <command> \-\-help]
+\fIcset\fR [cset options] <command> [command options] [args]
+.fi
+.SH "DESCRIPTION"
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+In general, you need to have root permissions to run cset. The tool mounts the cpusets filesystem and manipulates it. Non\-root users do not have permission for these actions.
+
+Cpuset is a Python application to make using the cpusets facilities in the Linux kernel easier. The actual included command is called \fIcset\fR and it allows manipulation of cpusets on the system and provides higher level functions such as implementation and control of a basic cpu shielding setup.
+.SS "Typical uses of cpuset include"
+.TP
+Setting up and managing a simple shielded CPU environment
+The concept of \fIshielded\fR cpus is that a certain number of cpus are partitioned off on the system and only processes that are of interest are run on these cpus (i.e., inside the shield).
+
+For a simple shielded configuration, one typically uses three cpusets: the root set, a system set and a user set. \fICset\fR includes a super command that implements this strategy and lets you easily manage it. See \fBcset\-shield\fR(1) for more details.
+.TP
+Setting up and managing a comples shielding environment
+Shielding can be more complex of course where concepts such as priority cpusets and intersecting cpuset can be used. You can use \fIcset\fR to help manage this type of shielding as well. You will need to use the \fBcset\-set\fR(1) and \fBcset\-proc\fR(1) subcommands directly to do that.
+.TP
+Managing cpusets on the system
+The cset subcommand \fBcset\-set\fR(1) allows you to create and destroy arbitrary cpusets on the system and assign arbitrary cpus and memory nodes to them. The cpusets so created have to follow the Linux kernel cpuset rules. See the \fBcset\-set\fR(1) subcommand for more details.
+.TP
+Managing processes that run on various system cpusets
+The cset subcommand \fBcset\-proc\fR(1) allows you to manage processes running on various cpusets created on the system. You can exec new processes in specific cpusets and move tasks around existing cpusets. See the \fBcset\-proc\fR(1) subcommand for more details.
+.SH "OPTIONS"
+The following generic option flags are available. Additional options are available per\-command, and documented in the command\-specific documentation.
+.TP
+\fIcset\fR \-\-version
+Prints the cpuset suite version that the \fIcset\fR program came from, as well as version of other components used, such as Python and the kernel.
+.TP
+\fIcset\fR \-\-help
+Prints the synopsis and a list of all commands.
+.TP
+\fIcset\fR \-\-log <filename>
+Creates a log file for the current run. All manner of useful information is stored in this file. This is usually used to debug cpuset when things don't go as planned.
+.TP
+\fIcset\fR help \fIcommand\fR
+Although not strictly an "option", this is a very helpful way to execute help with cpuset. The command prints out a lengthy summary of how the specified subcommand works.
+.SH "CPUSET COMMANDS"
+The cpuset commands are divided into groups, according to the primary purpose of those commands. Following is a short description of each command. A more detailed description is available in individual command manpages. Those manpages are named \fIcset\-<command>(1)\fR. The first command, \fIhelp\fR, is especially useful as it prints out a long summary of what a particular command does.
+.TP
+\fIcset help\fR
+print the detailed command usage
+.TP
+\fIcset version\fR
+display version information
+.TP
+\fIcset copyright\fR
+display copyright information
+.TP
+\fIcset shield\fR
+supercommand to set up and manage basic shielding (see \fBcset\-shield\fR(1))
+.TP
+\fIcset set\fR
+create, modify and destroy cpusets (see \fBcset\-set\fR(1))
+.TP
+\fIcset proc\fR
+create and manage processes within cpusets (see \fBcset\-proc\fR(1))
+.SH "LICENSE"
+Cpuset is licensed under the GNU GPL V2 only.
+.SH "COPYRIGHT"
+Copyright (c) 2008 Novell Inc.
+.SH "AUTHOR"
+Written by Alex Tsariounov <alext@novell.com>.
+
+Some substrate code and ideas were taken from the excellent Stacked GIT (stgit) v0.13 (see http://gna.org/projects/stgit and http://www.procode.org/stgit). Stacked GIT is under GPL V2 or later.
+.SH "SEE ALSO"
+\fBcset\-set\fR(1), \fBcset\-proc\fR(1), \fBcset\-shield\fR(1), \fBtaskset\fR(1), \fBchrt\fR(1)
+
+/usr/src/linux/Documentation/cpusets.txt
+

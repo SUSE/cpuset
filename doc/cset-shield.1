@@ -1,0 +1,173 @@
+.\" ** You probably do not want to edit this file directly **
+.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
+.\" Instead of manually editing it, you probably should edit the DocBook XML
+.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
+.TH "CSET\-SHIELD" "1" "05/30/2008" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+cset\-shield \- cpuset supercommand which implements cpu shielding
+.SH "SYNOPSIS"
+.sp
+.nf
+\fIcset\fR [cset options] \fIshield\fR [shield options] [args]
+\fIcset\fR shield \-\-help
+\fIcset\fR shield
+\fIcset\fR shield \-\-cpu 1\-7
+\fIcset\fR shield \-\-cpu 1\-7 \-\-kthread=on
+\fIcset\fR shield \-\-exec /opt/software/myapp/doit \-\-my_opt1 \-\-my_opt2
+\fIcset\fR shield \-\-user appuser \-\-exec run_benchmark.sh
+\fIcset\fR shield \-\-shield 1024,2048,5000\-1000
+\fIcset\fR shield \-\-unshield 6000\-8500
+\fIcset\fR shield \-\-kthread=off
+\fIcset\fR shield \-\-kthread=on
+\fIcset\fR shield \-\-shield bash
+.fi
+.SH "OPTIONS"
+.TP
+\-h, \-\-help
+prints the list of options for this command
+.TP
+\-c CPUSPEC, \-\-cpu=CPUSPEC
+modifies or initializes the shield cpusets
+.TP
+\-r, \-\-reset
+destroys the shield
+.TP
+\-e, \-\-exec
+executes args in the shield
+.TP
+\-\-user=USER
+use this USER for \-\-exec (id or name)
+.TP
+\-\-group=GROUP
+use this GROUP for \-\-exec (id or name)
+.TP
+\-s PIDSPEC, \-\-shield=PIDSPEC
+shield specified PIDSPEC of processes or threads
+.TP
+\-u PIDSPEC, \-\-unshield=PIDSPEC
+remove specified PIDSPEC of processes or threads from the shield, the task keep running in the unshielded cpuset
+.TP
+\-k on|off, \-\-kthread=on|off
+shield from unbound interrupt threads as well
+.TP
+\-f, \-\-force
+force operation, use with care
+.TP
+\-v, \-\-verbose
+prints more detailed output, additive
+.TP
+\-\-sysset=SYSSET
+optionally specify system cpuset name
+.TP
+\-\-userset=USERSET
+optionally specify user cpuset name
+.SH "DESCRIPTION"
+This is a supercommand that creates basic cpu shielding. The normal cset commands can of course be used to create this basic shield, but the shield command combines many such commands to create and manage a common type of cpu shielding setup.
+
+The concept of shielding implies at minimum three cpusets, for example: root, user and system. The root cpuset always exists in all implementations of cpusets and contains all available CPUs on the machine. The system cpuset is so named because normal system tasks are made to run on it. The user cpuset is so named because that is the "shielded" cpuset on which you would run your tasks of interest.
+
+Usually, CPU zero would be in the system set and the rest of the CPUs would be in the user set. After creation of the cpusets, all processes running in the root cpuset are moved to the system cpuset. Thus any new processes or threads spawned from these processes will also run the system cpuset.
+
+If the optional \-\-kthread=on option is given to the shield command, then all kernel threads (with exception of the per\-CPU bound interrupt kernel threads) are also moved to the system set.
+
+One executes processes on the shielded user cpuset with the \-\-exec subcommand or moves processes or threads to the shielded cpuset with the \-\-shield subcommand.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+You do not need to specify which cpuset a process or thread is running in initially when using the \-\-shield subcommand.
+
+To create a shield, you would execute the shield command with the \-\-cpu option that specifies CPUSPEC argument that assigns CPUs to be under the shield (this means assigned to the user cpuset, all other cpus will be assigned to the system set).
+
+For example:
+
+\fB# cset shield \-\-cpu=3\fR
+
+On a 4\-way machine, this command will dedicate the first 3 processors, CPU0\-CPU2, for the system set (unshielded) and only the last processor, CPU3, for the user set (shielded).
+
+The CPUSPEC will accept a comma separated list of CPUs and inclusive range specifications. For example, \-\-cpu=1,3,5\-7 will assign CPU1, CPU3, CPU5, CPU6, and CPU7 to the user (or shielded) cpuset.
+
+If you do not like the names "system" and "user" for the unshielded and shielded sets respectively, or if those names are used already, then use the \-\-sysset and \-\-userset options.
+
+For example:
+
+\fB# cset shield \-\-sysset=free \-\-userset=cage \-\-cpu=2,3 \-\-kthread=on\fR
+
+The above command will use the name "free" for the unshielded system cpuset, the name "cage" for the shielded user cpuset, initialize these cpusets and dedicate CPU0 and CPU1 to the "free" set and (on a 4\-way machine) dedicate CPU2 and CPU3 to the "cage" set. Further, the command moves all processes and threads, including kernel threads from the root cpuset to the "free" cpuset.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+If you do use the \-\-syset/\-\-userset options, then you must continue to use those for every invocation of the shield supercommand.
+
+After initialization, you can run the process of interest on the shielded cpuset with the \-\-exec subcommand, or move processes or threads already running to the shielded cpuset with the \-\-shield subcommand.
+
+The PIDSPEC argument taken for the \-\-shield (or \-s) subcommand is a comma separated list of PIDs or TIDs. The list can also include brackets of PIDs or TIDs that are inclusive of the endpoints.
+
+For example:
+.sp
+.nf
+1,2,5               Means processes 1, 2 and 5
+1,2,600\-700         Means processes 1, 2 and from 600 to 700
+.fi
+\fB# cset shield \-\-shield=50\-65\fR
+
+The above command moves all processes and threads with PID or TID in the range 50\-65 inclusive, from any cpuset they may be running in into the shielded user cpuset.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+The range of PIDs or TIDs does not need to have every position populated. In other words, for the example above, if there is only one process, say PID 57, in the range of 50\-65, then only that process will be moved.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBCaution\fR
+Please note that there is no checking of processes you request to move into the shield with the \-\-shield command. This means that the tool will happily move, for example, kernel threads that are bound to specific CPUs with this command. You can hang your system by indiscriminately specifying arbitrary PIDs to the \-\-shield command so please be careful.
+
+The \-\-unshield (or \-u) subcommand will remove the specified processes or threads from the shielded cpuset and move them into the unshielded (or system) cpuset. This option also takes a PIDSPEC argument, the same as for the \-\-shield subcommand.
+
+Both the \-\-shield and the \-\-unshield commands will also finally output the number of tasks running in the shield and out of the shield. If you do not specify a PIDSPEC to these commands, then just that status is output. By specifying also a \-\-verbose in addition, then you will get a listing of every task that is running in either the shield or out of the shield.
+
+Using no subcommand, ie. only "cset shield", will output the status of both shield and non\-shield. Tasks will be listed if \-\-verbose is used.
+
+You can adjust which CPUs are in the shielded cpuset by issuing the \-\-cpu subcommand again anytime after the shield has been initialized.
+
+For example if the original shield contained CPU0 and CPU1 in the system set and CPU2 and CPU3 in the user set, if you then issue the following command:
+
+\fB# cset shield \-\-cpu=1,2,3\fR
+
+then that command will move CPU1 into the shielded "user" cpuset. Any processes or threads that were running on CPU1 that belonged to the unshielded "system" cpuset are migrated to CPU0 by the system.
+
+The \-\-reset subcommand will in essence destroy the shield. For example, if there was a shield on a 4\-way machine with CPU0 in system and CPUs 1\-3 in user with processes running on the user cpuset (i.e. in the shield), and a \-\-reset subcommand was issued, then all processes running in both system and user cpusets would be migrated to the root cpuset (which has access to all CPUs and never goes away), after which both system and user cpusets would be destroyed.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+\fBNote\fR
+Even though you can mix general usage of cpusets with the shielding concepts described here, you generally will not want to. For more complex shielding or usage scenarios, one would generally use the normal cpuset commands (i.e. cset set and proc) directly.
+.SH "LICENSE"
+Cpuset is licensed under the GNU GPL V2 only.
+.SH "COPYRIGHT"
+Copyright (c) 2008 Novell Inc.
+.SH "AUTHOR"
+Written by Alex Tsariounov <alext@novell.com>.
+
+Some substrate code and ideas were taken from the excellent Stacked GIT (stgit) v0.13 (see http://gna.org/projects/stgit and http://www.procode.org/stgit). Stacked GIT is under GPL V2 or later.
+.SH "SEE ALSO"
+\fBcset\fR(1), \fBcset\-set\fR(1), \fBcset\-proc\fR(1), \fBtaskset\fR(1), \fBchrt\fR(1)
+
+/usr/src/linux/Documentation/cpusets.txt
+

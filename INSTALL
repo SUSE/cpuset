@@ -1,0 +1,22 @@
+This is a distutils-based package and as such, it contains
+a number of differnet installation methods.  By far the most
+convenient is to create an rpm.  This rpm can then be later
+updated or removed by the rpm packaging utility (rpm).
+
+To create an rpm, use the following command:
+
+	python setup.py bdist_rpm
+
+For basic installation:
+
+	python setup.py install
+
+By default, the above command installs cpuset in the
+$HOME/{bin,lib,share} directories. For a different location,
+use the --prefix option:
+
+	python setup.py install --prefix=/usr
+
+For more information:
+
+	http://docs.python.org/inst/inst.html
