@@ -1,2 +1,12 @@
-Alex Tsariounov <alext@novell.com>
-	http://www.novell.com/realtime
+Lead:
+
+	Alex Tsariounov <alext@novell.com>
+		http://www.novell.com/realtime
+
+Credits:
+
+	Thomas Grohmann <Thomas.Grohmann@gmx.net>
+                Bug#26
+
+	Alex Piavka <piavka@cs.bgu.ac.il>
+                Gentoo ebuild script

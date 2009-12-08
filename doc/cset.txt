@@ -39,7 +39,7 @@ the root set, a system set and a user set.  'Cset' includes a super
 command that implements this strategy and lets you easily manage it.
 See 'cset-shield(1)' for more details.
 
-Setting up and managing a comples shielding environment::
+Setting up and managing a complex shielding environment::
 	Shielding can be more complex of course where concepts such as
         priority cpusets and intersecting cpuset can be used.  You can
         use 'cset' to help manage this type of shielding as well.  You

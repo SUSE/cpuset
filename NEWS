@@ -1,5 +1,16 @@
 ============================================================
 
+Cpuset 1.5.1 (June 17, 2009)
+https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.5.1
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Maintenance update to 1.5.0 includes bug fixes as follows.
+
+Fixed Bugs:
+* Fix bug #26: Cpuset does not function on machines with greater than 16 CPUs
+
+============================================================
+
 Cpuset 1.5.0 (February 7, 2009)
 https://forgesvn1.novell.com/svn/cpuset/tags/rel_1.5.0
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/

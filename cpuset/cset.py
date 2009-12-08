@@ -2,7 +2,7 @@
 """
 
 __copyright__ = """
-Copyright (C) 2008, 2009 Novell Inc.
+Copyright (C) 2007-2009 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -334,7 +334,7 @@ def rescan():
     global RootSet, maxcpu, allcpumask
     RootSet = CpuSet()
     # figure out system properties
-    maxcpu = int(RootSet.cpus[-1])
+    maxcpu = int(RootSet.cpus.split('-')[-1])
     allcpumask = calc_cpumask(maxcpu)
 
 def cpuspec_check(cpuspec, usemax=True):

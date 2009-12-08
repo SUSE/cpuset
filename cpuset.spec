@@ -1,7 +1,7 @@
 #  
 # spec file for package cpuset (Version 1.04)  
 #  
-# Copyright (c) 2008 Novell, Inc. Waltham, MA, USA
+# Copyright (c) 2008-2009 Novell, Inc. Waltham, MA, USA
 # This file and all modifications and additions to the pristine  
 # package are under the same license as the package itself.  
 #  
@@ -11,7 +11,7 @@
 # norootforbuild  
 
 Name:           cpuset
-Version:        1.5.0
+Version:        1.5.1
 Release:        1
 License:        GPL v2 only
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
