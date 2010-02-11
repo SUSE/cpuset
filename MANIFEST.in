@@ -1,3 +1,3 @@
-include README Makefile MANIFEST MANIFEST.in AUTHORS COPYING INSTALL NEWS ChangeLog TODO cset.init.d
+include README Makefile MANIFEST MANIFEST.in AUTHORS COPYING INSTALL NEWS ChangeLog cset.init.d
 include t/README
 include doc/*.txt doc/Makefile doc/*.conf doc/callouts.xsl doc/*.1 doc/*.html
