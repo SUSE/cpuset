@@ -305,7 +305,6 @@ def find_sets(name):
     nodelist = []
     if name.find('/') == -1:
         log.debug("find by name")
-        name = name.lower()
         if name == 'root':
             log.debug("returning root set")
             nodelist.append(RootSet)
