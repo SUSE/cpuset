@@ -1,5 +1,5 @@
 #  
-# spec file for package cpuset (Version 1.5.2)  
+# Spec file for package cpuset
 #  
 # Copyright (c) 2008-2010 Novell, Inc. Waltham, MA, USA
 # This file and all modifications and additions to the pristine  
