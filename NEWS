@@ -1,4 +1,15 @@
 ============================================================
+Cpuset 1.5.3 (February 11, 2010)
+http://code.google.com/p/cpuset
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Maintenace update to 1.5.2 includes fixes as follows.
+
+* Code repository and project hosting to Google Code Hosting.
+* Apply patch submitted by Chrstopher Johnston to fix failure of
+  finding cpusets in a case-sensitive manner.
+
+============================================================
 Cpuset 1.5.2 (December 2, 2009)
 https://forgesvn1.novell.com/viewsvn/cpuset/tags/rel_1.5.2/
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/

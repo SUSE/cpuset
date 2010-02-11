@@ -3,19 +3,19 @@ standard Linux filesystem calls to make using the cpusets facilities
 in the Linux kernel easier.
 
 For the latest version see:
-   http://developer.novell.com/wiki/index.php/cpuset
+   http://code.google.com/p/cpuset
 
 For packages, see the OpenSUSE build service:
-   http://download.opensuse.org/repositories/home:/tsariounov:/Cpuset
+   http://download.opensuse.org/repositories/home:/tsariounov:/cpuset
 
 Bugs or feature requests should be sent to:
-   http://devzilla.novell.com/cpuset/
+   http://code.google.com/p/cpuset/issues/list
  or for supported products, the Novell Bugzilla at:
    http://bugzilla.novell.com
 
 -----
 
-Copyright (C) 2008-2009 Novell Inc.
+Copyright (C) 2008-2010 Novell Inc.
 
 Author: Alex Tsariounov <alext@novell.com>
 

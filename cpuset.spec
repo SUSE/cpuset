@@ -1,12 +1,12 @@
 #  
 # spec file for package cpuset (Version 1.5.2)  
 #  
-# Copyright (c) 2008-2009 Novell, Inc. Waltham, MA, USA
+# Copyright (c) 2008-2010 Novell, Inc. Waltham, MA, USA
 # This file and all modifications and additions to the pristine  
 # package are under the same license as the package itself.  
 #  
 # Please submit bugfixes or comments via 
-#        http://devzilla.novell.com/cpuset
+#        http://code.google.com/p/cpuset/issues/list
 #    Or 
 #        http://bugs.opensuse.org/
 # 
@@ -20,7 +20,7 @@ Version:        1.5.2
 Release:        1
 License:        GPL v2 only
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-Url:            http://developer.novell.com/wiki/index.php/Cpuset
+Url:            http://code.google.com/p/cpuset
 Group:          System/Management
 Summary:        Allows manipulation of cpusets on system and provides higher level functions
 Source:         %{name}-%{version}.tar.gz

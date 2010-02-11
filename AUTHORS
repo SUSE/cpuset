@@ -1,12 +1,15 @@
 Lead:
 
 	Alex Tsariounov <alext@novell.com>
-		http://www.novell.com/realtime
+	  http://www.novell.com
 
-Credits:
+Credits (in alphabetical order):
 
 	Thomas Grohmann <Thomas.Grohmann@gmx.net>
-                Bug#26
-
+	  - Bug#26.
+	  
+	Christopher Johnston <chjohnst@gmail.com>
+	  - Fix for case-sensitive set search.
+	  
 	Alex Piavka <piavka@cs.bgu.ac.il>
-                Gentoo ebuild script
+	  - Gentoo ebuild script.

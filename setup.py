@@ -10,7 +10,7 @@ setup(name = 'cpuset',
     license = 'GPLv2',
     author = 'Alex Tsariounov',
     author_email = 'alext@novell.com',
-    url = 'http://developer.novell.com/wiki/index.php/Cpuset',
+    url = 'http://code.google.com/p/cpuset',
     description = 'Allows manipluation of cpusets and provides higher level functions.',
     long_description = \
         'Cpuset is a Python application to make using the cpusets facilities in the Linux\n'

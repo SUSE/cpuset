@@ -2,7 +2,7 @@ Cpuset (cset) Tutorial
 ######################
 
 Alex Tsariounov <alext@novell.com> +
-Copyright (c) 2009 Novell Inc., cset v1.5.0 +
+Copyright (c) 2009-2010 Novell Inc., cset v1.5.3 +
 Verbatim copying and distribution of this entire article are permitted
 worldwide, without royalty, in any medium, provided this notice is preserved.
 
@@ -1329,10 +1329,12 @@ What To Do if There are Problems
 If you encounter problems with the *cset* application, the best option is to
 log a bug with the *cset* bugzilla instance found here:
 
-  http://devzilla.novell.com/cpuset
+  http://code.google.com/p/cpuset/issues/list
 
 If you are using *cset* on a supported operating system such as SLES or SLERT
-from Novell, then feel free to use that bugzilla instead.
+from Novell, then please use that bugzilla instead at:
+
+  http://bugzilla.novell.com
 
 If the problem is repeatable, there is an excellent chance that it will get
 fixed quickly.  Also, *cset* contains a logging facility that is invaluable

@@ -1,14 +1,25 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "CSET\-SET" "1" "02/07/2009" "" ""
+'\" t
+.\"     Title: cset-set
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 02/11/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
+.\"
+.TH "CSET\-SET" "1" "02/11/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-cset\-set \- manage sets of cpus
+cset-set \- manage sets of cpus
 .SH "SYNOPSIS"
 .sp
 .nf
@@ -26,81 +37,103 @@ cset\-set \- manage sets of cpus
 \fIcset\fR set \-\-destroy /mygroup_sets/my_set
 .fi
 .SH "OPTIONS"
-.TP
+.PP
 \-h, \-\-help
+.RS 4
 prints the list of options for this command
-.TP
+.RE
+.PP
 \-l, \-\-list
+.RS 4
 list the named cpuset(s); if \-a is used, will list members of named cpuset; if \-r is used, will list recursively
-.TP
+.RE
+.PP
 \-c CPUSPEC, \-\-cpu=CPUSPEC
+.RS 4
 create or modify cpuset in the specified cpuset with CPUSPEC specification
-.TP
+.RE
+.PP
 \-m MEMSPEC, \-\-mem=MEMSPEC
+.RS 4
 specify which memory nodes to assign to the created or modified cpuset
-.TP
+.RE
+.PP
 \-d, \-\-destroy
+.RS 4
 destroy specified cpuset
-.TP
+.RE
+.PP
 \-s CPUSET, \-\-set=CPUSET
+.RS 4
 specify cpuset name to be acted on
-.TP
+.RE
+.PP
 \-r, \-\-recurse
+.RS 4
 do recursive listing, for use with \-\-list
-.TP
+.RE
+.PP
 \-v, \-\-verbose
+.RS 4
 prints more detailed output, for the set command, using this flag will not chop listing to fit in 80 columns
-.TP
+.RE
+.PP
 \-\-cpu_exclusive
+.RS 4
 mark this cpuset as owning its CPUs exclusively
-.TP
+.RE
+.PP
 \-\-mem_exclusive
+.RS 4
 mark this cpuset as owning its MEMs exclusively
+.RE
 .SH "DESCRIPTION"
-This command is used to create, modify, and destroy cpusets. Cpusets form a tree\-like structure rooted at the root cpuset which always includes all system CPUs and all system memory nodes.
+This command is used to create, modify, and destroy cpusets\&. Cpusets form a tree\-like structure rooted at the root cpuset which always includes all system CPUs and all system memory nodes\&.
 
-A cpuset is an organizational unit that defines a group of CPUs and a group of memory nodes where a process or thread (i.e. task) is allowed to run on. For non\-NUMA machines, the memory node is always 0 (zero) and cannot be set to anything else. For NUMA machines, the memory node can be set to a similar specification as the CPU definition and will tie those memory nodes to that cpuset. You will usually want the memory nodes that belong to the CPUs defined to be in the same cpuset.
+A cpuset is an organizational unit that defines a group of CPUs and a group of memory nodes where a process or thread (i\&.e\&. task) is allowed to run on\&. For non\-NUMA machines, the memory node is always 0 (zero) and cannot be set to anything else\&. For NUMA machines, the memory node can be set to a similar specification as the CPU definition and will tie those memory nodes to that cpuset\&. You will usually want the memory nodes that belong to the CPUs defined to be in the same cpuset\&.
 
-A cpuset can have exclusive right to the CPUs defined in it. This means that only this cpuset can own these CPUs. Similarly, a cpuset can have exclusive right to the memory nodes defined in it. This means that only this cpuset can own these memory nodes.
+A cpuset can have exclusive right to the CPUs defined in it\&. This means that only this cpuset can own these CPUs\&. Similarly, a cpuset can have exclusive right to the memory nodes defined in it\&. This means that only this cpuset can own these memory nodes\&.
 
-Cpusets can be specified by name or by path; however, care should be taken when specifying by name if the name is not unique. This tool will generally not let you do destructive things to non\-unique cpuset names.
+Cpusets can be specified by name or by path; however, care should be taken when specifying by name if the name is not unique\&. This tool will generally not let you do destructive things to non\-unique cpuset names\&.
 
-Cpusets are uniquely specified by path. The path starts at where the cpusets filesystem is mounted so you generally do not have to know where that is. For example, so specify a cpuset that is called "two" which is a subset of "one" which in turn is a subset of the root cpuset, use the path "/one/two" regardless of where the cpusets filesystem is mounted.
+Cpusets are uniquely specified by path\&. The path starts at where the cpusets filesystem is mounted so you generally do not have to know where that is\&. For example, so specify a cpuset that is called "two" which is a subset of "one" which in turn is a subset of the root cpuset, use the path "/one/two" regardless of where the cpusets filesystem is mounted\&.
 
-When specifying CPUs, a so\-called CPUSPEC is used. The CPUSPEC will accept a comma\-separated list of CPUs and inclusive range specifications. For example, \-\-cpu=1,3,5\-7 will assign CPU1, CPU3, CPU5, CPU6, and CPU7 to the specified cpuset.
+When specifying CPUs, a so\-called CPUSPEC is used\&. The CPUSPEC will accept a comma\-separated list of CPUs and inclusive range specifications\&. For example, \-\-cpu=1,3,5\-7 will assign CPU1, CPU3, CPU5, CPU6, and CPU7 to the specified cpuset\&.
 
-Note that cpusets follow certain rules. For example, children can only include CPUs that the parents already have. If you do not follow those rules, the kernel cpuset subsystem will not let you create that cpuset. For example, if you create a cpuset that contains CPU3, and then attempt to create a child of that cpuset with a CPU other than 3, you will get an error, and the cpuset will not be active. The error is somewhat cryptic in that it is usually a "Permission denied" error.
+Note that cpusets follow certain rules\&. For example, children can only include CPUs that the parents already have\&. If you do not follow those rules, the kernel cpuset subsystem will not let you create that cpuset\&. For example, if you create a cpuset that contains CPU3, and then attempt to create a child of that cpuset with a CPU other than 3, you will get an error, and the cpuset will not be active\&. The error is somewhat cryptic in that it is usually a "Permission denied" error\&.
 
-Memory nodes are specified with a MEMSPEC in a similar way to the CPUSPEC. For example, \-\-mem=1,3\-6 will assign MEM1, MEM3, MEM4, MEM5, and MEM6 to the specified cpuset.
+Memory nodes are specified with a MEMSPEC in a similar way to the CPUSPEC\&. For example, \-\-mem=1,3\-6 will assign MEM1, MEM3, MEM4, MEM5, and MEM6 to the specified cpuset\&.
 
-Note that if you attempt to create or modify a cpuset with a memory node specification that is not valid, you may get a cryptic error message, "No space left on device", and the modification will not be allowed.
+Note that if you attempt to create or modify a cpuset with a memory node specification that is not valid, you may get a cryptic error message, "No space left on device", and the modification will not be allowed\&.
 
-When you destroy a cpuset, then the tasks running in that set are moved to the parent of that cpuset. If this is not what you want, then manually move those tasks to the cpuset of your choice with the \fIcset proc\fR command (see \fIcset proc \-\-help\fR for more information).
+When you destroy a cpuset, then the tasks running in that set are moved to the parent of that cpuset\&. If this is not what you want, then manually move those tasks to the cpuset of your choice with the \fIcset proc\fR command (see \fIcset proc \-\-help\fR for more information)\&.
 .SS "EXAMPLES"
-.TP
+.PP
 Create a cpuset with the default memory specification
+.RS 4
 \fB# cset set \-\-cpu=2,4,6\-8 \-\-set=new_set\fR
-
-This command creates a cpuset called "new_set" located off the root cpuset which holds CPUS 2,4,6,7,8 and node 0 (interleaved) memory. Note that \-\-set is optional, and you can just specify the name for the new cpuset after all arguments.
-.TP
+.RE
+This command creates a cpuset called "new_set" located off the root cpuset which holds CPUS 2,4,6,7,8 and node 0 (interleaved) memory\&. Note that \-\-set is optional, and you can just specify the name for the new cpuset after all arguments\&.
+.PP
 Create a cpuset that specifies both CPUs and memory nodes
+.RS 4
 \fB# cset set \-\-cpu=3 \-\-mem=3 /rad/set_one\fR
+.RE
+Note that this command uses the full path method to specify the name of the new cpuset "/rad/set_one"\&. It also names the new cpuset implicitly (i\&.e\&. no \-\-set option, although you can use that if you want to)\&. If the "set_one" name is unique, you can subsequently refer to is just by that\&. Memory node 3 is assigned to this cpuset as well as CPU 3\&.
 
-Note that this command uses the full path method to specify the name of the new cpuset "/rad/set_one". It also names the new cpuset implicitly (i.e. no \-\-set option, although you can use that if you want to). If the "set_one" name is unique, you can subsequently refer to is just by that. Memory node 3 is assigned to this cpuset as well as CPU 3.
-
-The above commands will create the new cpusets, or if they already exist, they will modify them to the new specifications.
+The above commands will create the new cpusets, or if they already exist, they will modify them to the new specifications\&.
 .SH "LICENSE"
-Cpuset is licensed under the GNU GPL V2 only.
+Cpuset is licensed under the GNU GPL V2 only\&.
 .SH "COPYRIGHT"
-Copyright (c) 2008\-2009 Novell Inc.
+Copyright (c) 2008\-2010 Novell Inc\&.
 .SH "AUTHOR"
-Written by Alex Tsariounov <alext@novell.com>.
+Written by Alex Tsariounov <alext@novell\&.com>\&.
 .SH "SEE ALSO"
 cset(1), cset\-proc(1), cset\-shield(1)
 
-/usr/share/doc/packages/cpuset/html/tutorial.html
+/usr/share/doc/packages/cpuset/html/tutorial\&.html
 
 taskset(1), chrt(1)
 
-/usr/src/linux/Documentation/cpusets.txt
+/usr/src/linux/Documentation/cpusets\&.txt
 
