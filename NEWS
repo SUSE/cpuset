@@ -6,7 +6,7 @@ http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
 Maintenace update to 1.5.2 includes fixes as follows.
 
 * Code repository and project hosting to Google Code Hosting.
-* Apply patch submitted by Chrstopher Johnston to fix failure of
+* Apply patch submitted by Christopher Johnston to fix failure of
   finding cpusets in a case-sensitive manner.
 
 ============================================================
