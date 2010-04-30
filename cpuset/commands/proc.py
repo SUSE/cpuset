@@ -713,7 +713,11 @@ def task_detail(pid, width=70):
     cmdline = cmdline.replace('\0', ' ')
 
     out = []
-    out.append(pwd.getpwuid(int(stdict['Uid'].split()[0]))[0][:8].ljust(8))
+    try:
+        uid=pwd.getpwuid(int(stdict['Uid'].split()[0]))[0][:8].ljust(8)
+    except:
+        uid=stdict['Uid'].split()[0][:8].ljust(8)
+    out.append(uid)
     out.append(stdict['Pid'].rjust(5))
     out.append(stdict['PPid'].rjust(5))
 
