@@ -9,7 +9,10 @@ Credits (in alphabetical order):
 	  - Bug#26.
 	  
 	Christopher Johnston <chjohnst@gmail.com>
-	  - Fix for case-sensitive set search.
+	  - Fix for case-sensitive set search (issue#1)
+
+        Mostroski
+          - Fix for issue#2
 	  
 	Alex Piavka <piavka@cs.bgu.ac.il>
 	  - Gentoo ebuild script.
