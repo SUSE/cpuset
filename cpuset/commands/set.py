@@ -199,6 +199,7 @@ def func(parser, options, args):
 
     if options.cpu_exclusive or options.mem_exclusive:
         # FIXME: modification of existing cpusets for exclusivity
+        log.info("Modification of cpu_exclusive and mem_exclusive not implemented.")
         return
 
     # default behavior if no options specified is list
