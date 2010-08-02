@@ -5,6 +5,15 @@ PYTHON	?= python
 all:
 	$(PYTHON) setup.py build
 
+rpm:
+	$(PYTHON) setup.py bdist_rpm
+
+srcrpm:
+	$(PYTHON) setup.py bdist_rpm
+
+srcdist:
+	$(PYTHON) setup.py sdist
+
 install:
 	$(PYTHON) setup.py install --prefix=$(PREFIX) --root=$(DESTDIR)
 

@@ -1,4 +1,15 @@
 ============================================================
+Cpuset 1.5.5 Pre-release (XXX, 2010)
+http://code.google.com/p/cpuset
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Maintenance update to 1.5.4 includes fixes as follows.
+
+* Fix for Issue#3: cset fails to create cpu sets if some cpus are offline
+  Problem in cset.rescan() for maxcpu if root cpuset cpus are complex
+  pattern due to offlining cpus.
+
+============================================================
 Cpuset 1.5.4 (May 7, 2010)
 http://code.google.com/p/cpuset
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/

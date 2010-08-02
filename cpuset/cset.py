@@ -343,8 +343,11 @@ def rescan():
     global RootSet, maxcpu, allcpumask
     RootSet = CpuSet()
     # figure out system properties
-    maxcpu = int(RootSet.cpus.split('-')[-1])
+    log.debug("rescan: all cpus = %s", RootSet.cpus)
+    maxcpu = int(RootSet.cpus.split('-')[-1].split(',')[-1])
+    log.debug("        max cpu = %s", maxcpu)
     allcpumask = calc_cpumask(maxcpu)
+    log.debug("        allcpumask = %s", allcpumask)
 
 def cpuspec_check(cpuspec, usemax=True):
     """check format of cpuspec for validity"""
