@@ -1,4 +1,15 @@
 ============================================================
+Cpuset 1.5.6 (June 9, 2011)
+http://code.google.com/p/cpuset
+http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/
+
+Maintenance update to 1.5.5 includes fixes as follows.
+
+* Fix for Issue#5: LOGNAME environment variable set incorrectly...
+  Set LOGNAME and USERNAME env variables when execing new process
+  to match --user option, if given.
+
+============================================================
 Cpuset 1.5.5 (August 3, 2010)
 http://code.google.com/p/cpuset
 http://download.opensuse.org/repositories/home:/tsariounov:/cpuset/

@@ -51,12 +51,12 @@ test -x $CSET_BIN || { echo "$CSET_BIN not installed";
 	if [ "$1" = "stop" ]; then exit 0;
 	else exit 5; fi; }
 
-# cset variables
+# cset variables (EDIT apropriately for your situation)
 CSET_SYSTEM=0
 CSET_USER=1-7
 
-# Check for existence of needed config file and read it
-# This is not used for this example, but you can create one for
+# Check for existence of cset config file and read it
+# This is not used in this example, but you can create one for
 # your setup if you wish.
 #CSET_CONFIG=/etc/sysconfig/cset
 #test -r $CSET_CONFIG || { echo "$CSET_CONFIG not existing";
@@ -86,16 +86,16 @@ case "$1" in
 	#### Example 1: using the shield subcommand
 	##
 	
-	#$CSET_BIN shield --cpu=0
+	#$CSET_BIN shield --cpu=1-3
 
 	# Note that this creates CPU 0 as the general processor that runs
-	# everything and all other CPUs are assigned to the shield.  This
-	# is a typical simple shielding setup.  Adjust if your needs are
-	# different.
+	# everything and all other CPUs (assuming this is a 4-CPU system) are assigned
+	# to the shield.  This is a typical simple shielding setup.  Adjust if your
+	# needs are different.
 
 	# For shielding kernel threads as well, use the -k switch below instead
 	# of the shield command above.
-	#$CSET_BIN shield --cpu=0 -k
+	#$CSET_BIN shield --cpu=1-3 -k
 
 	##
 	#### Example 2: using the set and proc subcommands

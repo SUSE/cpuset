@@ -565,7 +565,10 @@ def run(tset, args, usr_par=None, grp_par=None):
              s.path, os.getpid()) 
     # change user and group before exec
     if grp_par: os.setgid(group)
-    if usr_par: os.setuid(user)
+    if usr_par: 
+        os.setuid(user)
+        os.environ["LOGNAME"] = usr_par
+        os.environ["USERNAME"] = usr_par
     os.execvp(args[0], args)
 
 def is_unbound(proc):
