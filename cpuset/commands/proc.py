@@ -569,6 +569,7 @@ def run(tset, args, usr_par=None, grp_par=None):
         os.setuid(user)
         os.environ["LOGNAME"] = usr_par
         os.environ["USERNAME"] = usr_par
+        os.environ["USER"] = usr_par
     os.execvp(args[0], args)
 
 def is_unbound(proc):
