@@ -36,6 +36,11 @@ class CpuSet(object):
     # a relative path from this basepath.
     sets = {}
     basepath = ''
+    cpus_path = '/cpus'
+    mems_path = '/mems'
+    cpu_exclusive_path = '/cpu_exclusive'
+    mem_exclusive_path = '/mem_exclusive'
+    tasks_path = '/tasks'
 
     def __init__(self, path=None):
         log.debug("initializing CpuSet")
@@ -56,6 +61,14 @@ class CpuSet(object):
                 del CpuSet.sets
                 CpuSet.sets = {}
             CpuSet.sets[self.path] = self
+
+            # if mounted as a cgroup controller, switch file name format
+            if not os.access(path + CpuSet.cpus_path, os.F_OK):
+                CpuSet.cpus_path = '/cpuset.cpus'
+                CpuSet.mems_path = '/cpuset.mems'
+                CpuSet.cpu_exclusive_path = '/cpuset.cpu_exclusive'
+                CpuSet.mem_exclusive_path = '/cpuset.mem_exclusive'
+
             # bottom-up search otherwise links will not exist
             log.debug("starting bottom-up discovery walk...")
             for dir, dirs, files in os.walk(path, topdown=False):
@@ -104,7 +117,7 @@ class CpuSet(object):
                 log.debug("the cpuset %s already exists, skipping", path)
                 self = CpuSet.sets[path]  # questionable....
                 return
-            cpus = CpuSet.basepath + path + "/cpus"
+            cpus = CpuSet.basepath + path +  CpuSet.cpus_path
             if not os.access(cpus, os.F_OK):
                 # not a cpuset directory
                 str = '%s is not a cpuset directory' % (CpuSet.basepath + path)
@@ -118,6 +131,8 @@ class CpuSet(object):
         log.debug("locating cpuset filesystem...")
         cpuset = re.compile(r"none (/.+) cpuset .+")
         cgroup = re.compile(r"none (/.+) cgroup .+")
+        cpuset1 = re.compile(r"cpuset (/.+) cpuset .+")
+        cgroup1 = re.compile(r"cgroup (/.+) cgroup .+")
         path = None
         f = file("/proc/mounts")
         for line in f:
@@ -125,8 +140,17 @@ class CpuSet(object):
             if res:
                 path = res.group(1)
                 break
+            res = cpuset1.search(line)
+            if res:
+                path = res.group(1)
+                break
             else:
                 if cgroup.search(line):
+                    groups = line.split()
+                    if re.search("cpuset", groups[3]):
+                        path = groups[1]
+                        break
+                if cgroup1.search(line):
                     groups = line.split()
                     if re.search("cpuset", groups[3]):
                         path = groups[1]
@@ -158,36 +182,36 @@ class CpuSet(object):
         raise AttributeError, "deletion of properties not allowed"
 
     def getcpus(self): 
-        f = file(CpuSet.basepath+self.path+"/cpus")
+        f = file(CpuSet.basepath+self.path+CpuSet.cpus_path)
         return f.readline()[:-1]
     def setcpus(self, newval):
         cpuspec_check(newval)
-        f = file(CpuSet.basepath+self.path+"/cpus",'w')
+        f = file(CpuSet.basepath+self.path+CpuSet.cpus_path,'w')
         f.write(str(newval))
         f.close()
         log.debug("-> prop_set %s.cpus = %s", self.path, newval) 
     cpus = property(fget=getcpus, fset=setcpus, fdel=delprop, doc="CPU specifier")
 
     def getmems(self): 
-        f = file(CpuSet.basepath+self.path+"/mems")
+        f = file(CpuSet.basepath+self.path+CpuSet.mems_path)
         return f.readline()[:-1]
     def setmems(self, newval): 
         # FIXME: check format for correctness
-        f = file(CpuSet.basepath+self.path+"/mems",'w')
+        f = file(CpuSet.basepath+self.path+CpuSet.mems_path,'w')
         f.write(str(newval))
         f.close()
         log.debug("-> prop_set %s.mems = %s", self.path, newval) 
     mems = property(getmems, setmems, delprop, "Mem node specifier")
     
     def getcpuxlsv(self): 
-        f = file(CpuSet.basepath+self.path+"/cpu_exclusive")
+        f = file(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path)
         if f.readline()[:-1] == '1':
             return True
         else:
             return False
     def setcpuxlsv(self, newval):
         log.debug("-> prop_set %s.cpu_exclusive = %s", self.path, newval) 
-        f = file(CpuSet.basepath+self.path+"/cpu_exclusive",'w')
+        f = file(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path,'w')
         if newval:
             f.write('1')
         else:
@@ -197,14 +221,14 @@ class CpuSet(object):
                              "CPU exclusive flag")
 
     def getmemxlsv(self): 
-        f = file(CpuSet.basepath+self.path+"/mem_exclusive")
+        f = file(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path)
         if f.readline()[:-1] == '1':
             return True
         else:
             return False
     def setmemxlsv(self, newval):
         log.debug("-> prop_set %s.mem_exclusive = %s", self.path, newval) 
-        f = file(CpuSet.basepath+self.path+"/mem_exclusive",'w')
+        f = file(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path,'w')
         if newval:
             f.write('1')
         else:
@@ -214,7 +238,7 @@ class CpuSet(object):
                              "Memory exclusive flag")
 
     def gettasks(self):
-        f = file(CpuSet.basepath+self.path+"/tasks")
+        f = file(CpuSet.basepath+self.path+CpuSet.tasks_path)
         lst = []
         for task in f: lst.append(task[:-1])
         return lst
@@ -229,7 +253,7 @@ class CpuSet(object):
             prog = False
         for task in tasklist:
             try:
-                f = file(CpuSet.basepath+self.path+"/tasks",'w')
+                f = file(CpuSet.basepath+self.path+CpuSet.tasks_path,'w')
                 f.write(task)
                 f.close()
             except Exception, err:
