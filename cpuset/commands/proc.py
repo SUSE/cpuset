@@ -727,7 +727,8 @@ def task_detail(pid, width=70):
 
     out2 = []
     out2.append(stdict['State'].split()[0])
-    out2.append(policy[int(stat[statdef['rtpolicy']])])
+    policy_code=int(stat[statdef['rtpolicy']])
+    out2.append(policy[policy_code] if policy_code<len(policy) else '?')
     if stat[statdef['rtpolicy']] == '0':
         out2.append('th')
     elif stat[statdef['rtpolicy']] == '3':
