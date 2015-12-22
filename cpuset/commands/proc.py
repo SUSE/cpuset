@@ -711,7 +711,12 @@ def task_detail(pid, width=70):
         except:
             pass  # sometimes, we get an extra \n out of this file...
     stat = file('/proc/'+pid+'/stat', 'r').readline()
-    stat = stat.split()
+    # we assume parentheses appear only around the name
+    stat_right_paren = stat.rfind(')')
+    stat_left_paren = stat.find('(')
+    stat = [stat[:stat_left_paren-1]] + \
+           [stat[stat_left_paren:stat_right_paren+1]] + \
+           stat[stat_right_paren+2:].split()
     cmdline = file('/proc/'+pid+'/cmdline').readline()
     # assume that a zero delimits the cmdline (it does now...)
     cmdline = cmdline.replace('\0', ' ')
