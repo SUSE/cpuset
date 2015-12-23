@@ -29,8 +29,7 @@ OPTIONS
   prints the list of options for this command
 
 -l, --list::
-  list the named cpuset(s); if -a is used, will list members of named
-  cpuset; if -r is used, will list recursively
+  list the named cpuset(s); if -r is used, will list recursively
 
 -c CPUSPEC, --cpu=CPUSPEC::
   create or modify cpuset in the specified cpuset with CPUSPEC
