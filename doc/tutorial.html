@@ -2,15 +2,25 @@
     "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.4.5" />
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.6.8" />
 <title>Cpuset (cset) Tutorial</title>
 <style type="text/css">
-/* Debug borders */
-p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
-/*
-  border: 1px solid red;
-*/
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
 }
 
 body {
@@ -35,13 +45,8 @@ strong {
   color: #083194;
 }
 
-tt {
-  color: navy;
-}
-
 h1, h2, h3, h4, h5, h6 {
   color: #527bbd;
-  font-family: sans-serif;
   margin-top: 1.2em;
   margin-bottom: 0.5em;
   line-height: 1.3;
@@ -59,9 +64,11 @@ h3 {
 h3 + * {
   clear: left;
 }
+h5 {
+  font-size: 1.0em;
+}
 
 div.sectionbody {
-  font-family: serif;
   margin-left: 0;
 }
 
@@ -77,53 +84,58 @@ p {
 ul, ol, li > p {
   margin-top: 0;
 }
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
 
-pre {
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
   padding: 0;
   margin: 0;
 }
 
-span#author {
+
+#author {
   color: #527bbd;
-  font-family: sans-serif;
   font-weight: bold;
   font-size: 1.1em;
 }
-span#email {
+#email {
 }
-span#revnumber, span#revdate, span#revremark {
-  font-family: sans-serif;
+#revnumber, #revdate, #revremark {
 }
 
-div#footer {
-  font-family: sans-serif;
+#footer {
   font-size: small;
   border-top: 2px solid silver;
   padding-top: 0.5em;
   margin-top: 4.0em;
 }
-div#footer-text {
+#footer-text {
   float: left;
   padding-bottom: 0.5em;
 }
-div#footer-badges {
+#footer-badges {
   float: right;
   padding-bottom: 0.5em;
 }
 
-div#preamble {
+#preamble {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
-div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.imageblock, div.exampleblock, div.verseblock,
 div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
 div.admonitionblock {
-  margin-top: 1.5em;
+  margin-top: 1.0em;
   margin-bottom: 1.5em;
 }
 div.admonitionblock {
-  margin-top: 2.5em;
-  margin-bottom: 2.5em;
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
 }
 
 div.content { /* Block element content. */
@@ -133,7 +145,6 @@ div.content { /* Block element content. */
 /* Block element titles. */
 div.title, caption.title {
   color: #527bbd;
-  font-family: sans-serif;
   font-weight: bold;
   text-align: left;
   margin-top: 1.0em;
@@ -155,31 +166,34 @@ div.content + div.title {
 
 div.sidebarblock > div.content {
   background: #ffffee;
-  border: 1px solid silver;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
   padding: 0.5em;
 }
 
 div.listingblock > div.content {
-  border: 1px solid silver;
-  background: #f4f4f4;
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
   padding: 0.5em;
 }
 
-div.quoteblock {
-  padding-left: 2.0em;
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
   margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
 }
+
 div.quoteblock > div.attribution {
   padding-top: 0.5em;
   text-align: right;
 }
 
-div.verseblock {
-  padding-left: 2.0em;
-  margin-right: 10%;
-}
-div.verseblock > div.content {
-  white-space: pre;
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
 }
 div.verseblock > div.attribution {
   padding-top: 0.75em;
@@ -200,12 +214,12 @@ div.admonitionblock .icon {
 }
 div.admonitionblock td.content {
   padding-left: 0.5em;
-  border-left: 2px solid silver;
+  border-left: 3px solid #dddddd;
 }
 
 div.exampleblock > div.content {
-  border-left: 2px solid silver;
-  padding: 0.5em;
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
 }
 
 div.imageblock div.content { padding-left: 0; }
@@ -252,35 +266,12 @@ div.compact div, div.compact div {
   margin-bottom: 0.1em;
 }
 
-div.tableblock > table {
-  border: 3px solid #527bbd;
-}
-thead {
-  font-family: sans-serif;
-  font-weight: bold;
-}
 tfoot {
   font-weight: bold;
 }
 td > div.verse {
   white-space: pre;
 }
-p.table {
-  margin-top: 0;
-}
-/* Because the table frame attribute is overriden by CSS in most browsers. */
-div.tableblock > table[frame="void"] {
-  border-style: none;
-}
-div.tableblock > table[frame="hsides"] {
-  border-left-style: none;
-  border-right-style: none;
-}
-div.tableblock > table[frame="vsides"] {
-  border-top-style: none;
-  border-bottom-style: none;
-}
-
 
 div.hdlist {
   margin-top: 0.8em;
@@ -310,20 +301,59 @@ div.hdlist.compact tr {
   background: yellow;
 }
 
-@media print {
-  div#footer-badges { display: none; }
+.footnote, .footnoteref {
+  font-size: 0.8em;
 }
 
-div#toctitle {
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
   color: #527bbd;
-  font-family: sans-serif;
   font-size: 1.1em;
   font-weight: bold;
   margin-top: 1.0em;
   margin-bottom: 0.1em;
 }
 
-div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
   margin-top: 0;
   margin-bottom: 0;
 }
@@ -339,51 +369,179 @@ div.toclevel4 {
   margin-left: 6em;
   font-size: 0.9em;
 }
-/* Workarounds for IE6's broken and incomplete CSS2. */
 
-div.sidebar-content {
-  background: #ffffee;
-  border: 1px solid silver;
-  padding: 0.5em;
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
 }
-div.sidebar-title, div.image-title {
-  color: #527bbd;
-  font-family: sans-serif;
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
   font-weight: bold;
-  margin-top: 0.0em;
-  margin-bottom: 0.5em;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
 }
 
-div.listingblock div.content {
-  border: 1px solid silver;
-  background: #f4f4f4;
-  padding: 0.5em;
+
+/*
+ * html5 specific
+ *
+ * */
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
 }
 
-div.quoteblock-attribution {
-  padding-top: 0.5em;
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
   text-align: right;
 }
 
-div.verseblock-content {
-  white-space: pre;
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
 }
-div.verseblock-attribution {
-  padding-top: 0.75em;
-  text-align: left;
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
 }
-
-div.exampleblock-content {
-  border-left: 2px solid silver;
-  padding-left: 0.5em;
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
 }
 
-/* IE6 sets dynamically generated links as visited. */
-div#toc a:visited { color: blue; }
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
-window.onload = function(){generateToc(4)}
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
 /* Author: Mihai Bazon, September 2002
  * http://students.infoiasi.ro/~mishoo
  *
@@ -395,53 +553,74 @@ window.onload = function(){generateToc(4)}
  */
 
  /* modified by Troy D. Hanson, September 2006. License: GPL */
- /* modified by Stuart Rackham, October 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
 
-function getText(el) {
-  var text = "";
-  for (var i = el.firstChild; i != null; i = i.nextSibling) {
-    if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
-      text += i.data;
-    else if (i.firstChild != null)
-      text += getText(i);
-  }
-  return text;
-}
+// toclevels = 1..4.
+toc: function (toclevels) {
 
-function TocEntry(el, text, toclevel) {
-  this.element = el;
-  this.text = text;
-  this.toclevel = toclevel;
-}
-
-function tocEntries(el, toclevels) {
-  var result = new Array;
-  var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
-  // Function that scans the DOM tree for header elements (the DOM2
-  // nodeIterator API would be a better technique but not supported by all
-  // browsers).
-  var iterate = function (el) {
+  function getText(el) {
+    var text = "";
     for (var i = el.firstChild; i != null; i = i.nextSibling) {
-      if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
-        var mo = re.exec(i.tagName)
-        if (mo)
-          result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
-        iterate(i);
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
       }
     }
+    iterate(el);
+    return result;
   }
-  iterate(el);
-  return result;
-}
 
-// This function does the work. toclevels = 1..4.
-function generateToc(toclevels) {
   var toc = document.getElementById("toc");
-  var entries = tocEntries(document.getElementsByTagName("body")[0], toclevels);
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
     if (entry.element.id == "")
-      entry.element.id = "toc" + i;
+      entry.element.id = "_toc_" + i;
     var a = document.createElement("a");
     a.href = "#" + entry.element.id;
     a.appendChild(document.createTextNode(entry.text));
@@ -451,12 +630,106 @@ function generateToc(toclevels) {
     toc.appendChild(div);
   }
   if (entries.length == 0)
-    document.getElementById("header").removeChild(toc);
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
 }
+
+}
+asciidoc.install(4);
 /*]]>*/
 </script>
 </head>
-<body>
+<body class="article">
 <div id="header">
 <h1>Cpuset (cset) Tutorial</h1>
 <div id="toc">
@@ -464,6 +737,7 @@ function generateToc(toclevels) {
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
 </div>
 </div>
+<div id="content">
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph"><p>Alex Tsariounov &lt;<a href="mailto:alext@novell.com">alext@novell.com</a>&gt;<br />
@@ -476,6 +750,7 @@ the <strong>cset</strong> command: cset(1), cset-shield(1), cset-set(1), and cse
 more details.  Additionally, the <strong>cset</strong> command has online help.</p></div>
 </div>
 </div>
+<div class="sect1">
 <h2 id="_introduction">1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>In the Linux kernel, the cpuset facility provides a mechanism for creating
@@ -491,27 +766,28 @@ end for the Linux cpusets functionality. Working with cpusets directly can be
 confusing and slightly complex.  The <strong>cset</strong> tool hides that complexity behind
 an easy-to-use command line interface.</p></div>
 <div class="paragraph"><p>There are two distinct use cases for <strong>cset</strong>: the basic shielding use case and
-the "advanced" case of using raw <tt>set</tt> and <tt>proc</tt> subcommands.  The basic
-shielding function is accessed with the <tt>shield</tt> subcommand and described in
-the next section.  Using the raw <tt>set</tt> and <tt>proc</tt> subcommands allows one to
+the "advanced" case of using raw <code>set</code> and <code>proc</code> subcommands.  The basic
+shielding function is accessed with the <code>shield</code> subcommand and described in
+the next section.  Using the raw <code>set</code> and <code>proc</code> subcommands allows one to
 set up arbitrarily complex cpusets and is described in the later sections.</p></div>
-<div class="paragraph"><p>Note that in general, one either uses the <tt>shield</tt> subcommand <em>or</em> a
-combination of the <tt>set</tt> and <tt>proc</tt> subcommands.  One rarely, if ever, uses
+<div class="paragraph"><p>Note that in general, one either uses the <code>shield</code> subcommand <em>or</em> a
+combination of the <code>set</code> and <code>proc</code> subcommands.  One rarely, if ever, uses
 all of these subcommands together.  Doing so will likely become too
-confusing. Additionally, the <tt>shield</tt> subcommand sets up its required cpusets
+confusing. Additionally, the <code>shield</code> subcommand sets up its required cpusets
 with exclusively marked CPUs.  This can interfere with your cpuset
 strategy. If you find that you need more functionality for your strategy than
-<tt>shield</tt> provides, go ahead and transition to using <tt>set</tt> and <tt>proc</tt>
-exclusively.  It is straightforward to implement what <tt>shield</tt> does with a few
-extra <tt>set</tt> and <tt>proc</tt> subcommands.</p></div>
-<h3 id="_obtaining_online_help">1.1. Obtaining Online Help</h3><div style="clear:left"></div>
+<code>shield</code> provides, go ahead and transition to using <code>set</code> and <code>proc</code>
+exclusively.  It is straightforward to implement what <code>shield</code> does with a few
+extra <code>set</code> and <code>proc</code> subcommands.</p></div>
+<div class="sect2">
+<h3 id="_obtaining_online_help">1.1. Obtaining Online Help</h3>
 <div class="dlist"><dl>
 <dt class="hdlist1">
 For a full list of <strong>cset</strong> subcommands
 </dt>
 <dd>
 <p>
-    <tt># cset help</tt>
+    <code># cset help</code>
 </p>
 </dd>
 <dt class="hdlist1">
@@ -519,7 +795,7 @@ For in-depth help on individual subcommands
 </dt>
 <dd>
 <p>
-    <tt># cset help &lt;subcommand&gt;</tt>
+    <code># cset help &lt;subcommand&gt;</code>
 </p>
 </dd>
 <dt class="hdlist1">
@@ -527,16 +803,19 @@ For options of individual subcommands
 </dt>
 <dd>
 <p>
-    <tt># cset &lt;subcommand&gt; (-h | --help)</tt>
+    <code># cset &lt;subcommand&gt; (-h | --help)</code>
 </p>
 </dd>
 </dl></div>
 </div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_the_basic_shielding_model">2. The Basic Shielding Model</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Although any set up of cpusets can really be described as "shielding," there
 is one prevalent shielding model in use that is so common that <strong>cset</strong> has a
-subcommand that is dedicated to its use.  This subcommand is called <tt>shield</tt>.</p></div>
+subcommand that is dedicated to its use.  This subcommand is called <code>shield</code>.</p></div>
 <div class="paragraph"><p>The concept behind this model is the use of three cpusets.  The <em>root</em> cpuset
 which is always present in all configurations and contains all CPUs.  The
 <em>system</em> cpuset which contains CPUs which are used for system tasks.  These
@@ -545,7 +824,7 @@ system.  And finally, the <em>user</em> cpuset which contains CPUs which are use
 "important" tasks.  The <em>user</em> cpuset is the shield.  Only those tasks that
 are somehow important, usually tasks whose performance determines the overall
 rating for the machine, are run in the <em>user</em> cpuset.</p></div>
-<div class="paragraph"><p>The <tt>shield</tt> subcommand manages all of these cpusets and lets you define the
+<div class="paragraph"><p>The <code>shield</code> subcommand manages all of these cpusets and lets you define the
 CPUs and Memory Nodes that are in the <em>shielded</em> and <em>unshielded</em> sets. The
 subcommand automatically moves all movable tasks on the system into the
 <em>unshielded</em> cpuset on shield activation, and back into the <em>root</em> cpuset on
@@ -553,17 +832,18 @@ shield tear down.  The subcommand then lets you move tasks into and out of the
 shield.  Additionally, you can move special tasks (kernel threads) which
 normally run in the <em>root</em> cpuset into the <em>unshielded</em> set so that your
 shield will have even less disturbance.</p></div>
-<div class="paragraph"><p>The <tt>shield</tt> subcommand abstracts the management of these cpusets away from
+<div class="paragraph"><p>The <code>shield</code> subcommand abstracts the management of these cpusets away from
 you and provides options that drive how the shield is set up, which tasks are
 to be shielded and which tasks are not, and status of the shield.  In fact,
 you need not be bothered with the naming of the required cpusets or even where
-the cpuset filesystem is mounted.  <strong>Cset</strong> and the <tt>shield</tt> subcommand takes
+the cpuset filesystem is mounted.  <strong>Cset</strong> and the <code>shield</code> subcommand takes
 care of all that.</p></div>
 <div class="paragraph"><p>If you find yourself needing to define more cpusets for your application, then
 it is likely that this simple shielding is not a rich enough model for you.
-In this case, you should transition to using the <tt>set</tt> and <tt>proc</tt> subcommands
+In this case, you should transition to using the <code>set</code> and <code>proc</code> subcommands
 described in a later section.</p></div>
-<h3 id="_a_simple_shielding_example">2.1. A Simple Shielding Example</h3><div style="clear:left"></div>
+<div class="sect2">
+<h3 id="_a_simple_shielding_example">2.1. A Simple Shielding Example</h3>
 <div class="paragraph"><p>Assume that we have a 4-way machine that is not NUMA.  This means there are 4
 CPUs at our disposal and there is only one Memory Node available.  On such
 machines, we do not need to specify any memory node parameters to <strong>cset</strong>, it
@@ -583,22 +863,23 @@ tasks that are running on the system.</p></div>
 running on the system.</td>
 </tr></table>
 </div>
+<div class="sect3">
 <h4 id="_setup_and_teardown_of_the_shield">2.1.1. Setup and  Teardown of the Shield</h4>
 <div class="paragraph"><p>To set up a shield of 3 CPUs with 1 CPU left for low priority system
 processing, issue the following command.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset shield -c 1-3
+<pre><code>[zuul:cpuset-trunk]# cset shield -c 1-3
 cset: --&gt; activating shielding:
 cset: moving 176 tasks from root into system cpuset...
 [==================================================]%
 cset: "system" cpuset of CPUSPEC(0) with 176 tasks running
-cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running</tt></pre>
+cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running</code></pre>
 </div></div>
 <div class="paragraph"><p>This command does a number of things.  First, a <em>user</em> cpuset is created with
-what&#8217;s called a CPUSPEC (CPU specification) from the <tt>-c/--cpu</tt> option.  This
+what&#8217;s called a CPUSPEC (CPU specification) from the <code>-c/--cpu</code> option.  This
 CPUSPEC specifies to use CPUs 1 through 3 inclusively.  Next, the command
-creates a <em>system</em> cpuset with a CPUSPEC that is the inverse of the <tt>-c</tt>
+creates a <em>system</em> cpuset with a CPUSPEC that is the inverse of the <code>-c</code>
 option for the current machine.  On this machine that cpuset will only contain
 the first CPU, CPU0.  Next, all userspace processes running in the <em>root</em>
 cpuset are transfered to the <em>system</em> cpuset.  This makes all those processes
@@ -607,16 +888,16 @@ through 3 and they are now idling.</p></div>
 <div class="paragraph"><p>Note that the command did not move the kernel threads that are running in the
 <em>root</em> cpuset to the <em>system</em> cpuset.  This is because you may want these
 kernel threads to use all available CPUs.  If you do not, the you can use the
-<tt>-k/--kthread</tt> option as described below.</p></div>
+<code>-k/--kthread</code> option as described below.</p></div>
 <div class="paragraph"><p>The shield setup command above outputs the information of which cpusets were
 created and how many tasks are running on each.  If you want to see the
 current status of the shield again, issue this command:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset shield
+<pre><code>[zuul:cpuset-trunk]# cset shield
 cset: --&gt; shielding system active with
 cset: "system" cpuset of CPUSPEC(0) with 176 tasks running
-cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running</tt></pre>
+cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running</code></pre>
 </div></div>
 <div class="paragraph"><p>Which shows us that the shield is set up and that 176 tasks are running in the
 <em>system</em> cpuset&#8212;the "unshielded" cpuset.</p></div>
@@ -638,30 +919,30 @@ move all movable kernel threads into the unshielded <em>system</em> set with the
 following command.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset shield -k on
+<pre><code>[zuul:cpuset-trunk]# cset shield -k on
 cset: --&gt; activating kthread shielding
 cset: kthread shield activated, moving 70 tasks into system cpuset...
 [==================================================]%
-cset: done</tt></pre>
+cset: done</code></pre>
 </div></div>
 <div class="paragraph"><p>You can see that this moved an additional 70 tasks to the unshielded <em>system</em>
-cpuset.  Note that the <tt>-k/--kthread on</tt> parameter can be given at the shield
+cpuset.  Note that the <code>-k/--kthread on</code> parameter can be given at the shield
 creation time as well and you do not need to perform these two steps
 separately if you know that you will want kernel thread shielding as well.
 Executing <strong>cset shield</strong> again shows us the current state of the shield.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset shield
+<pre><code>[zuul:cpuset-trunk]# cset shield
 cset: --&gt; shielding system active with
 cset: "system" cpuset of CPUSPEC(0) with 246 tasks running
-cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running</tt></pre>
+cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running</code></pre>
 </div></div>
 <div class="paragraph"><p>You can get a detailed listing of what is running in the shield by specifying
-either <tt>-s/--shield</tt> or <tt>-u/--unshield</tt> to the <tt>shield</tt> subcommand and using
+either <code>-s/--shield</code> or <code>-u/--unshield</code> to the <code>shield</code> subcommand and using
 the verbose flag.  You will get output similar to the following.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset shield --unshield -v
+<pre><code>[zuul:cpuset-trunk]# cset shield --unshield -v
 cset: "system" cpuset of CPUSPEC(0) with 251 tasks running
    USER       PID  PPID SPPr TASK NAME
    -------- ----- ----- ---- ---------
@@ -670,7 +951,7 @@ cset: "system" cpuset of CPUSPEC(0) with 251 tasks running
    root        84     2 Sf50 [IRQ-9]
 ...
    alext    31796 31789 Soth less
-   root     32653 25222 Roth python ./cset shield --unshield -v</tt></pre>
+   root     32653 25222 Roth python ./cset shield --unshield -v</code></pre>
 </div></div>
 <div class="paragraph"><p>Note that I abbreviated the listing; we do have 251 tasks running in the
 <em>system</em> set.  The output is self-explanatory; however, the "SPPr" field may
@@ -679,24 +960,26 @@ can see that the initial two tasks are Stopped and running in timeshare
 priority, marked as "oth" (for "other").  The [IRQ-9] task is also stopped,
 but marked at real time FIFO policy with a priority of 50.  The last task in
 the listing is the <strong>cset</strong> command itself and is marked as running.  Also note
-that adding a second <tt>-v/--verbose</tt> option will not restrict the output to
+that adding a second <code>-v/--verbose</code> option will not restrict the output to
 fit into an 80 character screen.</p></div>
 <div class="paragraph"><p>Tear down of the shield, stopping the shield in other words, is done with the
-<tt>-r/--reset</tt> option to the <tt>shield</tt> subcommand.  When this command is issued,
+<code>-r/--reset</code> option to the <code>shield</code> subcommand.  When this command is issued,
 both the <em>system</em> and <em>user</em> cpusets are deleted and any tasks that are
 running in both of those cpusets are moved to the <em>root</em> cpuset.  Once so
 moved, all tasks will have access to all resources on the system.  For
 example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset shield --reset
+<pre><code>[zuul:cpuset-trunk]# cset shield --reset
 cset: --&gt; deactivating/reseting shielding
 cset: moving 0 tasks from "/user" user set to root set...
 cset: moving 250 tasks from "/system" system set to root set...
 [==================================================]%
 cset: deleting "/user" and "/system" sets
-cset: done</tt></pre>
+cset: done</code></pre>
 </div></div>
+</div>
+<div class="sect3">
 <h4 id="_moving_interesting_tasks_into_and_out_of_the_shield">2.1.2. Moving Interesting Tasks Into and Out of the Shield</h4>
 <div class="paragraph"><p>Now that we have a shield running, the objective is to run our "important"
 processes in that shield.  These processes can be anything, but usually they
@@ -714,14 +997,15 @@ Move an already running task into the shield
 </p>
 </li>
 </ol></div>
+<div class="sect4">
 <h5 id="_execing_a_process_into_the_shield">Execing a Process into the Shield</h5>
-<div class="paragraph"><p>Running a new process in the shield can be done with the <tt>-e/--exec</tt> option
-to the <tt>shield</tt> subcommand.  This is the simplest way to get a task to run in
+<div class="paragraph"><p>Running a new process in the shield can be done with the <code>-e/--exec</code> option
+to the <code>shield</code> subcommand.  This is the simplest way to get a task to run in
 the shield.  For this example, let&#8217;s exec a new bash shell into the shield
 with the following commands.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset shield -s
+<pre><code>[zuul:cpuset-trunk]# cset shield -s
 cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running
 cset: done
 
@@ -739,12 +1023,12 @@ cset: "user" cpuset of CPUSPEC(1-3) with 2 tasks running
 
 [zuul:cpuset-trunk]# cset shield -s
 cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running
-cset: done</tt></pre>
+cset: done</code></pre>
 </div></div>
 <div class="paragraph"><p>The first command above lists the status of the shield.  We see that the
 shield is defined as CPUs 1 through 3 inclusive and currently there are no
 tasks running in it.</p></div>
-<div class="paragraph"><p>The second command execs the bash shell into the shield with the <tt>-e</tt>
+<div class="paragraph"><p>The second command execs the bash shell into the shield with the <code>-e</code>
 option.  The last message of cset lists the PID of the new process.</p></div>
 <div class="admonitionblock">
 <table><tr>
@@ -752,10 +1036,10 @@ option.  The last message of cset lists the PID of the new process.</p></div>
 <div class="title">Note</div>
 </td>
 <td class="content"><strong>cset</strong> follows the tradition of separating the tool options from the
-command to be execed options with a double dash (<tt>--</tt>).  This is not shown in
+command to be execed options with a double dash (<code>--</code>).  This is not shown in
 this simple example, but if the command you want to exec also takes options,
-separate them with the double dash like so: <tt># cset shield -e mycommand -- -v</tt>
-The <tt>-v</tt> will be passed to <tt>mycommand</tt>, and not to <strong>cset</strong>.</td>
+separate them with the double dash like so: <code># cset shield -e mycommand -- -v</code>
+The <code>-v</code> will be passed to <code>mycommand</code>, and not to <strong>cset</strong>.</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>The next command lists the status of the shield again.  You will note that
@@ -778,11 +1062,11 @@ and see that once again, it does not contain any tasks.</p></div>
 <div class="paragraph"><p>You may have noticed in the output above that both the new shell and the
 status command are running as the root user.  This is because <strong>cset</strong> needs to
 run as root and so all it&#8217;s children will also run as root.  If you need to
-run a process under a different user and or group, you may use the <tt>--user</tt>
-and <tt>--group</tt> options for <tt>exec</tt> as follows.</p></div>
+run a process under a different user and or group, you may use the <code>--user</code>
+and <code>--group</code> options for <code>exec</code> as follows.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset shield --user=alext --group=users -e bash
+<pre><code>[zuul:cpuset-trunk]# cset shield --user=alext --group=users -e bash
 cset: --&gt; last message, executed args into cpuset "/user", new pid is: 14212
 
 alext@zuul&gt; cset shield -s -v
@@ -790,21 +1074,23 @@ cset: "user" cpuset of CPUSPEC(1-3) with 2 tasks running
    USER       PID  PPID SPPr TASK NAME
    -------- ----- ----- ---- ---------
    alext    14212  8583 Soth bash
-   alext    14241 14212 Roth python ./cset shield -s -v</tt></pre>
+   alext    14241 14212 Roth python ./cset shield -s -v</code></pre>
 </div></div>
+</div>
+<div class="sect4">
 <h5 id="_moving_a_running_task_into_and_out_of_the_shield">Moving a Running Task into and out of the Shield</h5>
 <div class="paragraph"><p>While execing a process into the shield is undoubtably useful, most of the
 time, you&#8217;ll want to move already running tasks into and out of the shield.
 The <strong>cset</strong> shield subcommand includes two options for doing this:
-<tt>-s/--shield</tt> and <tt>-u/--unshield</tt>.  These options require what&#8217;s called a
-PIDSPEC (process specification) to also be specified with the <tt>-p/--pid</tt>
+<code>-s/--shield</code> and <code>-u/--unshield</code>.  These options require what&#8217;s called a
+PIDSPEC (process specification) to also be specified with the <code>-p/--pid</code>
 option.  The PIDSPEC defines which tasks get operated on.  The PIDSPEC can be
 a single process ID, a list of process IDs separated by commas, and a list of
 process ID ranges separated by dashes, groups of which are separated by
 commas.  For example:</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
-<tt>--shield --pid 1234</tt>
+<code>--shield --pid 1234</code>
 </dt>
 <dd>
 <p>
@@ -812,7 +1098,7 @@ This PIDSPEC argument specifies that PID 1234 be shielded.
 </p>
 </dd>
 <dt class="hdlist1">
-<tt>--shield --pid 1234,42,1934,15000,15001,15002</tt>
+<code>--shield --pid 1234,42,1934,15000,15001,15002</code>
 </dt>
 <dd>
 <p>
@@ -821,7 +1107,7 @@ shield.
 </p>
 </dd>
 <dt class="hdlist1">
-<tt>--unshield -p 5000,5100,6010-7000,9232</tt>
+<code>--unshield -p 5000,5100,6010-7000,9232</code>
 </dt>
 <dd>
 <p>
@@ -845,8 +1131,8 @@ range.</td>
 </div>
 <div class="paragraph"><p>Use of the appropriate PIDSPEC can thus be handy to move tasks and groups of
 tasks into and out of the shield.  Additionally, there is one more option that
-can help with multi-threaded processes, and that is the <tt>--threads</tt> flag.  If
-this flag is present in a <tt>shield</tt> or <tt>unshield</tt> command with a PIDSPEC and if
+can help with multi-threaded processes, and that is the <code>--threads</code> flag.  If
+this flag is present in a <code>shield</code> or <code>unshield</code> command with a PIDSPEC and if
 any of the task IDs in the PIDSPEC belong to a thread in a process container,
 then <strong>all</strong> the sibling threads in that process container will get shielded or
 unshielded as well.  This flag provides an easy mechanism to shield/unshield
@@ -855,7 +1141,7 @@ all threads of a process by simply specifying one thread in that process.</p></d
 range PIDSPEC and back out with the bash variable for the current PID.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# echo $$
+<pre><code>[zuul:cpuset-trunk]# echo $$
 22018
 
 [zuul:cpuset-trunk]# cset shield -s -p 22010-22020
@@ -876,76 +1162,83 @@ cset: done
 
 [zuul:cpuset-trunk]# cset shield -s
 cset: "user" cpuset of CPUSPEC(1-3) with 0 tasks running
-cset: done</tt></pre>
+cset: done</code></pre>
 </div></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <div class="title">Note</div>
 </td>
-<td class="content">Ordinarily, the <tt>shield</tt> option will shield a PIDSPEC only if it is
-currently running in the <em>system</em> set&#8212;the unshielded set.  The <tt>unshield</tt>
+<td class="content">Ordinarily, the <code>shield</code> option will shield a PIDSPEC only if it is
+currently running in the <em>system</em> set&#8212;the unshielded set.  The <code>unshield</code>
 option will unshield a PIDSPEC only if it is currently running in the <em>user</em>
-set&#8212;the shielded set.  If you want to <tt>shield/unshield</tt> a process that
-happens to be running in the <em>root</em> set (not common), then use the <tt>--force</tt>
+set&#8212;the shielded set.  If you want to <code>shield/unshield</code> a process that
+happens to be running in the <em>root</em> set (not common), then use the <code>--force</code>
 option for these commands.</td>
 </tr></table>
 </div>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_full_featured_cpuset_manipulation_commands">3. Full Featured Cpuset Manipulation Commands</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>While basic shielding as described above is useful and a common use model for
 <strong>cset</strong>, there comes a time when more functionality will be desired to
 implement your strategy.  To implement this, <strong>cset</strong> provides two subcommands:
-<tt>set</tt>, which allows you to manipulate cpusets; and <tt>proc</tt>, which allows you to
+<code>set</code>, which allows you to manipulate cpusets; and <code>proc</code>, which allows you to
 manipulate processes within those cpusets.</p></div>
-<h3 id="_the_set_subcommand">3.1. The Set Subcommand</h3><div style="clear:left"></div>
+<div class="sect2">
+<h3 id="_the_set_subcommand">3.1. The Set Subcommand</h3>
 <div class="paragraph"><p>In order to do anything with cpusets, you must be able to create, adjust,
-rename, move and destroy them.  The <tt>set</tt> subcommand allows the management of
+rename, move and destroy them.  The <code>set</code> subcommand allows the management of
 cpusets in such a manner.</p></div>
+<div class="sect3">
 <h4 id="_creating_and_destroying_cpusets_with_set">3.1.1. Creating and Destroying Cpusets with Set</h4>
-<div class="paragraph"><p>The basic syntax of <tt>set</tt> for cpuset creation is:</p></div>
+<div class="paragraph"><p>The basic syntax of <code>set</code> for cpuset creation is:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -c 1-3 -s my_cpuset1
-cset: --&gt; created cpuset "my_cpuset1"</tt></pre>
+<pre><code>[zuul:cpuset-trunk]# cset set -c 1-3 -s my_cpuset1
+cset: --&gt; created cpuset "my_cpuset1"</code></pre>
 </div></div>
 <div class="paragraph"><p>This creates a cpuset named "my_cpuset1" with a CPUSPEC of CPU1, CPU2 and
 CPU3.  The CPUSPEC is the same concept as described in the "Setup and
-Teardown of the Shield" section above.  The <tt>set</tt> subcommand also takes a
-<tt>-m/--mem</tt> option that lets you specify the memory nodes the set will use as
+Teardown of the Shield" section above.  The <code>set</code> subcommand also takes a
+<code>-m/--mem</code> option that lets you specify the memory nodes the set will use as
 well as flags to make the CPUs and MEMs exclusive to the cpuset.  If you are
-on a non-NUMA machine, just leave the <tt>-m</tt> option out and the default memory
+on a non-NUMA machine, just leave the <code>-m</code> option out and the default memory
 node 0 will be used.</p></div>
-<div class="paragraph"><p>Just like with <tt>shield</tt>, you can adjust the CPUs and MEMs with subsequent
-calls to <tt>set</tt>.  If, for example, you wish to adjust the "my_cpuset1" cpuset
+<div class="paragraph"><p>Just like with <code>shield</code>, you can adjust the CPUs and MEMs with subsequent
+calls to <code>set</code>.  If, for example, you wish to adjust the "my_cpuset1" cpuset
 to only use CPUs 1 and 3 (and omit CPU2), then issue the following command.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -c 1,3 -s my_cpuset1
-cset: --&gt; modified cpuset "my_cpuset</tt></pre>
+<pre><code>[zuul:cpuset-trunk]# cset set -c 1,3 -s my_cpuset1
+cset: --&gt; modified cpuset "my_cpuset</code></pre>
 </div></div>
 <div class="paragraph"><p><strong>cset</strong> will then adjust the CPUs that are assigned to the "my_cpuset1" set to
  only use CPU1 and CPU3.</p></div>
-<div class="paragraph"><p>To rename a cpuset, use the <tt>-n/--newname</tt> option.  For example:</p></div>
+<div class="paragraph"><p>To rename a cpuset, use the <code>-n/--newname</code> option.  For example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -s my_cpuset1 -n super_set
-cset: --&gt; renaming "/cpusets/my_cpuset1" to "super_set"</tt></pre>
+<pre><code>[zuul:cpuset-trunk]# cset set -s my_cpuset1 -n super_set
+cset: --&gt; renaming "/cpusets/my_cpuset1" to "super_set"</code></pre>
 </div></div>
 <div class="paragraph"><p>Renames the cpuset called "my_cpuset1" to "super_set".</p></div>
-<div class="paragraph"><p>To destroy a cpuset, use the <tt>-d/--destroy</tt> option as follows.</p></div>
+<div class="paragraph"><p>To destroy a cpuset, use the <code>-d/--destroy</code> option as follows.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -d super_set
+<pre><code>[zuul:cpuset-trunk]# cset set -d super_set
 cset: --&gt; processing cpuset "super_set", moving 0 tasks to parent "/"...
 cset: --&gt; deleting cpuset "/super_set"
-cset: done</tt></pre>
+cset: done</code></pre>
 </div></div>
 <div class="paragraph"><p>This command destroys the newly created cpuset called "super_set".  When a
 cpuset is destroyed, all the tasks running in it are moved to the parent
 cpuset.  The <em>root</em> cpuset, which always exists and always contains all CPUs,
-can not be destroyed.  You may also give the <tt>--destroy</tt> option a list of
+can not be destroyed.  You may also give the <code>--destroy</code> option a list of
 cpusets to destroy.</p></div>
 <div class="admonitionblock">
 <table><tr>
@@ -955,20 +1248,20 @@ cpusets to destroy.</p></div>
 <td class="content">The <strong>cset</strong> subcommand creates the cpusets based on a mounted cpuset
 filesystem.  You do not need to know where that filesystem is mounted,
 although it is easy to figure out (by default it&#8217;s on <em>/cpusets</em>).  When you
-give the <tt>set</tt> subcommand a name for a new cpuset, it is created wherever the
+give the <code>set</code> subcommand a name for a new cpuset, it is created wherever the
 cpuset filesystem is mounted at.</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>If you want to create a cpuset hierarchy, then you must give a path to the
-<strong>cset</strong> <tt>set</tt> subcommand.  This path will always begin with the <em>root</em> cpuset,
+<strong>cset</strong> <code>set</code> subcommand.  This path will always begin with the <em>root</em> cpuset,
 for which the path is <em>/</em>.  For example.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -c 1,3 -s top_set
+<pre><code>[zuul:cpuset-trunk]# cset set -c 1,3 -s top_set
 cset: --&gt; created cpuset "top_set"
 
 [zuul:cpuset-trunk]# cset set -c 3 -s /top_set/sub_set
-cset: --&gt; created cpuset "/top_set/sub_set"</tt></pre>
+cset: --&gt; created cpuset "/top_set/sub_set"</code></pre>
 </div></div>
 <div class="paragraph"><p>These commands created two cpusets: <em>top_set</em> and <em>sub_set</em>.  The <em>top_set</em>
 uses CPU1 and CPU3.  It has a subset of <em>sub_set</em> which only uses CPU3.  Once
@@ -977,29 +1270,31 @@ have to specify the path in order to affect it.  If the name is not unique,
 then <strong>cset</strong> will complain and ask you to use the path.  For example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -c 1,3 -s sub_set
-cset: --&gt; modified cpuset "sub_set</tt></pre>
+<pre><code>[zuul:cpuset-trunk]# cset set -c 1,3 -s sub_set
+cset: --&gt; modified cpuset "sub_set</code></pre>
 </div></div>
 <div class="paragraph"><p>This command adds CPU1 to the <em>sub_set</em> cpuset for it&#8217;s use.  Note that using
 the path in this case is optional.</p></div>
 <div class="paragraph"><p>If you attempt to destroy a cpuset which has sub-cpusets, <strong>cset</strong> will complain
-and not do it unless you use the <tt>-r/--recurse</tt> and the <tt>--force</tt> options.
-If you do use <tt>--force</tt>, then all the tasks running in all subsets of the
+and not do it unless you use the <code>-r/--recurse</code> and the <code>--force</code> options.
+If you do use <code>--force</code>, then all the tasks running in all subsets of the
 deletion target cpuset will be moved to the target&#8217;s parent cpuset and all
 cpusets.</p></div>
 <div class="paragraph"><p>Moving a cpuset from under a certain cpuset to a different location is
 currently not implemented and is slated for a later release of <strong>cset</strong>.</p></div>
+</div>
+<div class="sect3">
 <h4 id="_listing_cpusets_with_set">3.1.2. Listing Cpusets with Set</h4>
-<div class="paragraph"><p>To list cpusets, use the <tt>set</tt> subcommand with the <em>-l/--list</em> option.  For
+<div class="paragraph"><p>To list cpusets, use the <code>set</code> subcommand with the <em>-l/--list</em> option.  For
 example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -l
+<pre><code>[zuul:cpuset-trunk]# cset set -l
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
          root        0-3 y       0 y   320    1 /
-          one          3 n       0 n     0    1 /one</tt></pre>
+          one          3 n       0 n     0    1 /one</code></pre>
 </div></div>
 <div class="paragraph"><p>This shows that there is currently one cpuset present called <em>one</em>. (Of course
 that there is also the <em>root</em> set, which is always present.) The output shows
@@ -1007,64 +1302,68 @@ that the <em>one</em> cpuset has no tasks running in it.  The <em>root</em> cpus
 tasks running.  The "-X" for "CPUs" and "MEMs" fields denotes whether the CPUs
 and MEMs in the cpusets are marked exclusive to those cpusets.  Note that the
 <em>one</em> cpuset has subsets as indicated by a 1 in the <em>Subs</em> field.  You can
-specify a cpuset to list with the <tt>set</tt> subcommand as follows.</p></div>
+specify a cpuset to list with the <code>set</code> subcommand as follows.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -l -s one
+<pre><code>[zuul:cpuset-trunk]# cset set -l -s one
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
           one          3 n       0 n     0    1 /one
-          two          3 n       0 n     0    1 /one/two</tt></pre>
+          two          3 n       0 n     0    1 /one/two</code></pre>
 </div></div>
 <div class="paragraph"><p>This output shows that there is a cpuset called <em>two</em> in cpuset <em>one</em> and it
 also has subset.  You can also ask for a recursive listing as follows.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -l -r
+<pre><code>[zuul:cpuset-trunk]# cset set -l -r
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
          root        0-3 y       0 y   320    1 /
           one          3 n       0 n     0    1 /one
           two          3 n       0 n     0    1 /one/two
-        three          3 n       0 n     0    0 /one/two/three</tt></pre>
+        three          3 n       0 n     0    0 /one/two/three</code></pre>
 </div></div>
 <div class="paragraph"><p>This command lists all cpusets existing on the system since it asks for a
 recursive listing beginning at the <em>root</em> cpuset.  Incidentally, should you
-need to specify the <em>root</em> cpuset you can use either <tt>root</tt> or <tt>/</tt> to specify it
+need to specify the <em>root</em> cpuset you can use either <code>root</code> or <code>/</code> to specify it
 explicitely&#8212;just remember that the <em>root</em> cpuset cannot be deleted or modified.</p></div>
-<h3 id="_the_proc_subcommand">3.2. The Proc Subcommand</h3><div style="clear:left"></div>
-<div class="paragraph"><p>Now that we know how to create, rename and destroy cpusets with the <tt>set</tt>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_proc_subcommand">3.2. The Proc Subcommand</h3>
+<div class="paragraph"><p>Now that we know how to create, rename and destroy cpusets with the <code>set</code>
 subcommand, the next step is to manage threads and processes in those
-cpusets.  The subcommand to do this is called <tt>proc</tt> and it allows you to exec
+cpusets.  The subcommand to do this is called <code>proc</code> and it allows you to exec
 processes into a cpuset, move existing tasks around existing cpusets, and list
 tasks running in specified cpusets.  For the following examples, let us
 assume a cpuset setup of two sets as follows:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -l
+<pre><code>[zuul:cpuset-trunk]# cset set -l
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
          root        0-3 y       0 y   309    2 /
           two          2 n       0 n     3    0 /two
-        three          3 n       0 n    10    0 /three</tt></pre>
+        three          3 n       0 n    10    0 /three</code></pre>
 </div></div>
+<div class="sect3">
 <h4 id="_listing_tasks_with_proc">3.2.1. Listing Tasks with Proc</h4>
-<div class="paragraph"><p>Operation of the <tt>proc</tt> subcommand follows the same model as the <tt>set</tt>
+<div class="paragraph"><p>Operation of the <code>proc</code> subcommand follows the same model as the <code>set</code>
 subcommand.  For example, to list tasks in a cpuset, you need to use the
-<tt>-l/--list</tt> option and specify the cpuset by name or, if the name exists
+<code>-l/--list</code> option and specify the cpuset by name or, if the name exists
 multiple times in the cpuset hierarchy, by path.  For example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -l -s two
+<pre><code>[zuul:cpuset-trunk]# cset proc -l -s two
 cset: "two" cpuset of CPUSPEC(2) with 3 tasks running
  USER       PID  PPID SPPr TASK NAME
  -------- ----- ----- ---- ---------
  root     16141  4300 Soth bash
  root     16171 16141 Soth bash
- root     16703 16171 Roth python ./cset proc -l two</tt></pre>
+ root     16703 16171 Roth python ./cset proc -l two</code></pre>
 </div></div>
 <div class="paragraph"><p>This output shows us that the cpuset called <em>two</em> has CPU2 only attached to it
 and is running three tasks: two shells and the python command to list it.
@@ -1082,14 +1381,14 @@ shown as "f" for FIFO or "r" for round robin, and the priority would be a
 number from 1 to 99.  See below for an example.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -l -s root | head -7
+<pre><code>[zuul:cpuset-trunk]# cset proc -l -s root | head -7
 cset: "root" cpuset of CPUSPEC(0-3) with 309 tasks running
  USER       PID  PPID SPPr TASK NAME
  -------- ----- ----- ---- ---------
  root         1     0 Soth init [5]
  root         2     0 Soth [kthreadd]
  root         3     2 Sf99 [migration/0]
- root         4     2 Sf99 [posix_cpu_timer]</tt></pre>
+ root         4     2 Sf99 [posix_cpu_timer]</code></pre>
 </div></div>
 <div class="paragraph"><p>This output shows the first few tasks in the <em>root</em> cpuset.  Note that both
 <em>init</em> and <em>[kthread]</em> are running at timeshare; however, the <em>[migration/0]</em>
@@ -1101,7 +1400,7 @@ Linux tool and include it in pipelines as in the example above.</p></div>
 <div class="paragraph"><p>Taking a peek into the third cpuset called <em>three</em>, we see:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -l -s three
+<pre><code>[zuul:cpuset-trunk]# cset proc -l -s three
 cset: "three" cpuset of CPUSPEC(3) with 10 tasks running
  USER       PID  PPID SPPr TASK NAME
  -------- ----- ----- ---- ---------
@@ -1114,28 +1413,30 @@ cset: "three" cpuset of CPUSPEC(3) with 10 tasks running
  alext    16493     1 Soth beagled /usr/lib64/beagle/BeagleDaemon.exe --bg -...
  alext    17243     1 Soth beagled /usr/lib64/beagle/BeagleDaemon.exe --bg -...
  alext    17244     1 Soth beagled /usr/lib64/beagle/BeagleDaemon.exe --bg -...
- alext    17265     1 Soth beagled /usr/lib64/beagle/BeagleDaemon.exe --bg -...</tt></pre>
+ alext    17265     1 Soth beagled /usr/lib64/beagle/BeagleDaemon.exe --bg -...</code></pre>
 </div></div>
 <div class="paragraph"><p>This output shows that a lot of <em>beagled</em> tasks are running in this cpuset and
 it also shows an ellipsis (&#8230;) at the end of their listings.  If you see this
 ellipsis, that means that the command was too long to fit onto an 80 character
-screen.  To see the entire commandline, use the <tt>-v/--verbose</tt> flag, as per
+screen.  To see the entire commandline, use the <code>-v/--verbose</code> flag, as per
 following.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -l -s three -v | head -4
+<pre><code>[zuul:cpuset-trunk]# cset proc -l -s three -v | head -4
 cset: "three" cpuset of CPUSPEC(3) with 10 tasks running
  USER       PID  PPID SPPr TASK NAME
  -------- ----- ----- ---- ---------
- alext    16165     1 Soth beagled /usr/lib64/beagle/BeagleDaemon.exe --bg --autostarted --indexing-delay 300</tt></pre>
+ alext    16165     1 Soth beagled /usr/lib64/beagle/BeagleDaemon.exe --bg --autostarted --indexing-delay 300</code></pre>
 </div></div>
+</div>
+<div class="sect3">
 <h4 id="_execing_tasks_with_proc">3.2.2. Execing Tasks with Proc</h4>
-<div class="paragraph"><p>To exec a task into a cpuset, the <tt>proc</tt> subcommand needs to be employed with
-the <tt>-e/--exec</tt> option.  Let&#8217;s exec a shell into the cpuset named <em>two</em> in
+<div class="paragraph"><p>To exec a task into a cpuset, the <code>proc</code> subcommand needs to be employed with
+the <code>-e/--exec</code> option.  Let&#8217;s exec a shell into the cpuset named <em>two</em> in
 our set.  First we check to see what is running that set:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -l -s two
+<pre><code>[zuul:cpuset-trunk]# cset proc -l -s two
 cset: "two" cpuset of CPUSPEC(2) with 0 tasks running
 
 [zuul:cpuset-trunk]# cset proc -s two -e bash
@@ -1146,7 +1447,7 @@ cset: "two" cpuset of CPUSPEC(2) with 2 tasks running
  USER       PID  PPID SPPr TASK NAME
  -------- ----- ----- ---- ---------
  root     20955 19253 Soth bash
- root     20981 20955 Roth python ./cset proc -l two</tt></pre>
+ root     20981 20955 Roth python ./cset proc -l two</code></pre>
 </div></div>
 <div class="paragraph"><p>You can see that initially, <em>two</em> had nothing running in it.  After the
 completion of the second command, we list <em>two</em> again and see that there are
@@ -1158,7 +1459,7 @@ executed the listing command from the new shell which was bound to cpuset
 Let&#8217;s test that by just running a new shell with no prefixed <strong>cset</strong> command.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# bash
+<pre><code>[zuul:cpuset-trunk]# bash
 
 [zuul:cpuset-trunk]# cset proc -l -s two
 cset: "two" cpuset of CPUSPEC(2) with 3 tasks running
@@ -1166,7 +1467,7 @@ cset: "two" cpuset of CPUSPEC(2) with 3 tasks running
  -------- ----- ----- ---- ---------
  root     20955 19253 Soth bash
  root     21118 20955 Soth bash
- root     21147 21118 Roth python ./cset proc -l two</tt></pre>
+ root     21147 21118 Roth python ./cset proc -l two</code></pre>
 </div></div>
 <div class="paragraph"><p>Here again we see that the second shell, PID 21118, has a parent PID of 20955
 which is the first shell.  Both shells as well as the listing command are
@@ -1177,10 +1478,10 @@ running in the <em>two</em> cpuset.</p></div>
 <div class="title">Note</div>
 </td>
 <td class="content"><strong>cset</strong> follows the tradition of separating the tool options from the
-command to be execed options with a double dash (<tt>--</tt>).  This is not shown in
+command to be execed options with a double dash (<code>--</code>).  This is not shown in
 this simple example, but if the command you want to exec also takes options,
-separate them with the double dash like so: <tt># cset proc -s myset -e mycommand
--- -v</tt> The <tt>-v</tt> will be passed to <tt>mycommand</tt>, and not to <strong>cset</strong>.</td>
+separate them with the double dash like so: <code># cset proc -s myset -e mycommand
+-- -v</code> The <code>-v</code> will be passed to <code>mycommand</code>, and not to <strong>cset</strong>.</td>
 </tr></table>
 </div>
 <div class="admonitionblock">
@@ -1197,26 +1498,28 @@ cpuset.</td>
 puzzling. For example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -s two -e blah-blah
+<pre><code>[zuul:cpuset-trunk]# cset proc -s two -e blah-blah
 cset: --&gt; last message, executed args into cpuset "/two", new pid is: 21655
-cset: **&gt; [Errno 2] No such file or directory</tt></pre>
+cset: **&gt; [Errno 2] No such file or directory</code></pre>
 </div></div>
 <div class="paragraph"><p>The result is no new process even though a new PID is output.  The reason for
 the message is of course that the <strong>cset</strong> process forked in preparation for
-exec, but the command <tt>blah-blah</tt> was not found in order to exec it.</p></div>
+exec, but the command <code>blah-blah</code> was not found in order to exec it.</p></div>
+</div>
+<div class="sect3">
 <h4 id="_moving_tasks_with_proc">3.2.3. Moving Tasks with Proc</h4>
 <div class="paragraph"><p>Although the ability to exec a task into a cpuset is fundamental, you will
 most likely be moving tasks between cpusets more often.  Moving tasks is
-accomplished with the <tt>-m/--move</tt> and <tt>-p/--pid</tt> options to the <tt>proc</tt>
-subcommand of <strong>cset</strong>.  The move option tells the <tt>proc</tt> subcommand that a task
-move is requested.  The <tt>-p/--pid</tt> option takes an argument called a PIDSPEC
+accomplished with the <code>-m/--move</code> and <code>-p/--pid</code> options to the <code>proc</code>
+subcommand of <strong>cset</strong>.  The move option tells the <code>proc</code> subcommand that a task
+move is requested.  The <code>-p/--pid</code> option takes an argument called a PIDSPEC
 (PID Specification).  The PIDSPEC defines which tasks get operated on.</p></div>
 <div class="paragraph"><p>The PIDSPEC can be a single process ID, a list of process IDs separated by
 commas, and a list of process ID ranges also separated by commas.  For
 example:</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
-<tt>--move --pid 1234</tt>
+<code>--move --pid 1234</code>
 </dt>
 <dd>
 <p>
@@ -1224,7 +1527,7 @@ This PIDSPEC argument specifies that task 1234 be moved.
 </p>
 </dd>
 <dt class="hdlist1">
-<tt>--move --pid 1234,42,1934,15000,15001,15002</tt>
+<code>--move --pid 1234,42,1934,15000,15001,15002</code>
 </dt>
 <dd>
 <p>
@@ -1232,7 +1535,7 @@ This PIDSPEC argument specifies that this list of tasks only be moved.
 </p>
 </dd>
 <dt class="hdlist1">
-<tt>--move --pid 5000,5100,6010-7000,9232</tt>
+<code>--move --pid 5000,5100,6010-7000,9232</code>
 </dt>
 <dd>
 <p>
@@ -1258,7 +1561,7 @@ range.</td>
 variable for the current PID.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -l -s two
+<pre><code>[zuul:cpuset-trunk]# cset proc -l -s two
 cset: "two" cpuset of CPUSPEC(2) with 0 tasks running
 
 [zuul:cpuset-trunk]# echo $$
@@ -1282,20 +1585,20 @@ cset: moving 1 userspace tasks to /
 cset: done
 
 [zuul:cpuset-trunk]# cset proc -l -s two
-cset: "two" cpuset of CPUSPEC(2) with 0 tasks running</tt></pre>
+cset: "two" cpuset of CPUSPEC(2) with 0 tasks running</code></pre>
 </div></div>
 <div class="paragraph"><p>Use of the appropriate PIDSPEC can thus be handy to move tasks and groups of
 tasks.  Additionally, there is one more option that can help with
-multi-threaded processes, and that is the <tt>--threads</tt> flag.  If this flag is
-present in a <tt>proc</tt> move command with a PIDSPEC and if any of the task IDs in
+multi-threaded processes, and that is the <code>--threads</code> flag.  If this flag is
+present in a <code>proc</code> move command with a PIDSPEC and if any of the task IDs in
 the PIDSPEC belongs to a thread in a process container, then <strong>all</strong> the sibling
 threads in that process container will also get moved.  This flag provides an
 easy mechanism to move all threads of a process by simply specifying one
 thread in that process.  In the following example, we move all the threads
-running in cpuset <em>three</em> to cpuset <em>two</em> by using the <tt>--threads</tt> flag.</p></div>
+running in cpuset <em>three</em> to cpuset <em>two</em> by using the <code>--threads</code> flag.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set two three
+<pre><code>[zuul:cpuset-trunk]# cset set two three
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
@@ -1328,18 +1631,19 @@ cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
           two          2 n       0 n    10    0 /two
-        three          3 n       0 n     0    0 /three</tt></pre>
+        three          3 n       0 n     0    0 /three</code></pre>
 </div></div>
+<div class="sect4">
 <h5 id="_moving_all_tasks_from_one_cpuset_to_another">Moving All Tasks from one Cpuset to Another</h5>
 <div class="paragraph"><p>There is a special case for moving all tasks currently running in one cpuset
 to another.  This can be a common use case, and when you need to do it,
-specifying a PIDSPEC with <tt>-p</tt> is not necessary <em>so long as</em> you use the
-<tt>-f/--fromset</tt> <strong>and</strong> the <tt>-t/--toset</tt> options.</p></div>
-<div class="paragraph"><p>In the following example, we move all 10 <tt>beagled</tt> threads back to cpuset
+specifying a PIDSPEC with <code>-p</code> is not necessary <em>so long as</em> you use the
+<code>-f/--fromset</code> <strong>and</strong> the <code>-t/--toset</code> options.</p></div>
+<div class="paragraph"><p>In the following example, we move all 10 <code>beagled</code> threads back to cpuset
 <em>three</em> with this method.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -l two three
+<pre><code>[zuul:cpuset-trunk]# cset proc -l two three
 cset: "two" cpuset of CPUSPEC(2) with 10 tasks running
  USER       PID  PPID SPPr TASK NAME
  -------- ----- ----- ---- ---------
@@ -1366,12 +1670,14 @@ cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
           two          2 n       0 n     0    0 /two
-        three          3 n       0 n    10    0 /three</tt></pre>
+        three          3 n       0 n    10    0 /three</code></pre>
 </div></div>
+</div>
+<div class="sect4">
 <h5 id="_moving_kernel_threads_with_proc">Moving Kernel Threads with Proc</h5>
 <div class="paragraph"><p>Kernel threads are special and <strong>cset</strong> detects tasks that are kernel threads
-and will refuse to move them unless you also add a <tt>-k/--kthread</tt> option to
-your <tt>proc</tt> move command.  Even if you include <tt>-k</tt>, <strong>cset</strong> will <em>still</em>
+and will refuse to move them unless you also add a <code>-k/--kthread</code> option to
+your <code>proc</code> move command.  Even if you include <code>-k</code>, <strong>cset</strong> will <em>still</em>
 refuse to move the kernel thread if they are bound to specific CPUs.  The
 reason for this is system protection.</p></div>
 <div class="paragraph"><p>A number of kernel threads, especially on the real time Linux kernel, are
@@ -1379,38 +1685,38 @@ bound to specific CPUs and depend on per-CPU kernel variables.  If you move
 these threads to a different CPU than what they are bound to, you risk at best
 that the system will become horribly slow, and at worst a system hang.  If you
 still insist to move those threads (after all, <strong>cset</strong> needs to give the
-knowledgeable user access to the keys), then you need to use the <tt>--force</tt>
+knowledgeable user access to the keys), then you need to use the <code>--force</code>
 option additionally.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <div class="title">Warning</div>
 </td>
-<td class="content">Overriding a task move command with <tt>--force</tt> can have dire
+<td class="content">Overriding a task move command with <code>--force</code> can have dire
 consequences for the system.  Please be sure of the command before you force
 it.</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>In the following example, we move all unbound kernel threads running in the
-<em>root</em> cpuset to the cpuset named <em>two</em> by using the <tt>-k</tt> option.</p></div>
+<em>root</em> cpuset to the cpuset named <em>two</em> by using the <code>-k</code> option.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -k -f root -t two
+<pre><code>[zuul:cpuset-trunk]# cset proc -k -f root -t two
 cset: moving all kernel threads from / to /two
 cset: moving 70 kernel threads to: /two
 cset: --&gt; not moving 76 threads (not unbound, use --force)
 [==================================================]%
-cset: done</tt></pre>
+cset: done</code></pre>
 </div></div>
-<div class="paragraph"><p>You will note that we used the fromset&#8594;toset facility of the <tt>proc</tt>
-subcommand and we only specified the <tt>-k</tt> option (not the <tt>-m</tt> option).  This
+<div class="paragraph"><p>You will note that we used the fromset&#8594;toset facility of the <code>proc</code>
+subcommand and we only specified the <code>-k</code> option (not the <code>-m</code> option).  This
 has the effect of moving all kernel threads only.</p></div>
 <div class="paragraph"><p>Note that only 70 actual kernel threads were moved and 76 were not.  The
 reason that 76 kernel threads were not moved was because they are bound to
 specific CPUs.  Now, let&#8217;s move those kernel threads back to <em>root</em>.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -k -f two -t root
+<pre><code>[zuul:cpuset-trunk]# cset proc -k -f two -t root
 cset: moving all kernel threads from /two to /
 cset: ** no task matched move criteria
 cset: **&gt; kernel tasks are bound, use --force if ok
@@ -1419,14 +1725,14 @@ cset: **&gt; kernel tasks are bound, use --force if ok
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
-          two          2 n       0 n    70    0 /two</tt></pre>
+          two          2 n       0 n    70    0 /two</code></pre>
 </div></div>
 <div class="paragraph"><p>Ah!  What&#8217;s this?  <strong>Cset</strong> refused to move the kernel threads back to <em>root</em>
 because it says that they are "bound."  Let&#8217;s check this with the Linux
 taskset command.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -l -s two | head -5
+<pre><code>[zuul:cpuset-trunk]# cset proc -l -s two | head -5
 cset: "two" cpuset of CPUSPEC(2) with 70 tasks running
  USER       PID  PPID SPPr TASK NAME
  -------- ----- ----- ---- ---------
@@ -1440,42 +1746,48 @@ pid 2's current affinity mask: 4
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
-          two          2 n       0 n    70    0 /two</tt></pre>
+          two          2 n       0 n    70    0 /two</code></pre>
 </div></div>
 <div class="paragraph"><p>Of course, since the cpuset named <em>two</em> only has CPU2 assigned to it, once we
 moved the unbound kernel threads from <em>root</em> to <em>two</em>, their affinity masks
 got automatically changed to only use CPU2.  This is evident from the
-<tt>taskset</tt> output which is a hex value.  To really move these threads back to
+<code>taskset</code> output which is a hex value.  To really move these threads back to
 <em>root</em>, we need to force the move as follows.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -k -f two -t root --force
+<pre><code>[zuul:cpuset-trunk]# cset proc -k -f two -t root --force
 cset: moving all kernel threads from /two to /
 cset: moving 70 kernel threads to: /
 [==================================================]%
-cset: done</tt></pre>
+cset: done</code></pre>
 </div></div>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_destroying_tasks">3.2.4. Destroying Tasks</h4>
 <div class="paragraph"><p>There actually is no <strong>cset</strong> subcommand or option to destroy tasks&#8212;it&#8217;s not
 really needed.  Tasks exist and are accessible on the system as normal, even
 if they happen to be running in one cpuset or another.  To destroy tasks, use
 the usual ^C method or by using the <strong>kill(1)</strong> command.</p></div>
-<h3 id="_implementing_shielding_with_set_and_proc">3.3. Implementing "Shielding" with Set and Proc</h3><div style="clear:left"></div>
-<div class="paragraph"><p>With the preceding material on the <tt>set</tt> and <tt>proc</tt> subcommands, we now have
-the background to implement the basic shielding model, just like the <tt>shield</tt>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_implementing_shielding_with_set_and_proc">3.3. Implementing "Shielding" with Set and Proc</h3>
+<div class="paragraph"><p>With the preceding material on the <code>set</code> and <code>proc</code> subcommands, we now have
+the background to implement the basic shielding model, just like the <code>shield</code>
 subcommand.</p></div>
 <div class="paragraph"><p>One may pose the question as to why we want to do this, especially since
-<tt>shield</tt> already does it?  The answer is that sometimes one needs more
-functionality than <tt>shield</tt> has to implement one&#8217;s shielding strategy.  In
-those case you need to first stop using <tt>shield</tt> since that subcommand will
-interfere with the further application of <tt>set</tt> and <tt>proc</tt>; however, you will
-still need to implement the functionality of <tt>shield</tt> in order to implement
+<code>shield</code> already does it?  The answer is that sometimes one needs more
+functionality than <code>shield</code> has to implement one&#8217;s shielding strategy.  In
+those case you need to first stop using <code>shield</code> since that subcommand will
+interfere with the further application of <code>set</code> and <code>proc</code>; however, you will
+still need to implement the functionality of <code>shield</code> in order to implement
 successful shielding.</p></div>
-<div class="paragraph"><p>Remember from the above sections describing <tt>shield</tt>, that shielding has at
+<div class="paragraph"><p>Remember from the above sections describing <code>shield</code>, that shielding has at
 minimum three cpusets: <em>root</em>, which is always present and contains all CPUs;
 <em>system</em> which is the "non-shielded" set of CPUs and runs unimportant system
 tasks; and <em>user</em>, which is the "shielded" set of CPUs and runs your important
-tasks.  Remember also that <tt>shield</tt> moves all movable tasks into <em>system</em>
+tasks.  Remember also that <code>shield</code> moves all movable tasks into <em>system</em>
 and, optionally, moves unbound kernel threads into <em>system</em> as well.</p></div>
 <div class="paragraph"><p>We start first by creating the <em>system</em> and <em>user</em> cpusets as follows.  We
 assume that the machine is a four-CPU machine without NUMA memory features.
@@ -1483,7 +1795,7 @@ The <em>system</em> cpuset should hold only CPU0 while the <em>user</em> cpuset 
 the rest of the CPUs.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -c 0 -s system
+<pre><code>[zuul:cpuset-trunk]# cset set -c 0 -s system
 cset: --&gt; created cpuset "system"
 
 [zuul:cpuset-trunk]# cset set -c 1-3 -s user
@@ -1495,12 +1807,12 @@ cset:
  ------------ ---------- - ------- - ----- ---- ----------
          root        0-3 y       0 y   333    2 /
          user        1-3 n       0 n     0    0 /user
-       system          0 n       0 n     0    0 /system</tt></pre>
+       system          0 n       0 n     0    0 /system</code></pre>
 </div></div>
 <div class="paragraph"><p>Now, we need to move all running user processes into the <em>system</em> cpuset.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -m -f root -t system
+<pre><code>[zuul:cpuset-trunk]# cset proc -m -f root -t system
 cset: moving all tasks from root to /system
 cset: moving 188 userspace tasks to /system
 [==================================================]%
@@ -1512,18 +1824,18 @@ cset:
  ------------ ---------- - ------- - ----- ---- ----------
          root        0-3 y       0 y   146    2 /
          user        1-3 n       0 n     0    0 /user
-       system          0 n       0 n   187    0 /system</tt></pre>
+       system          0 n       0 n   187    0 /system</code></pre>
 </div></div>
 <div class="paragraph"><p>We now have the basic shielding set up.  Since all userspace tasks are running
 in <em>system</em>, anything that is spawned from them will also run in <em>system</em>.
 The <em>user</em> cpuset has nothing running in it unless you put tasks there with
-the <tt>proc</tt> subcommand as described above.  If you also want to move movable
+the <code>proc</code> subcommand as described above.  If you also want to move movable
 kernel threads from <em>root</em> to <em>system</em> (in order to achieve a form of
 "interrupt shielding" on a real time Linux kernel for example), you would
 execute the following command as well.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -k -f root -t system
+<pre><code>[zuul:cpuset-trunk]# cset proc -k -f root -t system
 cset: moving all kernel threads from / to /system
 cset: moving 70 kernel threads to: /system
 cset: --&gt; not moving 76 threads (not unbound, use --force)
@@ -1536,12 +1848,14 @@ cset:
  ------------ ---------- - ------- - ----- ---- ----------
          root        0-3 y       0 y    76    2 /
          user        1-3 n       0 n     0    0 /user
-       system          0 n       0 n   257    0 /system</tt></pre>
+       system          0 n       0 n   257    0 /system</code></pre>
 </div></div>
-<div class="paragraph"><p>At this point, you have achieved the simple shielding model that the <tt>shield</tt>
+<div class="paragraph"><p>At this point, you have achieved the simple shielding model that the <code>shield</code>
 subcommand provides.  You can now add other cpuset definitions to expand your
 shielding strategy beyond that simple model.</p></div>
-<h3 id="_implementing_hierarchy_with_set_and_proc">3.4. Implementing Hierarchy with Set and Proc</h3><div style="clear:left"></div>
+</div>
+<div class="sect2">
+<h3 id="_implementing_hierarchy_with_set_and_proc">3.4. Implementing Hierarchy with Set and Proc</h3>
 <div class="paragraph"><p>One popular extended "shielding" model is based on hierarchical cpusets, each
 with diminishing numbers of CPUs.  This model is used to create "priority
 cpusets" that allow assignment of CPU resources to tasks based on some
@@ -1576,7 +1890,7 @@ automation.</td>
 however, it is advantageous to create them as a hierarchy.  The reasoning for
 this is twofold: first, if a cpuset is destroyed, all its tasks are moved to
 its parent; second, one can use exclusive CPUs in a hierarchy.</p></div>
-<div class="paragraph"><p>There is a planned addition to the <tt>proc</tt> subcommand that will allow moving a
+<div class="paragraph"><p>There is a planned addition to the <code>proc</code> subcommand that will allow moving a
 specified PIDSPEC of tasks running in a specified cpuset to its parent.  This
 addition will ease the automation burden.</p></div>
 <div class="paragraph"><p>If a cpuset has CPUs that are exclusive to it, then other cpusets may not make
@@ -1586,7 +1900,7 @@ relevance to machines with many CPUs and more complex strategies.</p></div>
 follows.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -r
+<pre><code>[zuul:cpuset-trunk]# cset set -r
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
@@ -1616,14 +1930,14 @@ cset:
      prio_all        0-3 n       0 n     0    1 /prio_all
     prio_high        1-3 n       0 n     0    1 /prio_all/prio_high
      prio_med        2-3 n       0 n     0    1 /prio_all/prio_high/prio_med
-     prio_low          3 n       0 n     0    0 /prio_all/pr...rio_med/prio_low</tt></pre>
+     prio_low          3 n       0 n     0    0 /prio_all/pr...rio_med/prio_low</code></pre>
 </div></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <div class="title">Note</div>
 </td>
-<td class="content">We used the <tt>-r/--recurse</tt> switch to list all the sets in the last
+<td class="content">We used the <code>-r/--recurse</code> switch to list all the sets in the last
 command above.  If we had not, then the <em>prio_med</em> and <em>prio_low</em> cpusets
 would not have been listed.</td>
 </tr></table>
@@ -1632,7 +1946,7 @@ would not have been listed.</td>
 all movable kernel threads into the <em>system</em> cpuset to activate the shield.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset proc -m -k -f root -t system
+<pre><code>[zuul:cpuset-trunk]# cset proc -m -k -f root -t system
 cset: moving all tasks from root to /system
 cset: moving 198 userspace tasks to /system
 cset: moving 70 kernel threads to: /system
@@ -1649,18 +1963,18 @@ cset:
      prio_all        0-3 n       0 n     0    1 /prio_all
     prio_high        1-3 n       0 n     0    1 /prio_all/prio_high
      prio_med        2-3 n       0 n     0    1 /prio_all/prio_high/prio_med
-     prio_low          3 n       0 n     0    0 /prio_all/pr...rio_med/prio_low</tt></pre>
+     prio_low          3 n       0 n     0    0 /prio_all/pr...rio_med/prio_low</code></pre>
 </div></div>
 <div class="paragraph"><p>The shield is now active.  Since the <em>prio_*</em> cpuset names are unique, one can
 assign tasks to them either via either their simple name, or their full path
-(as described in the <tt>proc</tt> section above).</p></div>
+(as described in the <code>proc</code> section above).</p></div>
 <div class="paragraph"><p>You may have noted that there is an ellipsis in the path of the <em>prio_low</em>
 cpuset in the listing above.  This is done in order to fit the output onto an
 80 character screen.  If you want to see the entire line, then you need to use
-the <tt>-v/--verbose</tt> flag as follows.</p></div>
+the <code>-v/--verbose</code> flag as follows.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>[zuul:cpuset-trunk]# cset set -l -r -v
+<pre><code>[zuul:cpuset-trunk]# cset set -l -r -v
 cset:
          Name       CPUs-X    MEMs-X Tasks Subs Path
  ------------ ---------- - ------- - ----- ---- ----------
@@ -1669,9 +1983,12 @@ cset:
      prio_all        0-3 n       0 n     0    1 /prio_all
     prio_high        1-3 n       0 n     0    1 /prio_all/prio_high
      prio_med        2-3 n       0 n     0    1 /prio_all/prio_high/prio_med
-     prio_low          3 n       0 n     0    0 /prio_all/prio_high/prio_med/prio_low</tt></pre>
+     prio_low          3 n       0 n     0    0 /prio_all/prio_high/prio_med/prio_low</code></pre>
 </div></div>
 </div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_using_shortcuts">4. Using Shortcuts</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>The commands listed in the previous sections always used all the required
@@ -1685,70 +2002,75 @@ shortcuts, but you can use long options instead of short, in case you really
 enjoy typing&#8230;  All kidding aside, using long options and not using shortcuts
 does have a use case: when you write a script intended to be self-documenting,
 or perhaps when you generate <strong>cset</strong> documentation.</p></div>
-<div class="paragraph"><p>To begin, the subcommands <tt>shield</tt>, <tt>set</tt> and <tt>proc</tt> can themselves be
+<div class="paragraph"><p>To begin, the subcommands <code>shield</code>, <code>set</code> and <code>proc</code> can themselves be
 shortened to the fewest number of characters that are unambiguous.  For
 example, the following commands are identical:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt># cset shield -s -p 1234         &lt;--&gt;    # cset sh -s -p 1234
+<pre><code># cset shield -s -p 1234         &lt;--&gt;    # cset sh -s -p 1234
 # cset set -c 1,3 -s newset      &lt;--&gt;    # cset se -c 1,3 -s newset
-# cset proc -s newset -e bash    &lt;--&gt;    # cset p -s newset -e bash</tt></pre>
+# cset proc -s newset -e bash    &lt;--&gt;    # cset p -s newset -e bash</code></pre>
 </div></div>
-<div class="paragraph"><p>Note that <tt>proc</tt> can be shortened to just <tt>p</tt>, while <tt>shield</tt> and <tt>set</tt> need
+<div class="paragraph"><p>Note that <code>proc</code> can be shortened to just <code>p</code>, while <code>shield</code> and <code>set</code> need
 two letters to disambiguate.</p></div>
-<h3 id="_shield_subcommand_shortcuts">4.1. Shield Subcommand Shortcuts</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The <tt>shield</tt> subcommand supports two areas with shortcuts: the case when there
+<div class="sect2">
+<h3 id="_shield_subcommand_shortcuts">4.1. Shield Subcommand Shortcuts</h3>
+<div class="paragraph"><p>The <code>shield</code> subcommand supports two areas with shortcuts: the case when there
 is no options given where to <em>shield</em> is the common use case, and making the
-<tt>-p/--pid</tt> option <em>optional</em> for the <tt>-s/--shield</tt> and <tt>-u/--unshield</tt>
+<code>-p/--pid</code> option <em>optional</em> for the <code>-s/--shield</code> and <code>-u/--unshield</code>
 options.</p></div>
 <div class="paragraph"><p>For the common use case of actually <em>shielding</em> either a PIDSPEC or execing a
 command into the shield, the following <strong>cset</strong> commands are equivalent.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt># cset shield -s -p 1234,500-649   &lt;--&gt;    # cset sh 1234,500-649
-# cset shield -s -e bash           &lt;--&gt;    # cset sh bash</tt></pre>
+<pre><code># cset shield -s -p 1234,500-649   &lt;--&gt;    # cset sh 1234,500-649
+# cset shield -s -e bash           &lt;--&gt;    # cset sh bash</code></pre>
 </div></div>
-<div class="paragraph"><p>When using the <tt>-s</tt> or <tt>-u</tt> shield/unshield options, it is optional to use the
-<tt>-p</tt> option to specify a PIDSPEC.  For example:</p></div>
+<div class="paragraph"><p>When using the <code>-s</code> or <code>-u</code> shield/unshield options, it is optional to use the
+<code>-p</code> option to specify a PIDSPEC.  For example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt># cset shield -s -p 1234     &lt;--&gt;    # cset sh -s 1234
-# cset shield -u -p 1234     &lt;--&gt;    # cset sh -u 1234</tt></pre>
+<pre><code># cset shield -s -p 1234     &lt;--&gt;    # cset sh -s 1234
+# cset shield -u -p 1234     &lt;--&gt;    # cset sh -u 1234</code></pre>
 </div></div>
-<h3 id="_set_subcommand_shortcuts">4.2. Set Subcommand Shortcuts</h3><div style="clear:left"></div>
-<div class="paragraph"><p>The <tt>set</tt> subcommand has a limited number of shortcuts.  Basically, the
-<tt>-s/--set</tt> option is optional in most cases and the <tt>-l/--list</tt> option is
+</div>
+<div class="sect2">
+<h3 id="_set_subcommand_shortcuts">4.2. Set Subcommand Shortcuts</h3>
+<div class="paragraph"><p>The <code>set</code> subcommand has a limited number of shortcuts.  Basically, the
+<code>-s/--set</code> option is optional in most cases and the <code>-l/--list</code> option is
 also optional if you want to list sets.  For example, these commands are
 equivalent.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt># cset set -l -s myset           &lt;--&gt;  # cset se -l myset
+<pre><code># cset set -l -s myset           &lt;--&gt;  # cset se -l myset
 # cset se -l myset               &lt;--&gt;  # cset se myset
 
 # cset set -c 1,2,3 -s newset    &lt;--&gt;  # cset se -c 1,2,3 newset
 # cset set -d -s newset          &lt;--&gt;  # cset se -d newset
 
-# cset set -n newname -s oldname &lt;--&gt;  # cset se -n newname oldname</tt></pre>
+# cset set -n newname -s oldname &lt;--&gt;  # cset se -n newname oldname</code></pre>
 </div></div>
 <div class="paragraph"><p>In fact, if you want to apply either the list or the destroy options to
-multiple cpusets with one <strong>cset</strong> command, you&#8217;ll need to not use the <tt>-s</tt>
+multiple cpusets with one <strong>cset</strong> command, you&#8217;ll need to not use the <code>-s</code>
 option.  For example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt># cset se -d myset yourset ourset
+<pre><code># cset se -d myset yourset ourset
    --&gt; destroys cpusets: myset, yourset and ourset
 
 # cset se -l prio_high prio_med prio_low
    --&gt; lists only cpusets prio_high, prio_med and prio_low
-   --&gt; the -l is optional in this case since list is default</tt></pre>
+   --&gt; the -l is optional in this case since list is default</code></pre>
 </div></div>
-<h3 id="_proc_subcommand_shortcuts">4.3. Proc Subcommand Shortcuts</h3><div style="clear:left"></div>
-<div class="paragraph"><p>For the <tt>proc</tt> subcommand, the <tt>-s</tt>, <tt>-t</tt> and <tt>-f</tt> options to specify the
+</div>
+<div class="sect2">
+<h3 id="_proc_subcommand_shortcuts">4.3. Proc Subcommand Shortcuts</h3>
+<div class="paragraph"><p>For the <code>proc</code> subcommand, the <code>-s</code>, <code>-t</code> and <code>-f</code> options to specify the
 cpuset, the origination cpuset and the destination cpuset, can sometimes be
 optional.  For example, the following commands are equivalent.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>To list tasks in cpusets:
+<pre><code>To list tasks in cpusets:
 # cset proc -l -s myset        \
 # cset proc -l -f myset         --&gt;  # cset p -l myset
 # cset proc -l -t myset        /
@@ -1759,50 +2081,56 @@ optional.  For example, the following commands are equivalent.</p></div>
 # cset p -l one two            &lt;--&gt; # cset p one two
 
 To exec a process into a cpuset:
-# cset proc -s myset -e bash   &lt;--&gt;  # cset p myset -e bash</tt></pre>
+# cset proc -s myset -e bash   &lt;--&gt;  # cset p myset -e bash</code></pre>
 </div></div>
 <div class="paragraph"><p>Movement of tasks into and out of cpusets have the following shortcuts.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>To move a PIDSPEC into a cpuset:
+<pre><code>To move a PIDSPEC into a cpuset:
 # cset proc -m -p 4242,4243 -s myset &lt;--&gt; # cset p -m 4242,4243 myset
 # cset proc -m -p 12 -t myset        &lt;--&gt; # cset p -m 12 myset
 
 To move all tasks from one cpuset to another:
 # cset proc -m -f set1 -t set2      \
 # cset proc -m -s set1 -t set2       --&gt; # cset p -m set1 set2
-# cset proc -m -f set1 -s set2      /</tt></pre>
+# cset proc -m -f set1 -s set2      /</code></pre>
 </div></div>
 </div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_what_to_do_if_there_are_problems">5. What To Do if There are Problems</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>If you encounter problems with the <strong>cset</strong> application, the best option is to
 log a bug with the <strong>cset</strong> bugzilla instance found here:</p></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>http://code.google.com/p/cpuset/issues/list</tt></pre>
+<pre><code>https://github.com/lpechacek/cpuset/issues</code></pre>
 </div></div>
 <div class="paragraph"><p>If you are using <strong>cset</strong> on a supported operating system such as SLES or SLERT
 from Novell, then please use that bugzilla instead at:</p></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>http://bugzilla.novell.com</tt></pre>
+<pre><code>https://bugzilla.suse.com</code></pre>
 </div></div>
 <div class="paragraph"><p>If the problem is repeatable, there is an excellent chance that it will get
 fixed quickly.  Also, <strong>cset</strong> contains a logging facility that is invaluable
 for the developers to diagnose problems.  To create a log of a run, use the
-<tt>-l/--log</tt> option with a filename as an argument to the main <strong>cset</strong>
+<code>-l/--log</code> option with a filename as an argument to the main <strong>cset</strong>
 application.  For example.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt># cset -l logfile.txt set -n newname oldname</tt></pre>
+<pre><code># cset -l logfile.txt set -n newname oldname</code></pre>
 </div></div>
 <div class="paragraph"><p>That command saves a lot of debugging information in the <em>logfile.txt</em> file.
 Please attach this file to the bug.</p></div>
 </div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-06-09 12:56:15 EDT
+Last updated 2015-12-23 14:00:13 CET
 </div>
 </div>
 </body>

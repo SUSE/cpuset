@@ -6,11 +6,11 @@
 # package are under the same license as the package itself.  
 #  
 # Please submit bugfixes or comments via 
-#        http://code.google.com/p/cpuset/issues/list
+#        https://github.com/lpechacek/cpuset/issues
 #    Or 
-#        http://bugs.opensuse.org/
+#        https://bugzilla.opensuse.org
 # 
-# For supported products, via http://bugzilla.novell.com
+# For supported products, via https://bugzilla.suse.com
 #  
 
 # norootforbuild  
@@ -18,9 +18,9 @@
 Name:           cpuset
 Version:        1.5.6
 Release:        1
-License:        GPL v2 only
+License:        GPL-2.0
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-Url:            http://code.google.com/p/cpuset
+Url:            https://github.com/lpechacek/cpuset
 Group:          System/Management
 Summary:        Allows manipulation of cpusets on system and provides higher level functions
 Source:         %{name}-%{version}.tar.gz
