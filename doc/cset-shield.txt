@@ -180,7 +180,7 @@ then only that process will be moved.
 The --unshield (or -u) subcommand will remove the specified
 processes or threads from the shielded cpuset and move them into
 the unshielded (or system) cpuset.  This command is also used in
-conjuction with a -p/--pid option that specifies a PIDSPEC
+conjunction with a -p/--pid option that specifies a PIDSPEC
 argument, the same as for the --shield subcommand.
 
 Both the --shield and the --unshield commands will also finally
