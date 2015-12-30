@@ -40,11 +40,6 @@ and it allows manipulation of cpusets on the system and provides higher
 level functions such as implementation and control of a basic CPU
 shielding setup.
 
-
-Authors:
---------
-    Alex Tsariounov <alext@novell.com>
-
 %prep
 %setup
 
