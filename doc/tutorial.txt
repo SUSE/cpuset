@@ -2,7 +2,7 @@ Cpuset (cset) Tutorial
 ======================
 
 Alex Tsariounov <alext@novell.com> +
-Copyright (c) 2009-2011 Novell Inc., cset v1.5.6 +
+Copyright (c) 2009-2011 Novell Inc., cset v1.5.8 +
 Verbatim copying and distribution of this entire article are permitted
 worldwide, without royalty, in any medium, provided this notice is preserved.
 
