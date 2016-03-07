@@ -1,7 +1,7 @@
 cset(1)
 ======
 Alex Tsariounov <alext@novell.com>
-v1.5.6, June 2011
+v1.5.8, March 2016
 
 NAME
 ----

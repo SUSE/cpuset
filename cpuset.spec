@@ -16,7 +16,7 @@
 # norootforbuild  
 
 Name:           cpuset
-Version:        1.5.6
+Version:        1.5.8
 Release:        1
 License:        GPL-2.0
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
