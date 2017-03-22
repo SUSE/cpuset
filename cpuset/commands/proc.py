@@ -684,7 +684,7 @@ def move_pidspec(pidspec, toset, fset=None, threads=False):
 
 def task_detail(pid, width=70):
     # scheduler policy definitions
-    policy = ['o', 'f', 'r', 'b', '?', 'i']
+    policy = ['o', 'f', 'r', 'b', '?', 'i', 'd']
     # stat location definitions
     statdef = {
         'pid': 0,
