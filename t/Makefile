@@ -2,7 +2,7 @@
 # Suite design taken from git which is Copyright (c) 2005 Junio C Hamano
 #
 # Copyright (C) 2007 Novell Inc.
-# Author: Alex Tsariounov <alext@novell.com>
+# Author: Alex Tsariounov <tsariounov@gmail.com>
 #
 
 #CSET_TEST_OPTS=--verbose --debug

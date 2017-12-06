@@ -1,6 +1,6 @@
 cset(1)
 ======
-Alex Tsariounov <alext@novell.com>
+Alex Tsariounov <tsariounov@gmail.com>
 v1.5.8, March 2016
 
 NAME
@@ -143,7 +143,7 @@ Copyright (c) 2008-2011 Novell Inc.
 
 AUTHOR
 ------
-Written by Alex Tsariounov <\alext@novell.com>
+Written by Alex Tsariounov <\tsariounov@gmail.com>
 
 Some substrate code and ideas were taken from the excellent Stacked
 GIT (stgit) v0.13 (see \http://gna.org/projects/stgit  and
