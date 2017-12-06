@@ -1,6 +1,8 @@
 """Process manipulation command
 """
 
+from builtins import str
+from builtins import range
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
@@ -654,7 +656,7 @@ def pidspec_to_list(pidspec, fset=None, threads=False):
         log.debug('thread matching activated, looking for threads...')
         dups = 0
         hits = 0
-        for task in pdict.keys():
+        for task in list(pdict.keys()):
             dirs = os.listdir('/proc/'+str(task)+'/task')
             if len(dirs) > 1:
                 hits += 1
@@ -664,7 +666,7 @@ def pidspec_to_list(pidspec, fset=None, threads=False):
                         continue
                     pdict[thread] = True
         log.debug('found %s multithreaded containers and %s duplicates', hits, dups)
-    plist = pdict.keys()
+    plist = list(pdict.keys())
     log.debug('returning parsed pid list of %s tasks: %s', len(plist), plist)
     return plist
 

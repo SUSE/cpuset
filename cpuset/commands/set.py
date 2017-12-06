@@ -1,6 +1,9 @@
 """Cpuset manipulation command
 """
+from __future__ import division
 
+from builtins import str
+from past.utils import old_div
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
@@ -480,10 +483,10 @@ def set_details(name, indent=None, width=None, usehex=False):
 
     if width != 0 and len(tst) > width:
         target = width - len(out)
-        patha = set.path[:len(set.path)/2-3]
-        pathb = set.path[len(set.path)/2:]
-        patha = patha[:target/2-3]
-        pathb = pathb[-target/2:]
+        patha = set.path[:old_div(len(set.path),2)-3]
+        pathb = set.path[old_div(len(set.path),2):]
+        patha = patha[:old_div(target,2)-3]
+        pathb = pathb[old_div(-target,2):]
         out += patha + '...' + pathb
     else:
         out = tst

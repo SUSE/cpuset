@@ -1,6 +1,12 @@
 """Utility functions
 """
+from __future__ import division
+from __future__ import print_function
 
+from builtins import chr
+from builtins import range
+from past.utils import old_div
+from builtins import object
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
@@ -38,7 +44,7 @@ class CpusetExists(CpusetException):
     pass
 
 # a twirling bar progress indicator
-class TwirlyBar:
+class TwirlyBar(object):
     def __init__(self):
         import sys
         self.__dict__['__call__'] = self.tick
@@ -47,7 +53,7 @@ class TwirlyBar:
 
     def tick(self):
         if not config.mread:
-            print '\b' + self.__bar[self.__state] + '\b',
+            print('\b' + self.__bar[self.__state] + '\b', end=' ')
         self.__state = self.__state + 1
         if self.__state > 3: self.__state = 0
 
@@ -57,7 +63,7 @@ class TwirlyBar:
             time.sleep(0.04)
 
 # a progress bar indicator
-class ProgressBar:
+class ProgressBar(object):
     def __init__(self, finalcount, progresschar=None):
         self.__dict__['__call__'] = self.progress
         self.finalcount=finalcount
@@ -85,7 +91,7 @@ class ProgressBar:
         else:
             percentcomplete=100
 
-        blockcount=int(percentcomplete/2)
+        blockcount=int(old_div(percentcomplete,2))
         if not config.mread:
             if blockcount > self.blockcount:
                 for i in range(self.blockcount,blockcount):

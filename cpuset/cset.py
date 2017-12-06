@@ -1,6 +1,10 @@
 """Cpuset class and cpuset graph, importing module will create model
 """
+from __future__ import print_function
 
+from builtins import str
+from builtins import range
+from builtins import object
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
 Author: Alex Tsariounov <alext@novell.com>
@@ -98,7 +102,7 @@ class CpuSet(object):
                 else:
                     parpath = dir[0:dir.rfind('/')]
                     log.debug('parpath decodes to: %s from dir of: %s', parpath, dir)
-                    if CpuSet.sets.has_key(parpath):
+                    if parpath in CpuSet.sets:
                         log.debug("parent is %s", parpath)
                         node.parent = CpuSet.sets[parpath]
                     else:
@@ -113,7 +117,7 @@ class CpuSet(object):
             else:
                 path = '/'
             log.debug(" relative: %s", path)
-            if CpuSet.sets.has_key(path):
+            if path in CpuSet.sets:
                 log.debug("the cpuset %s already exists, skipping", path)
                 self = CpuSet.sets[path]  # questionable....
                 return
@@ -179,7 +183,7 @@ class CpuSet(object):
 
     # Properties of cpuset node
     def delprop(self):
-        raise AttributeError, "deletion of properties not allowed"
+        raise AttributeError("deletion of properties not allowed")
 
     def getcpus(self): 
         f = file(CpuSet.basepath+self.path+CpuSet.cpus_path)
@@ -256,7 +260,7 @@ class CpuSet(object):
                 f = file(CpuSet.basepath+self.path+CpuSet.tasks_path,'w')
                 f.write(task)
                 f.close()
-            except Exception, err:
+            except Exception as err:
                 if str(err).find('No such process') != -1:
                     notfound.append(task)
                 elif str(err).find('Invalid argument'):
@@ -413,8 +417,8 @@ def cpuspec_to_hex(cpuspec):
             number |= 1 << int(items[0])
         elif len(items) == 2: 
             il = [int(ii) for ii in items]
-            if il[1] >= il[0]: rng = range(il[0], il[1]+1)
-            else: rng = range(il[1], il[0]+1)
+            if il[1] >= il[0]: rng = list(range(il[0], il[1]+1))
+            else: rng = list(range(il[1], il[0]+1))
             log.debug(' group=%s has cpu range of %s', sub, rng)
             for num in rng: number |= 1 << num
         else:
@@ -515,26 +519,26 @@ if __name__ == '__main__':
     except:
         pass
 
-    print 'Max cpu on system:', maxcpu
-    print 'All cpu mask: 0x%s' % allcpumask
+    print('Max cpu on system:', maxcpu)
+    print('All cpu mask: 0x%s' % allcpumask)
 
-    print '------- find_sets tests --------'
-    print 'Find by root of "root" -> ', find_sets("root")
-    print 'Find by path of "/" -> ', find_sets("/")
+    print('------- find_sets tests --------')
+    print('Find by root of "root" -> ', find_sets("root"))
+    print('Find by path of "/" -> ', find_sets("/"))
 
-    print 'Find by path of "/csettest/one" -> ', find_sets("/csettest/one")
-    print 'Find by name of "one" -> ', find_sets("one")
-    print 'Find by path of "/csettest/two" -> ', find_sets("/csettest/two")
-    print 'Find by name of "two" -> ', find_sets("two")
+    print('Find by path of "/csettest/one" -> ', find_sets("/csettest/one"))
+    print('Find by name of "one" -> ', find_sets("one"))
+    print('Find by path of "/csettest/two" -> ', find_sets("/csettest/two"))
+    print('Find by name of "two" -> ', find_sets("two"))
 
-    print 'Find by path of "/csettest/one/x" -> ', find_sets("/csettest/one/x")
-    print 'Find by name of "x" -> ', find_sets("x")
-    print 'Find by path of "/csettest/two/y" -> ', find_sets("/csettest/two/y")
-    print 'Find by name of "y" -> ', find_sets("y")
+    print('Find by path of "/csettest/one/x" -> ', find_sets("/csettest/one/x"))
+    print('Find by name of "x" -> ', find_sets("x"))
+    print('Find by path of "/csettest/two/y" -> ', find_sets("/csettest/two/y"))
+    print('Find by name of "y" -> ', find_sets("y"))
 
     try:
         node = find_sets("cantfindmenoway")
-        print 'Found "cantfindmenoway??!? -> ', node
-    except CpusetException, err:
-        print 'Caught exeption for non-existant set (correctly)-> ', err
+        print('Found "cantfindmenoway??!? -> ', node)
+    except CpusetException as err:
+        print('Caught exeption for non-existant set (correctly)-> ', err)
 
