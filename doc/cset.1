@@ -1,13 +1,22 @@
 '\" t
 .\"     Title: cset
-.\"    Author: [see the "AUTHOR" section]
-.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/09/2011
-.\"    Manual: [FIXME: manual]
-.\"    Source: [FIXME: source]
+.\"    Author: Alex Tsariounov <tsariounov@gmail.com>
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: March 2016
+.\"    Manual: \ \&
+.\"    Source: \ \& 1.5.8
 .\"  Language: English
 .\"
-.TH "CSET" "1" "06/09/2011" "[FIXME: source]" "[FIXME: manual]"
+.TH "CSET" "1" "March 2016" "\ \& 1\&.5\&.8" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -69,6 +78,7 @@ The cset subcommand \fIcset\-proc(1)\fR allows you to manage processes running o
 .RE
 .SH "OPTIONS"
 The following generic option flags are available\&. Additional options are available per\-command, and documented in the command\-specific documentation\&.
+
 .PP
 \fIcset\fR \-\-version
 .RS 4
@@ -96,6 +106,7 @@ Converts a CPUSPEC (see \fIcset\-set(1)\fR for definition) to a hexadecimal numb
 .RE
 .SH "CSET COMMANDS"
 The cset commands are divided into groups, according to the primary purpose of those commands\&. Following is a short description of each command\&. A more detailed description is available in individual command manpages\&. Those manpages are named \fIcset\-<command>(1)\fR\&. The first command, \fIhelp\fR, is especially useful as it prints out a long summary of what a particular command does\&.
+
 .PP
 \fIcset help command\fR
 .RS 4
@@ -127,6 +138,7 @@ To create a persistent cpuset setup, i\&.e\&. one that survives a reboot, you ne
 If used, the init\&.d script \fI/etc/init\&.d/cset\fR starts and stops a cpuset configuration on boot and poweroff\&.
 
 Cpuset uses a configuration file if present on the system\&. The file is \fI/etc/cset\&.conf\fR and may contain the following options\&.
+
 .PP
 mountpoint = <directory_name>
 .RS 4
@@ -137,7 +149,7 @@ Cpuset is licensed under the GNU GPL V2 only\&.
 .SH "COPYRIGHT"
 Copyright (c) 2008\-2011 Novell Inc\&.
 .SH "AUTHOR"
-Written by Alex Tsariounov <alext@novell\&.com>
+Written by Alex Tsariounov <tsariounov@gmail\&.com>
 
 Some substrate code and ideas were taken from the excellent Stacked GIT (stgit) v0\&.13 (see http://gna\&.org/projects/stgit and http://www\&.procode\&.org/stgit)\&. Stacked GIT is under GPL V2 or later\&.
 .SH "SEE ALSO"
@@ -150,4 +162,9 @@ cset\-set(1), cset\-proc(1), cset\-shield(1)
 taskset(1), chrt(1)
 
 /usr/src/linux/Documentation/cpusets\&.txt
-
+.SH "AUTHOR"
+.PP
+\fBAlex Tsariounov\fR <\&tsariounov@gmail\&.com\&>
+.RS 4
+Author.
+.RE
