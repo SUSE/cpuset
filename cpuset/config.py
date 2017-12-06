@@ -13,6 +13,7 @@ from future import standard_library
 standard_library.install_aliases()
 __copyright__ = """
 Copyright (C) 2009-2010 Novell Inc.
+Copyright (C) 2013-2017 SUSE
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify

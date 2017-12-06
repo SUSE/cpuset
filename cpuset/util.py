@@ -1,14 +1,13 @@
 """Utility functions
 """
-from __future__ import division
 from __future__ import print_function
 
 from builtins import chr
 from builtins import range
-from past.utils import old_div
 from builtins import object
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
+Copyright (C) 2013-2017 SUSE
 Author: Alex Tsariounov <alext@novell.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -91,7 +90,7 @@ class ProgressBar(object):
         else:
             percentcomplete=100
 
-        blockcount=int(old_div(percentcomplete,2))
+        blockcount=percentcomplete//2
         if not config.mread:
             if blockcount > self.blockcount:
                 for i in range(self.blockcount,blockcount):
