@@ -271,7 +271,7 @@ class CpuSet(object):
                     raise
             if prog:
                 tick += 1
-                pb(tick)
+                pb.progress(tick)
         if len(notfound) > 0:
             log.info('**> %s tasks were not found, so were not moved', len(notfound))
             log.debug(' not found: %s', notfound)
