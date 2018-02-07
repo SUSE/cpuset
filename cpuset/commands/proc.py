@@ -22,7 +22,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 """
 
-import sys, os, re, logging, pwd, grp
+import sys, os, io, re, logging, pwd, grp
 from optparse import OptionParser, make_option
 
 from cpuset import config
@@ -706,21 +706,21 @@ def task_detail(pid, width=70):
     pid = str(pid)
     if not os.access('/proc/'+pid, os.F_OK):
         raise CpusetException('task "%s" does not exist' % pid)
-    status = file('/proc/'+pid+'/status', 'r').readlines()
+    status = io.open('/proc/'+pid+'/status', 'r', encoding="ascii").readlines()
     stdict = {}
     for line in status:
         try:
             stdict[line.split()[0][:-1]] = line.split(':')[1].strip()
         except:
             pass  # sometimes, we get an extra \n out of this file...
-    stat = file('/proc/'+pid+'/stat', 'r').readline()
+    stat = io.open('/proc/'+pid+'/stat', 'r', encoding="ascii").readline()
     # we assume parentheses appear only around the name
     stat_right_paren = stat.rfind(')')
     stat_left_paren = stat.find('(')
     stat = [stat[:stat_left_paren-1]] + \
            [stat[stat_left_paren:stat_right_paren+1]] + \
            stat[stat_right_paren+2:].split()
-    cmdline = file('/proc/'+pid+'/cmdline').readline()
+    cmdline = io.open('/proc/'+pid+'/cmdline', encoding="ascii").readline()
     # assume that a zero delimits the cmdline (it does now...)
     cmdline = cmdline.replace('\0', ' ')
 
