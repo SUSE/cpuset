@@ -1,4 +1,14 @@
 ============================================================
+Cpuset 1.6pre1 (February  8, 2018)
+https://github.com/lpechacek/cpuset
+http://download.opensuse.org/repositories/home:/LPechacek:/cpuset-release/
+
+Update to 1.6pre1 includes following changes:
+
+* Make cpuset compatible with both Python 2 and 3
+* Update package meta information
+
+============================================================
 Cpuset 1.5.8 (March  7, 2016)
 https://github.com/lpechacek/cpuset
 http://download.opensuse.org/repositories/home:/LPechacek:/cpuset-release/

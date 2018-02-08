@@ -1,7 +1,7 @@
 cset-proc(1)
 ============
 Alex Tsariounov <tsariounov@gmail.com>
-v1.5.8, March 2016
+v1.6pre1, February 2018
 
 NAME
 ----
