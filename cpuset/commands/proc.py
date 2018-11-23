@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 from builtins import str
-from builtins import range
+from future.utils import lrange
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
 Copyright (C) 2013-2018 SUSE
@@ -624,7 +624,7 @@ def pidspec_to_list(pidspec, fset=None, threads=False):
                 log.debug(' added single pid: %s', items[0])
         elif len(items) == 2:
             # a range of pids, only include those that exist
-            rng = [str(x) for x in range(int(items[0]), int(items[1])+1) 
+            rng = [str(x) for x in lrange(int(items[0]), int(items[1])+1)
                            if os.access('/proc/'+str(x), os.F_OK)]
             if fset:
                 for tsk in rng:

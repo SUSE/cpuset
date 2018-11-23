@@ -2,10 +2,10 @@
 """
 from __future__ import unicode_literals
 from __future__ import print_function
+from future.utils import lrange
 
 import io
 from builtins import str
-from builtins import range
 from builtins import object
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
@@ -402,8 +402,8 @@ def cpuspec_to_hex(cpuspec):
             number |= 1 << int(items[0])
         elif len(items) == 2: 
             il = [int(ii) for ii in items]
-            if il[1] >= il[0]: rng = list(range(il[0], il[1]+1))
-            else: rng = list(range(il[1], il[0]+1))
+            if il[1] >= il[0]: rng = lrange(il[0], il[1]+1)
+            else: rng = lrange(il[1], il[0]+1)
             log.debug(' group=%s has cpu range of %s', sub, rng)
             for num in rng: number |= 1 << num
         else:
@@ -425,7 +425,7 @@ def memspec_check(memspec):
 
 def cpuspec_inverse(cpuspec):
     """calculate inverse of cpu specification"""
-    cpus = [0 for x in range(maxcpu+1)]
+    cpus = [0 for x in lrange(maxcpu+1)]
     groups = cpuspec.split(',')
     log.debug("cpuspec_inverse(%s) maxcpu=%d groups=%d", 
               cpuspec, maxcpu, len(groups))
@@ -438,13 +438,13 @@ def cpuspec_inverse(cpuspec):
                 continue
             cpus[int(items[0])] = 1
         elif len(items) == 2:
-            for x in range(int(items[0]), int(items[1])+1):
+            for x in lrange(int(items[0]), int(items[1])+1):
                 cpus[x] = 1
         else:
             raise CpusetException("cpuspec(%s) has bad group %s" % (cpuspec, set))
     log.debug("cpuspec array: %s", cpus)
     # calculate inverse of array
-    for x in range(0, len(cpus)):
+    for x in lrange(0, len(cpus)):
         if cpus[x] == 0:
             cpus[x] = 1
         else:
@@ -453,7 +453,7 @@ def cpuspec_inverse(cpuspec):
     # build cpuspec expression
     nspec = ""
     ingrp = False
-    for x in range(0, len(cpus)):
+    for x in lrange(0, len(cpus)):
         if cpus[x] == 0 and ingrp:
             nspec += str(begin)
             if x > begin+1: 
