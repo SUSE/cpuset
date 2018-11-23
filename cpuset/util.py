@@ -43,25 +43,6 @@ class CpusetNotUnique(CpusetException):
 class CpusetExists(CpusetException):
     pass
 
-# a twirling bar progress indicator
-class TwirlyBar(object):
-    def __init__(self):
-        import sys
-        self.__dict__['__call__'] = self.tick
-        self.__state = 0
-        self.__bar = ('|', '/', '-', '\\')
-
-    def tick(self):
-        if not config.mread:
-            print('\b' + self.__bar[self.__state] + '\b', end=' ')
-        self.__state = self.__state + 1
-        if self.__state > 3: self.__state = 0
-
-    def fastick(self):
-        for x in range(10):
-            self.tick()
-            time.sleep(0.04)
-
 # a progress bar indicator
 class ProgressBar(object):
     def __init__(self, finalcount, progresschar=None):
