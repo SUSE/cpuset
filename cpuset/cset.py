@@ -8,7 +8,7 @@ from builtins import range
 from builtins import object
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
-Copyright (C) 2013-2017 SUSE
+Copyright (C) 2013-2018 SUSE
 Author: Alex Tsariounov <tsariounov@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -135,32 +135,14 @@ class CpuSet(object):
 
     def locate_cpusets(self):
         log.debug("locating cpuset filesystem...")
-        cpuset = re.compile(r"none (/.+) cpuset .+")
-        cgroup = re.compile(r"none (/.+) cgroup .+")
-        cpuset1 = re.compile(r"cpuset (/.+) cpuset .+")
-        cgroup1 = re.compile(r"cgroup (/.+) cgroup .+")
+        cpuset_mount_regex = re.compile(r"^[^ ]+ (/.+) (?:cpuset |cgroup (?:[^ ]*,)?cpuset[, ])")
         path = None
         f = io.open("/proc/mounts", encoding="ascii")
         for line in f:
-            res = cpuset.search(line)
+            res = cpuset_mount_regex.search(line)
             if res:
                 path = res.group(1)
                 break
-            res = cpuset1.search(line)
-            if res:
-                path = res.group(1)
-                break
-            else:
-                if cgroup.search(line):
-                    groups = line.split()
-                    if re.search("cpuset", groups[3]):
-                        path = groups[1]
-                        break
-                if cgroup1.search(line):
-                    groups = line.split()
-                    if re.search("cpuset", groups[3]):
-                        path = groups[1]
-                        break
         f.close()
 
         if not path:
