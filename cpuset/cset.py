@@ -1,5 +1,6 @@
 """Cpuset class and cpuset graph, importing module will create model
 """
+from __future__ import unicode_literals
 from __future__ import print_function
 
 import io
@@ -8,7 +9,7 @@ from builtins import range
 from builtins import object
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
-Copyright (C) 2013-2018 SUSE
+Copyright (C) 2013-2017 SUSE
 Author: Alex Tsariounov <tsariounov@gmail.com>
 
 This program is free software; you can redistribute it and/or modify

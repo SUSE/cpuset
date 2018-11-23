@@ -1,11 +1,12 @@
 """Process manipulation command
 """
 
+from __future__ import unicode_literals
 from builtins import str
 from builtins import range
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
-Copyright (C) 2013-2017 SUSE
+Copyright (C) 2013-2018 SUSE
 Author: Alex Tsariounov <tsariounov@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
