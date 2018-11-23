@@ -138,7 +138,7 @@ class CpuSet(object):
         log.debug("locating cpuset filesystem...")
         cpuset_mount_regex = re.compile(r"^[^ ]+ (/.+) (?:cpuset |cgroup (?:[^ ]*,)?cpuset[, ])")
         path = None
-        f = io.open("/proc/mounts", encoding="ascii")
+        f = io.open("/proc/mounts",encoding="iso8859-1")
         for line in f:
             res = cpuset_mount_regex.search(line)
             if res:
@@ -171,36 +171,36 @@ class CpuSet(object):
         raise AttributeError("deletion of properties not allowed")
 
     def getcpus(self): 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.cpus_path, encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.cpus_path,encoding="iso8859-1")
         return f.readline()[:-1]
     def setcpus(self, newval):
         cpuspec_check(newval)
-        f = io.open(CpuSet.basepath+self.path+CpuSet.cpus_path,'w', encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.cpus_path,'w',encoding="iso8859-1")
         f.write(str(newval))
         f.close()
         log.debug("-> prop_set %s.cpus = %s", self.path, newval) 
     cpus = property(fget=getcpus, fset=setcpus, fdel=delprop, doc="CPU specifier")
 
     def getmems(self): 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.mems_path, encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.mems_path,encoding="iso8859-1")
         return f.readline()[:-1]
     def setmems(self, newval): 
         # FIXME: check format for correctness
-        f = io.open(CpuSet.basepath+self.path+CpuSet.mems_path,'w', encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.mems_path,'w',encoding="iso8859-1")
         f.write(str(newval))
         f.close()
         log.debug("-> prop_set %s.mems = %s", self.path, newval) 
     mems = property(getmems, setmems, delprop, "Mem node specifier")
     
     def getcpuxlsv(self): 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path, encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path,encoding="iso8859-1")
         if f.readline()[:-1] == '1':
             return True
         else:
             return False
     def setcpuxlsv(self, newval):
         log.debug("-> prop_set %s.cpu_exclusive = %s", self.path, newval) 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path,'w', encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path,'w',encoding="iso8859-1")
         if newval:
             f.write('1')
         else:
@@ -210,14 +210,14 @@ class CpuSet(object):
                              "CPU exclusive flag")
 
     def getmemxlsv(self): 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path, encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path,encoding="iso8859-1")
         if f.readline()[:-1] == '1':
             return True
         else:
             return False
     def setmemxlsv(self, newval):
         log.debug("-> prop_set %s.mem_exclusive = %s", self.path, newval) 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path,'w', encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path,'w',encoding="iso8859-1")
         if newval:
             f.write('1')
         else:
@@ -227,7 +227,7 @@ class CpuSet(object):
                              "Memory exclusive flag")
 
     def gettasks(self):
-        f = io.open(CpuSet.basepath+self.path+CpuSet.tasks_path, encoding="ascii")
+        f = io.open(CpuSet.basepath+self.path+CpuSet.tasks_path,encoding="iso8859-1")
         lst = []
         for task in f: lst.append(task[:-1])
         return lst
@@ -242,7 +242,7 @@ class CpuSet(object):
             prog = False
         for task in tasklist:
             try:
-                f = io.open(CpuSet.basepath+self.path+CpuSet.tasks_path,'w', encoding="ascii")
+                f = io.open(CpuSet.basepath+self.path+CpuSet.tasks_path,'w',encoding="iso8859-1")
                 f.write(task)
                 f.close()
             except Exception as err:
@@ -274,7 +274,7 @@ def lookup_task_from_proc(pid):
     log.debug("entering lookup_task_from_proc, pid = %s", str(pid))
     path = "/proc/"+str(pid)+"/cpuset"
     if os.access(path, os.F_OK):
-        set = io.open(path, encoding="ascii").readline()[:-1]
+        set = io.open(path,encoding="iso8859-1").readline()[:-1]
         log.debug('lookup_task_from_proc: found task %s cpuset: %s', str(pid), set)
         return set
     # FIXME: add search for threads here...

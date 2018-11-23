@@ -707,21 +707,21 @@ def task_detail(pid, width=70):
     pid = str(pid)
     if not os.access('/proc/'+pid, os.F_OK):
         raise CpusetException('task "%s" does not exist' % pid)
-    status = io.open('/proc/'+pid+'/status', 'r', encoding="ascii").readlines()
+    status = io.open('/proc/'+pid+'/status', 'r',encoding="iso8859-1").readlines()
     stdict = {}
     for line in status:
         try:
             stdict[line.split()[0][:-1]] = line.split(':')[1].strip()
         except:
             pass  # sometimes, we get an extra \n out of this file...
-    stat = io.open('/proc/'+pid+'/stat', 'r', encoding="ascii").readline()
+    stat = io.open('/proc/'+pid+'/stat', 'r',encoding="iso8859-1").readline()
     # we assume parentheses appear only around the name
     stat_right_paren = stat.rfind(')')
     stat_left_paren = stat.find('(')
     stat = [stat[:stat_left_paren-1]] + \
            [stat[stat_left_paren:stat_right_paren+1]] + \
            stat[stat_right_paren+2:].split()
-    cmdline = io.open('/proc/'+pid+'/cmdline', encoding="ascii").readline()
+    cmdline = io.open('/proc/'+pid+'/cmdline',encoding="iso8859-1").readline()
     # assume that a zero delimits the cmdline (it does now...)
     cmdline = cmdline.replace('\0', ' ')
 
