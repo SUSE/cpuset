@@ -80,16 +80,11 @@ class CpuSet(object):
             log.debug("starting bottom-up discovery walk...")
             for dir, dirs, files in os.walk(path, topdown=False):
                 log.debug("*** walking %s", dir)
-                if dir != CpuSet.basepath:
-                    node = CpuSet(dir)
-                else:
-                    node = self
+                node = self if dir == CpuSet.basepath else CpuSet(dir)
                 node.subsets = []
                 for sub in dirs:
-                    if len(sub) > 0:
-                        relpath = os.path.join(dir,sub).replace(CpuSet.basepath, '')
-                    else:
-                        relpath = '/'
+                    relpath = (os.path.join(dir,sub).replace(CpuSet.basepath, '')
+                               if len(sub) > 0 else '/')
                     node.subsets.append(CpuSet.sets[relpath])
                 log.debug("%s has %i subsets: [%s]", dir, 
                           len(node.subsets), '|'.join(dirs))
@@ -115,10 +110,8 @@ class CpuSet(object):
         else:
             # one new cpuset node
             log.debug("new cpuset node absolute: %s", path)
-            if len(path) > len(CpuSet.basepath):
-                path = path.replace(CpuSet.basepath, '')
-            else:
-                path = '/'
+            path = (path.replace(CpuSet.basepath, '')
+                    if len(path) > len(CpuSet.basepath) else '/')
             log.debug(" relative: %s", path)
             if path in CpuSet.sets:
                 log.debug("the cpuset %s already exists, skipping", path)
@@ -194,34 +187,22 @@ class CpuSet(object):
     
     def getcpuxlsv(self): 
         f = io.open(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path,encoding="iso8859-1")
-        if f.readline()[:-1] == '1':
-            return True
-        else:
-            return False
+        return f.readline()[:-1] == '1'
     def setcpuxlsv(self, newval):
         log.debug("-> prop_set %s.cpu_exclusive = %s", self.path, newval) 
         f = io.open(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path,'w',encoding="iso8859-1")
-        if newval:
-            f.write('1')
-        else:
-            f.write('0')
+        f.write('1' if newval else '0')
         f.close()
     cpu_exclusive = property(getcpuxlsv, setcpuxlsv, delprop, 
                              "CPU exclusive flag")
 
     def getmemxlsv(self): 
         f = io.open(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path,encoding="iso8859-1")
-        if f.readline()[:-1] == '1':
-            return True
-        else:
-            return False
+        return f.readline()[:-1] == '1'
     def setmemxlsv(self, newval):
         log.debug("-> prop_set %s.mem_exclusive = %s", self.path, newval) 
         f = io.open(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path,'w',encoding="iso8859-1")
-        if newval:
-            f.write('1')
-        else:
-            f.write('0')
+        f.write('1' if newval else '0')
         f.close()
     mem_exclusive = property(getmemxlsv, setmemxlsv, delprop, 
                              "Memory exclusive flag")
@@ -445,10 +426,7 @@ def cpuspec_inverse(cpuspec):
     log.debug("cpuspec array: %s", cpus)
     # calculate inverse of array
     for x in lrange(0, len(cpus)):
-        if cpus[x] == 0:
-            cpus[x] = 1
-        else:
-            cpus[x] = 0
+        cpus[x] = int(cpus[x] == 0)
     log.debug("      inverse: %s", cpus)
     # build cpuspec expression
     nspec = ""
@@ -457,10 +435,7 @@ def cpuspec_inverse(cpuspec):
         if cpus[x] == 0 and ingrp:
             nspec += str(begin)
             if x > begin+1: 
-                if cpus[x] == 1:
-                    nspec += '-' + str(x)
-                else:
-                    nspec += '-' + str(x-1)
+                nspec += '-' + str(x if cpus[x] else x-1)
             ingrp = False
         if cpus[x] == 1:
             if not ingrp: 
