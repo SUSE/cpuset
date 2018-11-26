@@ -1,39 +1,45 @@
-#  
-# Spec file for package cpuset
-#  
-# Copyright (c) 2008-2010 Novell, Inc. Waltham, MA, USA
-# This file and all modifications and additions to the pristine  
-# package are under the same license as the package itself.  
-#  
-# Please submit bugfixes or comments via 
-#        https://github.com/lpechacek/cpuset/issues
-#    Or 
-#        https://bugzilla.opensuse.org
-# 
-# For supported products, via https://bugzilla.suse.com
-#  
+#
+# spec file for package cpuset
+#
+# Copyright (c) 2018 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2008-2011 Novell, Inc. Waltham, MA, USA
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
 
-# norootforbuild  
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
+#
 
-Name:           cpuset
-Version:        1.6pre1
-Release:        1
-License:        GPL-2.0
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-Url:            https://github.com/lpechacek/cpuset
-Group:          System/Management
-Summary:        Allows manipulation of cpusets on system and provides higher level functions
-Source:         %{name}-%{version}.tar.gz
-BuildRequires:  python-devel
 
-%if 0%{?suse_version} > 0
-%py_requires
+%define realver 1.6pre1
+%if 0%{?suse_version} < 1315
+%define pyver python
+%else
+%define pyver python3
 %endif
-
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%if 0%{?suse_version} && 0%{?suse_version} <= 1110
+%{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%else
+BuildArch:      noarch
+%endif
+Name:           cpuset
+Version:        1.6~pre1
+Release:        0
+Summary:        Allows manipulation of cpusets on system and provides higher level functions
+License:        GPL-2.0-only
+Group:          System/Management
+URL:            https://github.com/lpechacek/cpuset
+Source:         https://github.com/lpechacek/cpuset/archive/v%{realver}.tar.gz
+BuildRequires:  %{pyver}-setuptools
+Requires:       %{pyver}-future
 
 %description
-
 Cpuset is a Python application to make using the cpusets facilities in
 the Linux kernel easier.  The actual included command is called cset
 and it allows manipulation of cpusets on the system and provides higher
@@ -41,42 +47,34 @@ level functions such as implementation and control of a basic CPU
 shielding setup.
 
 %prep
-%setup
-
+%setup -q -n %{name}-%{realver}
 
 %build
-CFLAGS="%{optflags}" \
-%{__python} setup.py build
+%{pyver} setup.py build
 #make doc  ->not yet, asciidoc is missing...
-
 
 %install
 # Install binaries, but do not install docs via setup.py
-%{__python} setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-data=/eraseme
-%{__rm} -rf %{buildroot}/eraseme
+%{pyver} setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-data=/eraseme
+rm -rf %{buildroot}/eraseme
 
 # Install documentation
-%{__mkdir_p} %{buildroot}/%{_defaultdocdir}/cpuset
-%{__cp} NEWS README INSTALL AUTHORS COPYING cset.init.d %{buildroot}/%{_defaultdocdir}/cpuset/
-%{__mkdir_p} %{buildroot}/%{_mandir}/man1
-cd doc
-%{__gzip} *.1
-%{__cp} *.1.gz %{buildroot}/%{_mandir}/man1
-%{__cp} *.txt %{buildroot}/%{_defaultdocdir}/cpuset/
-%{__mkdir} %{buildroot}/%{_defaultdocdir}/cpuset/html
-%{__cp} *.html %{buildroot}/%{_defaultdocdir}/cpuset/html/
+mkdir -p %{buildroot}/%{_mandir}/man1
+mkdir -p %{buildroot}/%{_defaultdocdir}/%{name}/html
 
+install -m 0444 doc/*.1 %{buildroot}/%{_mandir}/man1
 
-%clean
-%{__rm} -rf %{buildroot}
-
+install -m 0444 NEWS README AUTHORS COPYING cset.init.d doc/*.txt %{buildroot}/%{_defaultdocdir}/%{name}
+install -m 0444 doc/*.html %{buildroot}/%{_defaultdocdir}/%{name}/html/
 
 %files
-%defattr(-,root,root)
+%doc %{_docdir}/%{name}
 %{_bindir}/cset
+%if 0%{?suse_version} < 1315
 %{python_sitelib}/*
+%else
+%{python3_sitelib}/*
+%endif
 %{_mandir}/man1/*
-%{_defaultdocdir}/*
-
 
 %changelog
