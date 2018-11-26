@@ -325,7 +325,7 @@ def list_sets(args):
     l = []
     if isinstance(args, list):
         for s in args: 
-            if isinstance(s, str):
+            if isstr(s):
                 l.extend(cset.find_sets(s))
             elif not isinstance(s, cset.CpuSet):
                 raise CpusetException(
@@ -334,7 +334,7 @@ def list_sets(args):
             else:
                 l.append(s)
     else:
-        if isinstance(args, str):
+        if isstr(args):
             l.extend(cset.find_sets(args))
         elif not isinstance(args, cset.CpuSet):
             raise CpusetException(
@@ -355,14 +355,14 @@ def list_sets(args):
 def move(fromset, toset, plist=None, verb=None, force=None):
     log.debug('entering move, fromset=%s toset=%s list=%s force=%s verb=%s', 
               fromset, toset, plist, force, verb)
-    if isinstance(fromset, str):
+    if isstr(fromset):
         fset = cset.unique_set(fromset)
     elif not isinstance(fromset, cset.CpuSet) and plist == None:
         raise CpusetException(
                 "passed fromset=%s, which is not a string or CpuSet" % fromset)
     else:
         fset = fromset
-    if isinstance(toset, str):
+    if isstr(toset):
         tset = cset.unique_set(toset)
     elif not isinstance(toset, cset.CpuSet):
         raise CpusetException(
@@ -528,7 +528,7 @@ def selective_move(fset, tset, plist=None, kthread=None, force=None, threads=Non
     move(None, target, tasks)
 
 def run(tset, args, usr_par=None, grp_par=None):
-    if isinstance(tset, str):
+    if isstr(tset):
         s = cset.unique_set(tset)
     elif not isinstance(tset, cset.CpuSet):
         raise CpusetException(
@@ -593,11 +593,11 @@ def pidspec_to_list(pidspec, fset=None, threads=False):
     log.debug('entering pidspecToList, pidspec=%s fset=%s threads=%s', 
               pidspec, fset, threads)
     if fset: 
-        if isinstance(fset, str): fset = cset.unique_set(fset)
+        if isstr(fset): fset = cset.unique_set(fset)
         elif not isinstance(fset, cset.CpuSet):
             raise CpusetException("passed fset=%s, which is not a string or CpuSet" % fset)
         log.debug('from-set specified as: %s', fset.path)
-    if not isinstance(pidspec, str):
+    if not isstr(pidspec):
         raise CpusetException('pidspec=%s is not a string' % pidspec)
     groups = pidspec.split(',')
     plist = []

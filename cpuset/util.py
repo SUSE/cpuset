@@ -43,6 +43,14 @@ class CpusetNotUnique(CpusetException):
 class CpusetExists(CpusetException):
     pass
 
+try:
+    basestring  # attempt to evaluate basestring
+    def isstr(s):
+        return isinstance(s, basestring)
+except NameError:
+    def isstr(s):
+        return isinstance(s, str)
+
 # a progress bar indicator
 class ProgressBar(object):
     def __init__(self, finalcount, progresschar=None):

@@ -289,7 +289,7 @@ def destroy_sets(sets, recurse=False, force=False):
 def destroy(name):
     """destroy one cpuset by name as cset or string"""
     log.debug('entering destroy, name=%s', name)
-    if isinstance(name, str):
+    if isstr(name):
         set = cset.unique_set(name)
     elif not isinstance(name, cset.CpuSet):
         raise CpusetException(
@@ -403,7 +403,7 @@ def modify(name, cpuspec=None, memspec=None, cx=None, mx=None):
     """modify one cpuset by name, cpuspec, memspec, cpu and mem exclusive flags"""
     log.debug('entering modify, name=%s cpuspec=%s memspec=%s cx=%s mx=%s',
               name, cpuspec, memspec, cx, mx)
-    if isinstance(name, str):
+    if isstr(name):
         nset = cset.unique_set(name)
     elif not isinstance(name, cset.CpuSet):
         raise CpusetException(
@@ -419,7 +419,7 @@ def modify(name, cpuspec=None, memspec=None, cx=None, mx=None):
 def active(name):
     """check that cpuset by name or cset is ready to be used"""
     log.debug("entering active, name=%s", name)
-    if isinstance(name, str):
+    if isstr(name):
         set = cset.unique_set(name)
     elif not isinstance(name, cset.CpuSet):
         raise CpusetException("passing bogus name=%s" % name)
@@ -443,7 +443,7 @@ def set_header(indent=None):
 def set_details(name, indent=None, width=None, usehex=False):
     """return string of cpuset details"""
     if width == None: width = 0
-    if isinstance(name, str):
+    if isstr(name):
         set = cset.unique_set(name)
     elif not isinstance(name, cset.CpuSet):
         raise CpusetException("passing bogus set=%s" % name)
