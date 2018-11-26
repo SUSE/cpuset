@@ -46,12 +46,12 @@ class CpusetExists(CpusetException):
 # a progress bar indicator
 class ProgressBar(object):
     def __init__(self, finalcount, progresschar=None):
-        self.__dict__['__call__'] = self.progress
         self.finalcount=finalcount
         self.blockcount=0
-        # Use ascii block char for progress if none passed
+        self.finished=False
+        # Use dark shade (U+2593) char for progress if none passed
         if not progresschar: 
-            self.block=chr(178)
+            self.block='\u2593'
         else: 
             self.block=progresschar
         if config.mread: 
@@ -63,7 +63,13 @@ class ProgressBar(object):
         self.f.write(']%')
         for i in lrange(52): self.f.write('\b')
 
+    def __call__(self, count):
+        self.progress(count)
+
     def progress(self, count):
+        if self.finished:
+            return
+
         count=min(count, self.finalcount)
 
         if self.finalcount:
@@ -71,6 +77,8 @@ class ProgressBar(object):
             if percentcomplete < 1: percentcomplete=1
         else:
             percentcomplete=100
+            self.finished=True
+            return
 
         blockcount=percentcomplete//2
         if not config.mread:
@@ -79,6 +87,7 @@ class ProgressBar(object):
                     self.f.write(self.block)
                     self.f.flush()
 
-            if percentcomplete == 100: self.f.write("]\n")
+            if percentcomplete == 100:
+                self.f.write("]\n")
+                self.finished=True
         self.blockcount=blockcount
-
