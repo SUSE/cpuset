@@ -255,7 +255,9 @@ def lookup_task_from_proc(pid):
     log.debug("entering lookup_task_from_proc, pid = %s", str(pid))
     path = "/proc/"+str(pid)+"/cpuset"
     if os.access(path, os.F_OK):
-        set = io.open(path,encoding="iso8859-1").readline()[:-1]
+        f = io.open(path,encoding="iso8859-1")
+        set = f.readline().strip()
+        f.close()
         log.debug('lookup_task_from_proc: found task %s cpuset: %s', str(pid), set)
         return set
     # FIXME: add search for threads here...
