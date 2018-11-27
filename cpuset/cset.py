@@ -208,9 +208,9 @@ class CpuSet(object):
 
     def gettasks(self):
         f = io.open(CpuSet.basepath+self.path+CpuSet.tasks_path,encoding="iso8859-1")
-        lst = []
-        for task in f: lst.append(task[:-1])
-        return lst
+        lst = map(lambda line: line.strip(), f.readlines())
+        f.close()
+        return list(lst)
     def settasks(self, tasklist):
         notfound = []
         unmovable = []
