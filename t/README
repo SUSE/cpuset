@@ -1,4 +1,8 @@
 CPUSET Tests
 ============
 
-
+* test_cset.py
+  - the test assumes 4 CPUs
+  - run test as root
+  - set up a shield before running the test:
+        cset shield -s -c 2-3 -k on
