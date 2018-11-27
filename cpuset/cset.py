@@ -159,51 +159,50 @@ class CpuSet(object):
         self.name = path[path.rfind('/')+1:]
         log.debug("...name=%s", self.name)
 
+    def read_first_line_from(self, file_to_read):
+        f = io.open(CpuSet.basepath+self.path+file_to_read, encoding="iso8859-1")
+        retval = f.readline().strip()
+        f.close()
+        return retval
+
+    def write_value_to(self, file_to_write, value):
+        log.debug("-> prop_set %s.%s = %s", self.path, file_to_write, value)
+        f = io.open(CpuSet.basepath+self.path+file_to_write, 'w', encoding="iso8859-1")
+        f.write(str(value))
+        f.close()
+
+    def write_01_to(self, file_to_write, value):
+        self.write_value_to(file_to_write, '1' if value else '0')
+
     # Properties of cpuset node
     def delprop(self):
         raise AttributeError("deletion of properties not allowed")
 
     def getcpus(self): 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.cpus_path,encoding="iso8859-1")
-        return f.readline()[:-1]
+        return self.read_first_line_from(CpuSet.cpus_path)
     def setcpus(self, newval):
         cpuspec_check(newval)
-        f = io.open(CpuSet.basepath+self.path+CpuSet.cpus_path,'w',encoding="iso8859-1")
-        f.write(str(newval))
-        f.close()
-        log.debug("-> prop_set %s.cpus = %s", self.path, newval) 
+        self.write_value_to(CpuSet.cpus_path, newval)
     cpus = property(fget=getcpus, fset=setcpus, fdel=delprop, doc="CPU specifier")
 
     def getmems(self): 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.mems_path,encoding="iso8859-1")
-        return f.readline()[:-1]
+        return self.read_first_line_from(CpuSet.mems_path)
     def setmems(self, newval): 
         # FIXME: check format for correctness
-        f = io.open(CpuSet.basepath+self.path+CpuSet.mems_path,'w',encoding="iso8859-1")
-        f.write(str(newval))
-        f.close()
-        log.debug("-> prop_set %s.mems = %s", self.path, newval) 
+        self.write_value_to(CpuSet.mems_path, newval)
     mems = property(getmems, setmems, delprop, "Mem node specifier")
     
     def getcpuxlsv(self): 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path,encoding="iso8859-1")
-        return f.readline()[:-1] == '1'
+        return self.read_first_line_from(CpuSet.cpu_exclusive_path) == '1'
     def setcpuxlsv(self, newval):
-        log.debug("-> prop_set %s.cpu_exclusive = %s", self.path, newval) 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.cpu_exclusive_path,'w',encoding="iso8859-1")
-        f.write('1' if newval else '0')
-        f.close()
+        self.write_01_to(CpuSet.cpu_exclusive_path, newval)
     cpu_exclusive = property(getcpuxlsv, setcpuxlsv, delprop, 
                              "CPU exclusive flag")
 
     def getmemxlsv(self): 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path,encoding="iso8859-1")
-        return f.readline()[:-1] == '1'
+        return self.read_first_line_from(CpuSet.mem_exclusive_path) == '1'
     def setmemxlsv(self, newval):
-        log.debug("-> prop_set %s.mem_exclusive = %s", self.path, newval) 
-        f = io.open(CpuSet.basepath+self.path+CpuSet.mem_exclusive_path,'w',encoding="iso8859-1")
-        f.write('1' if newval else '0')
-        f.close()
+        self.write_01_to(CpuSet.mem_exclusive_path, newval)
     mem_exclusive = property(getmemxlsv, setmemxlsv, delprop, 
                              "Memory exclusive flag")
 
