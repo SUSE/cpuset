@@ -1,7 +1,23 @@
 CPUSET Tests
 ============
 
-* test_cset.py
+* trigger-all.sh
+  - a shell script designed to trigger most code paths in cpuset
+  - as a side effect it can be used to check if something broke after a code
+    change
+  - procedure (as root):
+    1) run trigger-all.sh with known-good version of cset utility, store output
+       into a file
+    2) re-run the same test with your changed version - use both Python 2 and 3
+       - storing script output into files
+    3) compare these three files side by side (e.g. in vimdiff) looking for
+       irregularities
+   Hints: Use PYTHONIOENCODING=utf-8 to get correct output of test_util.py when
+   redirected into pipe. Consider filtering out numbers from script output as
+   they change (primarily PIDs) and typically form just noise. See
+   run-trigger-all.sh for an example.
+
+* test_cset.py (run from trigger-all.sh)
   - the test assumes 4 CPUs
   - run test as root
   - set up a shield before running the test:
