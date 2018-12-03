@@ -17,7 +17,6 @@
 #
 
 
-%define realver 1.6pre1
 %if 0%{?suse_version} < 1315
 %define pyver python
 %else
@@ -29,13 +28,13 @@
 BuildArch:      noarch
 %endif
 Name:           cpuset
-Version:        1.6~pre1
+Version:        1.6
 Release:        0
 Summary:        Allows manipulation of cpusets on system and provides higher level functions
 License:        GPL-2.0-only
 Group:          System/Management
 URL:            https://github.com/lpechacek/cpuset
-Source:         https://github.com/lpechacek/cpuset/archive/v%{realver}.tar.gz
+Source:         https://github.com/lpechacek/cpuset/archive/v%{version}.tar.gz
 BuildRequires:  %{pyver}-setuptools
 Requires:       %{pyver}-future
 
@@ -47,7 +46,7 @@ level functions such as implementation and control of a basic CPU
 shielding setup.
 
 %prep
-%setup -q -n %{name}-%{realver}
+%setup -q -n %{name}-%{version}
 
 %build
 %{pyver} setup.py build
