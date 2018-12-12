@@ -30,7 +30,7 @@ BuildArch:      noarch
 Name:           cpuset
 Version:        1.6
 Release:        0
-Summary:        Allows manipulation of cpusets on system and provides higher level functions
+Summary:        Cpuset manipulation tool
 License:        GPL-2.0-only
 Group:          System/Management
 URL:            https://github.com/lpechacek/cpuset
@@ -39,9 +39,9 @@ BuildRequires:  %{pyver}-setuptools
 Requires:       %{pyver}-future
 
 %description
-Cpuset is a Python application to make using the cpusets facilities in
-the Linux kernel easier.  The actual included command is called cset
-and it allows manipulation of cpusets on the system and provides higher
+Cpuset is a Python application for using the cpuset facilities in
+the Linux kernel. The actual included command is called cset
+and allows manipulation of cpusets on the system, and provides higher
 level functions such as implementation and control of a basic CPU
 shielding setup.
 
