@@ -113,7 +113,7 @@ summary of what a particular command does.
 PERSISTENT CPUSETS
 ------------------
 To create a persistent cpuset setup, i.e. one that survives a reboot,
-you need to create the file '/etc/init.d/cset'.  This distribuition of
+you need to create the file '/etc/init.d/cset'.  This distribution of
 cset includes an example cset init.d file found in
 '/usr/share/doc/pacakges/cpuset' which is called 'cset.init.d'.  You
 will need to alter the file to your specifications and copy it to be
