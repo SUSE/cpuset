@@ -484,7 +484,7 @@ def set_details(name, indent=None, width=None, usehex=False):
     if width != 0 and len(tst) > width:
         target = width - len(out)
         patha = set.path[:len(set.path)//2-3]
-        pathb = set.path[len(set.path//2):]
+        pathb = set.path[len(set.path)//2:]
         patha = patha[:target//2-3]
         pathb = pathb[-target//2:]
         out += patha + '...' + pathb
