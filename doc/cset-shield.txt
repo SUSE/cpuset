@@ -137,7 +137,7 @@ set.  Further, the command moves all processes and threads,
 including kernel threads from the root cpuset to the "free"
 cpuset.  
 
-NOTE: If you do use the --syset/--userset options, then you must
+NOTE: If you do use the --sysset/--userset options, then you must
 continue to use those for every invocation of the shield supercommand.
 
 After initialization, you can run the process of interest on the
