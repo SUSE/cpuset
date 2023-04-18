@@ -98,7 +98,7 @@ initialize these cpusets and dedicate CPU0 and CPU1 to the "free"
 set and (on a 4-way machine) dedicate CPU2 and CPU3 to the "cage"
 set.  Further, the command moves all processes and threads,
 including kernel threads from the root cpuset to the "free"
-cpuset.  Note however that if you do use the --syset/--userset
+cpuset.  Note however that if you do use the --sysset/--userset
 options, then you must continue to use those for every invocation
 of the shield supercommand.
 
