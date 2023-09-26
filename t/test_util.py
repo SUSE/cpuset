@@ -1,4 +1,3 @@
-from __future__ import print_function
 from cpuset import util,config
 import time
 

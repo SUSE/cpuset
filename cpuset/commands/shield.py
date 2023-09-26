@@ -1,8 +1,6 @@
 """Shield supercommand
 """
 
-from __future__ import unicode_literals
-from builtins import str
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
 Copyright (C) 2013-2018 SUSE

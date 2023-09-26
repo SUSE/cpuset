@@ -4,8 +4,6 @@
 #
 # Feel free to improve the unit test.
 
-from __future__ import unicode_literals
-from __future__ import print_function
 from cpuset import cset
 from cpuset.util import CpusetException
 import unittest
