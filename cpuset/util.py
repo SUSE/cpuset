@@ -1,11 +1,6 @@
 """Utility functions
 """
-from __future__ import unicode_literals
-from __future__ import print_function
-from future.utils import lrange
 
-from builtins import chr
-from builtins import object
 __copyright__ = """
 Copyright (C) 2007-2010 Novell Inc.
 Copyright (C) 2013-2018 SUSE
@@ -67,9 +62,9 @@ class ProgressBar(object):
         self.f=sys.stdout
         if not self.finalcount: return
         self.f.write('[')
-        for i in lrange(50): self.f.write(' ')
+        for i in range(50): self.f.write(' ')
         self.f.write(']%')
-        for i in lrange(52): self.f.write('\b')
+        for i in range(52): self.f.write('\b')
 
     def __call__(self, count):
         self.progress(count)
@@ -91,7 +86,7 @@ class ProgressBar(object):
         blockcount=percentcomplete//2
         if not config.mread:
             if blockcount > self.blockcount:
-                for i in lrange(self.blockcount,blockcount):
+                for i in range(self.blockcount,blockcount):
                     self.f.write(self.block)
                     self.f.flush()
 

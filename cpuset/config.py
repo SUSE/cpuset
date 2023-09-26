@@ -7,11 +7,7 @@ if desired.  The class variables are given default values in the module source.
 Anything found in the configuration files in the list of paths will override
 these defaults.
 """
-from __future__ import unicode_literals
-from __future__ import print_function
 
-from future import standard_library
-standard_library.install_aliases()
 __copyright__ = """
 Copyright (C) 2009-2010 Novell Inc.
 Copyright (C) 2013-2018 SUSE
