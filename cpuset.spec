@@ -36,7 +36,6 @@ Group:          System/Management
 URL:            https://github.com/SUSE/cpuset
 Source:         https://github.com/SUSE/cpuset/archive/refs/tags/v%{version}.tar.gz
 BuildRequires:  %{pyver}-setuptools
-Requires:       %{pyver}-future
 
 %description
 Cpuset is a Python application for using the cpuset facilities in
