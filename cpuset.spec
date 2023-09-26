@@ -1,7 +1,7 @@
 #
 # spec file for package cpuset
 #
-# Copyright (c) 2018 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2021 SUSE LLC
 # Copyright (c) 2008-2011 Novell, Inc. Waltham, MA, USA
 #
 # All modifications and additions to the file contributed by third parties
@@ -28,13 +28,13 @@
 BuildArch:      noarch
 %endif
 Name:           cpuset
-Version:        1.6
+Version:        1.6.1
 Release:        0
 Summary:        Cpuset manipulation tool
 License:        GPL-2.0-only
 Group:          System/Management
-URL:            https://github.com/lpechacek/cpuset
-Source:         https://github.com/lpechacek/cpuset/archive/v%{version}.tar.gz
+URL:            https://github.com/SUSE/cpuset
+Source:         https://github.com/SUSE/cpuset/archive/refs/tags/v%{version}.tar.gz
 BuildRequires:  %{pyver}-setuptools
 Requires:       %{pyver}-future
 
@@ -46,7 +46,8 @@ level functions such as implementation and control of a basic CPU
 shielding setup.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q
+%autopatch -p1
 
 %build
 %{pyver} setup.py build
