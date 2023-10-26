@@ -3,20 +3,21 @@ standard Linux filesystem calls to make using the cpusets facilities
 in the Linux kernel easier.
 
 For the latest version see:
-   https://github.com/lpechacek/cpuset
+   https://github.com/SUSE/cpuset
 
 For packages, see the OpenSUSE build service:
    https://build.opensuse.org/package/show/hardware/cpuset
    http://download.opensuse.org/repositories/hardware/
 
 Bugs or feature requests should be sent to:
-   https://github.com/lpechacek/cpuset/issues
+   https://github.com/SUSE/cpuset/issues
  or for supported products, SUSE Bugzilla at:
    https://bugzilla.suse.com
 
 -----
 
 Copyright (C) 2008-2011 Novell Inc.
+Copyright (C) 2023 SUSE LLC
 
 Author: Alex Tsariounov <tsariounov@gmail.com>
 

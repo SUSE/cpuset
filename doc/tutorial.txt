@@ -1329,7 +1329,7 @@ What To Do if There are Problems
 If you encounter problems with the *cset* application, the best option is to
 log a bug with the *cset* bugzilla instance found here:
 
-  https://github.com/lpechacek/cpuset/issues
+  https://github.com/SUSE/cpuset/issues
 
 If you are using *cset* on a supported operating system such as SLES or SLERT
 from Novell, then please use that bugzilla instead at:
