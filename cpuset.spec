@@ -17,11 +17,6 @@
 #
 
 
-%if 0%{?suse_version} < 1315
-%define pyver python
-%else
-%define pyver python3
-%endif
 %if 0%{?suse_version} && 0%{?suse_version} <= 1110
 %{!?python_sitelib: %global python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %else
@@ -35,7 +30,7 @@ License:        GPL-2.0-only
 Group:          System/Management
 URL:            https://github.com/SUSE/cpuset
 Source:         https://github.com/SUSE/cpuset/archive/refs/tags/v%{version}.tar.gz
-BuildRequires:  %{pyver}-setuptools
+BuildRequires:  python3-setuptools
 
 %description
 Cpuset is a Python application for using the cpuset facilities in
@@ -49,12 +44,12 @@ shielding setup.
 %autopatch -p1
 
 %build
-%{pyver} setup.py build
+python3 setup.py build
 #make doc  ->not yet, asciidoc is missing...
 
 %install
 # Install binaries, but do not install docs via setup.py
-%{pyver} setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-data=/eraseme
+python3 setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-data=/eraseme
 rm -rf %{buildroot}/eraseme
 
 # Install documentation
@@ -63,17 +58,14 @@ mkdir -p %{buildroot}/%{_defaultdocdir}/%{name}/html
 
 install -m 0444 doc/*.1 %{buildroot}/%{_mandir}/man1
 
-install -m 0444 NEWS README AUTHORS COPYING cset.init.d doc/*.txt %{buildroot}/%{_defaultdocdir}/%{name}
+install -m 0444 NEWS README AUTHORS cset.init.d doc/*.txt %{buildroot}/%{_defaultdocdir}/%{name}
 install -m 0444 doc/*.html %{buildroot}/%{_defaultdocdir}/%{name}/html/
 
 %files
+%license COPYING
 %doc %{_docdir}/%{name}
 %{_bindir}/cset
-%if 0%{?suse_version} < 1315
-%{python_sitelib}/*
-%else
 %{python3_sitelib}/*
-%endif
 %{_mandir}/man1/*
 
 %changelog
