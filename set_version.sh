@@ -11,8 +11,8 @@ sed -i "s/^\(version = '*\).*\('[[:space:]]*$\)/\1$VER\2/" cpuset/version.py
 sed -i "1i \
 ============================================================\n\
 Cpuset $VER ($DATE)\n\
-https://github.com/lpechacek/cpuset\n\
-http://download.opensuse.org/repositories/home:/LPechacek:/cpuset-release/\n\
+https://github.com/SUSE/cpuset\n\
+http://download.opensuse.org/hardware/cpuset/\n\
 \n
 " NEWS
 ${EDITOR:-vi} NEWS
