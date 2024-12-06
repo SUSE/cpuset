@@ -49,14 +49,14 @@ class Commands(dict):
             sys.exit(1)
 
         return candidates[0]
-        
+
     def __getitem__(self, key):
         """Return the command python module name based.
         """
         global prog
 
         cmd_mod = self.get(key) or self.get(self.canonical_cmd(key))
-            
+
         __import__('cpuset.commands.' + cmd_mod)
         return getattr(cpuset.commands, cmd_mod)
 
@@ -73,7 +73,7 @@ supercommands = (
 
 def _print_helpstring(cmd):
     print('  ' + cmd + ' ' * (12 - len(cmd)) + commands[cmd].help)
-    
+
 def print_help():
     print('Usage: %s [global options] <command> [command options]' % os.path.basename(sys.argv[0]))
     print()
@@ -89,7 +89,7 @@ def print_help():
 
     cmds = list(commands.keys())
     cmds.sort()
-    print() 
+    print()
     print('Super commands (high-level and multi-function):')
     for cmd in supercommands:
         _print_helpstring(cmd)
@@ -115,7 +115,7 @@ def main():
         print('usage: %s <command>' % prog, file=sys.stderr)
         print('  Try "%s --help" for a list of supported commands' % prog, file=sys.stderr)
         sys.exit(1)
-    
+
     # configure logging
     import logging
     console = logging.StreamHandler(sys.stdout)

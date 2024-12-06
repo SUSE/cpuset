@@ -30,7 +30,7 @@ from cpuset import cset
 from cpuset.util import *
 from cpuset import config
 
-global log 
+global log
 log = logging.getLogger('shield')
 
 help = 'supercommand to set up and manage basic shielding'
@@ -143,14 +143,14 @@ status of both shield and non-shield.  Tasks will be listed if
 
 You can adjust which CPUs are in the shielded cpuset by issuing
 the --cpu subcommand again anytime after the shield has been
-initialized.  
+initialized.
 
 For example if the original shield contained CPU0 and CPU1 in the
 system set and CPU2 and CPU3 in the user set, if you then issue
 the following command:
-    
+
     # cset shield --cpu=1,2,3
-    
+
 then that command will move CPU1 into the shielded "user" cpuset.
 Any processes or threads that were running on CPU1 that belonged
 to the unshielded "system" cpuset are migrated to CPU0 by the
@@ -225,10 +225,10 @@ def func(parser, options, args):
     if options.verbose: verbose = options.verbose
     cset.rescan()
 
-    if options.sysset: 
+    if options.sysset:
         global SYS_SET
         SYS_SET = options.sysset
-    if options.userset: 
+    if options.userset:
         global USR_SET
         USR_SET = options.userset
 
@@ -254,16 +254,16 @@ def func(parser, options, args):
             options.shield = True
         else:
             return
-        
-    if options.reset: 
+
+    if options.reset:
         reset_shield()
         return
 
-    if options.cpu: 
+    if options.cpu:
         make_shield(options.cpu, options.kthread)
         return
 
-    if options.kthread: 
+    if options.kthread:
         make_kthread(options.kthread)
         return
 
@@ -271,7 +271,7 @@ def func(parser, options, args):
         exec_args(args, options.user, options.group)
         # exec_args does not return...
 
-    if options.shield or options.unshield: 
+    if options.shield or options.unshield:
         shield_exists()
         if options.shield:
             smsg = 'shielding'
@@ -351,11 +351,11 @@ def reset_shield():
     log.info("--> deactivating/reseting shielding")
     shield_exists()
     tasks = cset.unique_set(USR_SET).tasks
-    log.info('moving %s tasks from "%s" user set to root set...', 
+    log.info('moving %s tasks from "%s" user set to root set...',
              len(tasks), USR_SET)
     proc.move(USR_SET, 'root', None, verbose)
     tasks = cset.unique_set(SYS_SET).tasks
-    log.info('moving %s tasks from "%s" system set to root set...', 
+    log.info('moving %s tasks from "%s" system set to root set...',
              len(tasks), SYS_SET)
     proc.move(SYS_SET, 'root', None, verbose)
     log.info('deleting "%s" and "%s" sets', USR_SET, SYS_SET)
@@ -434,7 +434,7 @@ def make_kthread(state):
     if state == 'on':
         log.info('--> activating kthread shielding')
         root_tasks = cset.unique_set('/').tasks
-        log.debug('root set has %d tasks, checking for unbound', 
+        log.debug('root set has %d tasks, checking for unbound',
                   len(root_tasks))
         tasks = []
         for task in root_tasks:
