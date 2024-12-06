@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 """
 
 import sys, os, io, re, logging, pwd, grp
+import subprocess
 from optparse import OptionParser, make_option
 
 from cpuset import config
@@ -574,11 +575,11 @@ def run(tset, args, usr_par=None, grp_par=None):
     os.execvp(args[0], args)
 
 def is_unbound(proc):
-    # FIXME: popen is slow...
     # --> use /proc/<pid>/status -> Cpus_allowed
     #     int(line.replace(',',''), 16)
     #     note: delete leading zeros to compare to allcpumask
-    line = os.popen('/usr/bin/taskset -p ' + str(proc) +' 2>/dev/null', 'r').readline()
+    taskset_res = subprocess.run(['/usr/bin/taskset -p', str(proc)], capture_output=True)
+    line = taskset_res.stdout.readline()
     aff = line.split()[-1]
     log.debug('is_unbound, proc=%s aff=%s allcpumask=%s',
               proc, aff, cset.allcpumask)
