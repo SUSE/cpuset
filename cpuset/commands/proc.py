@@ -21,16 +21,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 """
 
 import sys, os, io, re, logging, pwd, grp
+import subprocess
 from optparse import OptionParser, make_option
 
 from cpuset import config
 from cpuset import cset
 from cpuset.util import *
 from cpuset.commands.common import *
-try: from cpuset.commands import set 
+try: from cpuset.commands import set
 except SyntaxError:
     raise
-except: 
+except:
     pass
 
 global log
@@ -57,7 +58,7 @@ Processes are created by specifying the path to the executable
 and specifying the cpuset that the process is to be created in.
 
 For example:
-    # cset proc --set=blazing_cpuset --exec /usr/bin/fast_code 
+    # cset proc --set=blazing_cpuset --exec /usr/bin/fast_code
         This command will execute the /usr/bin/fast_code program
         on the "blazing_cpuset" cpuset.
 
@@ -126,7 +127,7 @@ the -k/--kthread switch is specified.  If it is, then all unbound
 kernel threads will be added to the move.  Unbound kernel threads
 are those that can run on any CPU.  If you also specify the
 --force switch, then all tasks, kernel or not, bound or not,
-will be moved.  
+will be moved.
 
 CAUTION: Please be cautious with the --force switch, since moving
 a kernel thread that is bound to a specific CPU to a cpuset that
@@ -207,14 +208,14 @@ def func(parser, options, args):
 
     cset.rescan()
 
-    tset = None 
+    tset = None
     if options.list or options.exc:
         if options.set:
             tset = cset.unique_set(options.set)
         elif options.toset:
             tset = cset.unique_set(options.toset)
         elif len(args) > 0:
-            if options.exc: 
+            if options.exc:
                 tset = cset.unique_set(args[0])
                 del args[0]
             else:
@@ -270,7 +271,7 @@ def func(parser, options, args):
         set.active(tset)
         # next, if there is a pidspec, move just that
         if options.pid:
-            if options.fromset and not options.force: 
+            if options.fromset and not options.force:
                 fset = cset.unique_set(options.fromset)
             elif options.toset and options.set:
                 fset = cset.unique_set(options.set)
@@ -295,15 +296,15 @@ def func(parser, options, args):
                 raise CpusetException("origination cpuset not specified")
             nt = len(fset.tasks)
             if nt == 0:
-                raise CpusetException('no tasks to move from cpuset "%s"' 
+                raise CpusetException('no tasks to move from cpuset "%s"'
                                       % fset.path)
             if options.move:
-                log.info('moving all tasks from %s to %s', 
+                log.info('moving all tasks from %s to %s',
                          fset.name, tset.path)
                 selective_move(fset, tset, None, options.kthread, options.force,
                                options.threads)
             else:
-                log.info('moving all kernel threads from %s to %s', 
+                log.info('moving all kernel threads from %s to %s',
                          fset.path, tset.path)
                 # this is a -k "move", so only move kernel threads
                 pids = []
@@ -321,12 +322,12 @@ def list_sets(args):
     log.debug("entering list_sets, args=%s", args)
     l = []
     if isinstance(args, list):
-        for s in args: 
+        for s in args:
             if isstr(s):
                 l.extend(cset.find_sets(s))
             elif not isinstance(s, cset.CpuSet):
                 raise CpusetException(
-                        'list_sets() args=%s, of which "%s" not a string or CpuSet' 
+                        'list_sets() args=%s, of which "%s" not a string or CpuSet'
                         % (args, s))
             else:
                 l.append(s)
@@ -350,7 +351,7 @@ def list_sets(args):
             log.info(cset.summary(s))
 
 def move(fromset, toset, plist=None, verb=None, force=None):
-    log.debug('entering move, fromset=%s toset=%s list=%s force=%s verb=%s', 
+    log.debug('entering move, fromset=%s toset=%s list=%s force=%s verb=%s',
               fromset, toset, plist, force, verb)
     if isstr(fromset):
         fset = cset.unique_set(fromset)
@@ -368,15 +369,15 @@ def move(fromset, toset, plist=None, verb=None, force=None):
         tset = toset
     if plist == None:
         log.debug('moving default of all processes')
-        if tset != fset and not force: 
+        if tset != fset and not force:
             plist = fset.tasks
         else:
             raise CpusetException(
                     "cannot move tasks into their origination cpuset")
     output = 0
-    if verb: 
+    if verb:
         output = verb
-    elif verbose: 
+    elif verbose:
         output = verbose
     if output:
         l = []
@@ -410,7 +411,7 @@ def selective_move(fset, tset, plist=None, kthread=None, force=None, threads=Non
     ktskb = 0
     sstsk = 0
     target = cset.unique_set(tset)
-    if fset: 
+    if fset:
         fset = cset.unique_set(fset)
         if fset == target and not force:
             raise CpusetException(
@@ -426,7 +427,7 @@ def selective_move(fset, tset, plist=None, kthread=None, force=None, threads=Non
             # kernel threads do not have an excutable image
             os.readlink('/proc/'+task+'/exe')
             autsk += 1
-            if fset and not force: 
+            if fset and not force:
                 try:
                     task_check.index(task)
                     tasks.append(task)
@@ -440,9 +441,9 @@ def selective_move(fset, tset, plist=None, kthread=None, force=None, threads=Non
                                 if thread != task:
                                     log.debug('  adding thread %s', thread)
                                     tasks.append(thread)
-                                    utsk += 1 
+                                    utsk += 1
                 except ValueError:
-                    log.debug(' task %s not running in %s, skipped', 
+                    log.debug(' task %s not running in %s, skipped',
                               task, fset.name)
                     utsknr += 1
             else:
@@ -459,11 +460,11 @@ def selective_move(fset, tset, plist=None, kthread=None, force=None, threads=Non
                 # this is in try because the task may not exist by the
                 # time we do this, in that case, just ignore it
                 if kthread:
-                    if force: 
+                    if force:
                         tasks.append(task)
                         ktsk += 1
                     else:
-                        if is_unbound(task): 
+                        if is_unbound(task):
                             tasks.append(task)
                             ktsk += 1
                         elif cset.lookup_task_from_cpusets(task) == target.path:
@@ -480,7 +481,7 @@ def selective_move(fset, tset, plist=None, kthread=None, force=None, threads=Non
                 ktsknr += 1
     # ok, move 'em
     log.debug('moving %d tasks to %s ...', len(tasks), tset.name)
-    if len(tasks) == 0: 
+    if len(tasks) == 0:
         log.info('**> no task matched move criteria')
         if sstsk > 0:
             raise CpusetException('same source/destination cpuset, use --force if ok')
@@ -535,8 +536,8 @@ def run(tset, args, usr_par=None, grp_par=None):
     log.debug('entering run, set=%s args=%s ', s.path, args)
     set.active(s)
     # check user
-    if usr_par: 
-        try: 
+    if usr_par:
+        try:
             user = pwd.getpwnam(usr_par)[2]
         except KeyError:
             try:
@@ -562,11 +563,11 @@ def run(tset, args, usr_par=None, grp_par=None):
                 pass # just forget it
     # move myself into target cpuset and exec child
     move_pidspec(str(os.getpid()), s)
-    log.info('--> last message, executed args into cpuset "%s", new pid is: %s', 
-             s.path, os.getpid()) 
+    log.info('--> last message, executed args into cpuset "%s", new pid is: %s',
+             s.path, os.getpid())
     # change user and group before exec
     if grp_par: os.setgid(group)
-    if usr_par: 
+    if usr_par:
         os.setuid(user)
         os.environ["LOGNAME"] = usr_par
         os.environ["USERNAME"] = usr_par
@@ -574,22 +575,22 @@ def run(tset, args, usr_par=None, grp_par=None):
     os.execvp(args[0], args)
 
 def is_unbound(proc):
-    # FIXME: popen is slow... 
     # --> use /proc/<pid>/status -> Cpus_allowed
     #     int(line.replace(',',''), 16)
     #     note: delete leading zeros to compare to allcpumask
-    line = os.popen('/usr/bin/taskset -p ' + str(proc) +' 2>/dev/null', 'r').readline()
+    taskset_res = subprocess.run(['/usr/bin/taskset -p', str(proc)], capture_output=True)
+    line = taskset_res.stdout.readline()
     aff = line.split()[-1]
-    log.debug('is_unbound, proc=%s aff=%s allcpumask=%s', 
+    log.debug('is_unbound, proc=%s aff=%s allcpumask=%s',
               proc, aff, cset.allcpumask)
     if aff == cset.allcpumask: return True
     return False
 
 def pidspec_to_list(pidspec, fset=None, threads=False):
     """create a list of process ids out of a pidspec"""
-    log.debug('entering pidspecToList, pidspec=%s fset=%s threads=%s', 
+    log.debug('entering pidspecToList, pidspec=%s fset=%s threads=%s',
               pidspec, fset, threads)
-    if fset: 
+    if fset:
         if isstr(fset): fset = cset.unique_set(fset)
         elif not isinstance(fset, cset.CpuSet):
             raise CpusetException("passed fset=%s, which is not a string or CpuSet" % fset)

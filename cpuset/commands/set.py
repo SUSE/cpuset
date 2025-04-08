@@ -30,7 +30,7 @@ from cpuset.commands.common import *
 try: from cpuset.commands import proc
 except SyntaxError:
     raise
-except: 
+except:
     pass
 
 global log
@@ -151,7 +151,7 @@ options = [make_option('-l', '--list',
                        help = 'do things recursively, use with --list and --destroy',
                        action = 'store_true'),
            make_option('--force',
-                       help = 'force recursive deletion even if processes are running ' 
+                       help = 'force recursive deletion even if processes are running '
                               'in those cpusets (they will be moved to parent cpusets)',
                        action = 'store_true'),
            make_option('-x', '--usehex',
@@ -254,7 +254,7 @@ def destroy_sets(sets, recurse=False, force=False):
         nl.append(sets)
     # check that sets passed are ok, will raise if one is bad
     sl2 = []
-    for s in nl: 
+    for s in nl:
         st = cset.unique_set(s)
         sl2.append(st)
         if len(st.subsets) > 0:
@@ -291,7 +291,7 @@ def destroy(name):
         set = cset.unique_set(name)
     elif not isinstance(name, cset.CpuSet):
         raise CpusetException(
-                "passed name=%s, which is not a string or CpuSet" % name) 
+                "passed name=%s, which is not a string or CpuSet" % name)
     else:
         set = name
     tsks = set.tasks
@@ -361,7 +361,7 @@ def create_from_options(options, args):
     mspec = None
     cx = None
     mx = None
-    if options.cpu: 
+    if options.cpu:
         cset.cpuspec_check(options.cpu)
         cspec = options.cpu
     if options.mem:
@@ -385,11 +385,11 @@ def create(name, cpuspec, memspec, cx, mx):
     try:
         cset.unique_set(name)
     except CpusetNotFound:
-       pass 
+       pass
     except:
         raise CpusetException('cpuset "%s" not unique, please specify by path' % name)
     else:
-        raise CpusetExists('attempt to create already existing set: "%s"' % name) 
+        raise CpusetExists('attempt to create already existing set: "%s"' % name)
     # FIXME: check if name is a path here
     os.mkdir(cset.CpuSet.basepath+'/'+name)
     # fixme: perhaps reparsing the all the sets is not so efficient...
@@ -405,7 +405,7 @@ def modify(name, cpuspec=None, memspec=None, cx=None, mx=None):
         nset = cset.unique_set(name)
     elif not isinstance(name, cset.CpuSet):
         raise CpusetException(
-                "passed name=%s, which is not a string or CpuSet" % name) 
+                "passed name=%s, which is not a string or CpuSet" % name)
     else:
         nset = name
     log.debug('modifying cpuset "%s"', nset.name)
@@ -472,7 +472,7 @@ def set_details(name, indent=None, width=None, usehex=False):
     if config.mread:
         l.append(set.path)
         l2 = []
-        for line in l: 
+        for line in l:
             l2.append(line.strip())
         return ';'.join(l2)
 
