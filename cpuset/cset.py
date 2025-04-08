@@ -14,7 +14,7 @@ published by the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
 General Public License for more details.
 
 You should have received a copy of the GNU General Public License
@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 import os, re, sys, logging
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     sys.path.insert(0, "..")
     logging.basicConfig()
 
@@ -33,7 +33,7 @@ log = logging.getLogger('cset')
 RootSet = None
 
 class CpuSet(object):
-    # sets is a class variable dict that keeps track of all
+    # sets is a class variable dict that keeps track of all 
     # cpusets discovered such that we can link them in properly.
     # The basepath is it's base path, the sets are indexed via
     # a relative path from this basepath.
@@ -60,7 +60,7 @@ class CpuSet(object):
             self.name = 'root'
             self.path = '/'
             self.parent = self
-            if (CpuSet.sets):
+            if (CpuSet.sets): 
                 del CpuSet.sets
                 CpuSet.sets = {}
             CpuSet.sets[self.path] = self
@@ -82,7 +82,7 @@ class CpuSet(object):
                     relpath = (os.path.join(dir,sub).replace(CpuSet.basepath, '')
                                if len(sub) > 0 else '/')
                     node.subsets.append(CpuSet.sets[relpath])
-                log.debug("%s has %i subsets: [%s]", dir,
+                log.debug("%s has %i subsets: [%s]", dir, 
                           len(node.subsets), '|'.join(dirs))
 
             log.debug("staring top-down parenting walk...")
@@ -174,32 +174,32 @@ class CpuSet(object):
     def delprop(self):
         raise AttributeError("deletion of properties not allowed")
 
-    def getcpus(self):
+    def getcpus(self): 
         return self.read_first_line_from(CpuSet.cpus_path)
     def setcpus(self, newval):
         cpuspec_check(newval)
         self.write_value_to(CpuSet.cpus_path, newval)
     cpus = property(fget=getcpus, fset=setcpus, fdel=delprop, doc="CPU specifier")
 
-    def getmems(self):
+    def getmems(self): 
         return self.read_first_line_from(CpuSet.mems_path)
-    def setmems(self, newval):
+    def setmems(self, newval): 
         # FIXME: check format for correctness
         self.write_value_to(CpuSet.mems_path, newval)
     mems = property(getmems, setmems, delprop, "Mem node specifier")
-
-    def getcpuxlsv(self):
+    
+    def getcpuxlsv(self): 
         return self.read_first_line_from(CpuSet.cpu_exclusive_path) == '1'
     def setcpuxlsv(self, newval):
         self.write_01_to(CpuSet.cpu_exclusive_path, newval)
-    cpu_exclusive = property(getcpuxlsv, setcpuxlsv, delprop,
+    cpu_exclusive = property(getcpuxlsv, setcpuxlsv, delprop, 
                              "CPU exclusive flag")
 
-    def getmemxlsv(self):
+    def getmemxlsv(self): 
         return self.read_first_line_from(CpuSet.mem_exclusive_path) == '1'
     def setmemxlsv(self, newval):
         self.write_01_to(CpuSet.mem_exclusive_path, newval)
-    mem_exclusive = property(getmemxlsv, setmemxlsv, delprop,
+    mem_exclusive = property(getmemxlsv, setmemxlsv, delprop, 
                              "Memory exclusive flag")
 
     def gettasks(self):
@@ -226,7 +226,7 @@ class CpuSet(object):
                     notfound.append(task)
                 elif str(err).find('Invalid argument'):
                     unmovable.append(task)
-                else:
+                else: 
                     raise
             if prog:
                 tick += 1
@@ -237,8 +237,8 @@ class CpuSet(object):
         if len(unmovable) > 0:
             log.info('**> %s tasks are not movable, impossible to move', len(unmovable))
             log.debug(' not movable: %s', unmovable)
-        log.debug("-> prop_set %s.tasks set with %s tasks", self.path,
-                  len(tasklist))
+        log.debug("-> prop_set %s.tasks set with %s tasks", self.path, 
+                  len(tasklist)) 
     tasks = property(gettasks, settasks, delprop, "Task list")
 
 #
@@ -284,7 +284,7 @@ def unique_set(name):
         raise CpusetException('unique_set() passed None as arg')
     if isinstance(name, CpuSet): return name
     nl = find_sets(name)
-    if len(nl) > 1:
+    if len(nl) > 1: 
         raise CpusetNotUnique('cpuset name "%s" not unique: %s' % (name,
                               [x.path for x in nl]) )
     return nl[0]
@@ -324,9 +324,9 @@ def walk_set(set):
         yield node
 
     for node in set.subsets:
-        for result in walk_set(node):
-            log.debug("++++++ yield %s", node.name)
-            yield result
+        for result in walk_set(node): 
+            log.debug("++++++ yield %s", node.name) 
+            yield result 
 
 def rescan():
     """re-read the cpuset directory to sync system with data structs"""
@@ -378,7 +378,7 @@ def cpuspec_to_hex(cpuspec):
             # one cpu in this group
             log.debug(" adding cpu %s to result", items[0])
             number |= 1 << int(items[0])
-        elif len(items) == 2:
+        elif len(items) == 2: 
             il = [int(ii) for ii in items]
             if il[1] >= il[0]: rng = list(range(il[0], il[1]+1))
             else: rng = list(range(il[1], il[0]+1))
@@ -405,7 +405,7 @@ def cpuspec_inverse(cpuspec):
     """calculate inverse of cpu specification"""
     cpus = [0 for x in range(maxcpu+1)]
     groups = cpuspec.split(',')
-    log.debug("cpuspec_inverse(%s) maxcpu=%d groups=%d",
+    log.debug("cpuspec_inverse(%s) maxcpu=%d groups=%d", 
               cpuspec, maxcpu, len(groups))
     for set in groups:
         items = set.split('-')
@@ -431,11 +431,11 @@ def cpuspec_inverse(cpuspec):
     for x in range(0, len(cpus)):
         if cpus[x] == 0 and ingrp:
             nspec += str(begin)
-            if x > begin+1:
+            if x > begin+1: 
                 nspec += '-' + str(x if cpus[x] else x-1)
             ingrp = False
         if cpus[x] == 1:
-            if not ingrp:
+            if not ingrp: 
                 if len(nspec): nspec += ','
                 begin = x
             ingrp = True
@@ -453,7 +453,7 @@ def summary(set):
     else: msg = 'tasks'
     return ('"%s" cpuset of CPUSPEC(%s) with %s %s running' %
             (set.name, set.cpus, len(set.tasks), msg) )
-
+            
 def calc_cpumask(max):
     all = 1
     ii = 1

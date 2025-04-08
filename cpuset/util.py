@@ -53,11 +53,11 @@ class ProgressBar(object):
         self.blockcount=0
         self.finished=False
         # Use dark shade (U+2593) char for progress if none passed
-        if not progresschar:
+        if not progresschar: 
             self.block='\u2593'
-        else:
+        else: 
             self.block=progresschar
-        if config.mread:
+        if config.mread: 
             return
         self.f=sys.stdout
         if not self.finalcount: return
